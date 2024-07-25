@@ -2,6 +2,8 @@
 #include <stdlib.h>
 #include <errno.h>
 #include <setjmp.h>
+#include <time.h>
+
 
 #include "debug.h"
 #include "box64context.h"
@@ -25,11 +27,52 @@
 #include "elfloader.h"
 #endif
 
+#include "block_counter.h"
+
+BlockCount block_count_table[HASH_TABLE_SIZE] = {0};
+
+// Hash function to get the index in the table
+unsigned int hash(void* addr) {
+    return ((uintptr_t)addr >> 4) % HASH_TABLE_SIZE;
+}
+
+// Function to increment the count for a block address
+void increment_block_count(void* addr) {
+    unsigned int index = hash(addr);
+    unsigned int original_index = index;
+    unsigned int step = 1;
+    printf("increment successful\n");
+    while (block_count_table[index].addr != NULL && block_count_table[index].addr != addr) {
+        index = (index + step * step) % HASH_TABLE_SIZE;
+        if (index == original_index) { // Table is full
+            fprintf(stderr, "Hash table is full!\n");
+            return;
+        }
+        step++;
+    }
+    if (block_count_table[index].addr == NULL) {
+        block_count_table[index].addr = addr;
+    }
+    block_count_table[index].count++;
+}
+
+// Function to print the execution count for each block in the hash table
+void print_block_counts() {
+    printf("Block Execution Counts:\n");
+    for (unsigned int i = 0; i < HASH_TABLE_SIZE; i++) {
+        if (block_count_table[i].addr != NULL) {
+            printf("Address: %p, Count: %d\n", block_count_table[i].addr, block_count_table[i].count);
+        }
+    }
+}
+
 #ifdef DYNAREC
 uintptr_t getX64Address(dynablock_t* db, uintptr_t arm_addr);
+extern double dynarun_time;
+
 
 void* LinkNext(x64emu_t* emu, uintptr_t addr, void* x2, uintptr_t* x3)
-{
+{	
     int is32bits = (R_CS == 0x23);
     #ifdef HAVE_TRACE
     if(!addr) {
@@ -82,6 +125,9 @@ void* LinkNext(x64emu_t* emu, uintptr_t addr, void* x2, uintptr_t* x3)
         // null block, but done: go to epilog, no linker here
         return native_epilog;
     }
+
+    increment_block_count(jblock);
+ 
     //dynablock_t *father = block->father?block->father:block;
     return jblock;
 }
@@ -139,6 +185,8 @@ void DynaCall(x64emu_t* emu, uintptr_t addr)
 int my_setcontext(x64emu_t* emu, void* ucp);
 void DynaRun(x64emu_t* emu)
 {
+    struct timespec start, end;
+    double time_used;
     // prepare setjump for signal handling
     JUMPBUFF jmpbuf[1] = {0};
     int skip = 0;
@@ -192,9 +240,26 @@ void DynaRun(x64emu_t* emu)
                 Run(emu, 1);
             } else {
                 dynarec_log(LOG_DEBUG, "%04d|Running DynaRec Block @%p (%p) of %d x64 insts (hash=0x%x) emu=%p\n", GetTID(), (void*)R_RIP, block->block, block->isize, block->hash, emu);
-                // block is here, let's run it!
-                native_prolog(emu, block->block);
-                extern int running32bits;
+                printf("%04d|Running DynaRec Block @%p (%p) of %d x64 insts (hash=0x%x) emu=%p\n", GetTID(), (void*)R_RIP, block->block, block->isize, block->hash, emu);
+		// block is here, let's run it!
+				
+		increment_block_count(block->block);
+		clock_gettime(CLOCK_MONOTONIC, &start);
+                
+		native_prolog(emu, block->block);
+                
+		clock_gettime(CLOCK_MONOTONIC, &end);
+
+	    	// Calculate the elapsed time in microseconds
+    		time_used = (end.tv_sec - start.tv_sec) * 1e9;
+    		time_used += (end.tv_nsec - start.tv_nsec);
+    		time_used /= 1e3;  
+
+    		// Update the global time variable
+   		 dynarun_time += time_used;
+
+
+		extern int running32bits;
                 if(emu->segs[_CS]==0x23)
                     running32bits = 1;
             }
@@ -214,6 +279,7 @@ void DynaRun(x64emu_t* emu)
             emu->quit = 0;
     }
     // clear the setjmp
+    print_block_counts();
     emu->jmpbuf = old_jmpbuf;
     #ifdef RV64
     emu->xSPSave = old_savesp;

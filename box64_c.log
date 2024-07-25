@@ -1,0 +1,239 @@
+Box64 with Dynarec v0.3.1 1819b756 built on Jul 24 2024 05:14:17
+Debug level is 2
+Dynarec blocks are dumped in color
+Dynarec for RISC-V With extension: I M A F D C XTheadBa XTheadBb XTheadBs XTheadCondMov XTheadMemIdx XTheadMemPair XTheadFMemIdx XTheadMac PageSize:4096 Running on unknown riscv64 cpu with 128 Cores
+Will use Hardware counter measured at 50.0 MHz emulating 3.2 GHz
+Params database has 81 entries
+Box64 with Dynarec v0.3.1 1819b756 built on Jul 24 2024 05:14:17
+BOX64: Didn't detect 48bits of address space, considering it's 39bits
+Setting up canary (for Stack protector) at FS:0x28, value:91314800
+Counted 17 Env var
+ Env[00]: HOSTNAME=fedora-riscv-6-1
+ Env[01]: HISTSIZE=1000
+ Env[02]: LANG=en_US.UTF-8
+ Env[03]: LS_COLORS=rs=0:di=01;34:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:mi=01;37;41:su=37;41:sg=30;43:ca=00:tw=30;42:ow=34;42:st=37;44:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arc=01;31:*.arj=01;31:*.taz=01;31:*.lha=01;31:*.lz4=01;31:*.lzh=01;31:*.lzma=01;31:*.tlz=01;31:*.txz=01;31:*.tzo=01;31:*.t7z=01;31:*.zip=01;31:*.z=01;31:*.dz=01;31:*.gz=01;31:*.lrz=01;31:*.lz=01;31:*.lzo=01;31:*.xz=01;31:*.zst=01;31:*.tzst=01;31:*.bz2=01;31:*.bz=01;31:*.tbz=01;31:*.tbz2=01;31:*.tz=01;31:*.deb=01;31:*.rpm=01;31:*.jar=01;31:*.war=01;31:*.ear=01;31:*.sar=01;31:*.rar=01;31:*.alz=01;31:*.ace=01;31:*.zoo=01;31:*.cpio=01;31:*.7z=01;31:*.rz=01;31:*.cab=01;31:*.wim=01;31:*.swm=01;31:*.dwm=01;31:*.esd=01;31:*.avif=01;35:*.jpg=01;35:*.jpeg=01;35:*.mjpg=01;35:*.mjpeg=01;35:*.gif=01;35:*.bmp=01;35:*.pbm=01;35:*.pgm=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.tiff=01;35:*.png=01;35:*.svg=01;35:*.svgz=01;35:*.mng=01;35:*.pcx=01;35:*.mov=01;35:*.mpg=01;35:*.mpeg=01;35:*.m2v=01;35:*.mkv=01;35:*.webm=01;35:*.webp=01;35:*.ogm=01;35:*.mp4=01;35:*.m4v=01;35:*.mp4v=01;35:*.vob=01;35:*.qt=01;35:*.nuv=01;35:*.wmv=01;35:*.asf=01;35:*.rm=01;35:*.rmvb=01;35:*.flc=01;35:*.avi=01;35:*.fli=01;35:*.flv=01;35:*.gl=01;35:*.dl=01;35:*.xcf=01;35:*.xwd=01;35:*.yuv=01;35:*.cgm=01;35:*.emf=01;35:*.ogv=01;35:*.ogx=01;35:*.aac=01;36:*.au=01;36:*.flac=01;36:*.m4a=01;36:*.mid=01;36:*.midi=01;36:*.mka=01;36:*.mp3=01;36:*.mpc=01;36:*.ogg=01;36:*.ra=01;36:*.wav=01;36:*.oga=01;36:*.opus=01;36:*.spx=01;36:*.xspf=01;36:*~=00;90:*#=00;90:*.bak=00;90:*.old=00;90:*.orig=00;90:*.part=00;90:*.rej=00;90:*.swp=00;90:*.tmp=00;90:*.dpkg-dist=00;90:*.dpkg-old=00;90:*.ucf-dist=00;90:*.ucf-new=00;90:*.ucf-old=00;90:*.rpmnew=00;90:*.rpmorig=00;90:*.rpmsave=00;90:
+ Env[04]: TERM=xterm-256color
+ Env[05]: MAIL=/var/spool/mail/ICT-02-01
+ Env[06]: PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/var/lib/snapd/snap/bin
+ Env[07]: LOGNAME=root
+ Env[08]: USER=root
+ Env[09]: HOME=/root
+ Env[10]: SHELL=/bin/bash
+ Env[11]: SUDO_COMMAND=./box64 /home/ICT-02-02/test/coremark.exe
+ Env[12]: SUDO_USER=ICT-02-02
+ Env[13]: SUDO_UID=1003
+ Env[14]: SUDO_GID=1003
+ Env[15]: BOX64_PATH=.:bin
+ Env[16]: BOX64_LD_LIBRARY_PATH=.:lib:lib64:x86_64:bin64:libs64
+BOX64 LIB PATH: ./:lib/:lib64/:x86_64/:bin64/:libs64/:/lib/x86_64-linux-gnu/:/usr/lib/x86_64-linux-gnu/
+BOX64 BIN PATH: ./:bin/:/usr/local/sbin/:/usr/local/bin/:/usr/sbin/:/usr/bin/:/sbin/:/bin/:/var/lib/snapd/snap/bin/
+Looking for /home/ICT-02-02/test/coremark.exe
+Read 32 Section header
+Read 13 Program header
+Loading Sections Table String (idx = 31)
+Loading SymTab Strings (idx = 30)
+Loading SymTab (idx = 29)
+Loading Dynamic (idx = 24)
+The DT_INIT is at address 0x1000
+The DT_FINI is at address 0x35b8
+The DT_INIT_ARRAY is at address 0x6cf0
+The DT_INIT_ARRAYSZ is 1
+The DT_FINI_ARRAY is at address 0x6cf8
+The DT_FINI_ARRAYSZ is 1
+The DT_GNU_HASH is at address 0x3b0
+The DT_FLAGS is 0x8
+The DT_VERNEED is at address 0x640
+The DT_VERNEEDNUM is 1
+RelA Table @0x6a0 (0x288/0x18)
+PLT Table @0x928 (type=7 0xc0/0x18)
+The GOT Table is at address 0x6f70..0x6ff0
+The PLT Table is at address 0x1020..0x10b0
+The .gnu.version is at address 0x61e
+The .text is at address 0x1140, and is 9336 big
+The .eh_frame section is at address 0x46d0..0x4d94
+The .eh_frame_hdr section is at address 0x4550
+Loading DynSym Strings (idx = 7)
+Loading DynSym (idx = 6)
+Adding "/home/ICT-02-02/test/coremark.exe" as #0 in elf collection
+Elf Addr(v/p)=(nil)/(nil) Memsize=0x7060 (align=0x1000)
+Elf Stack Memsize=1048576 (align=16)
+Elf TLS Memsize=0 (align=0)
+Pre-allocated 0x7060 byte at 0x100000000 for /home/ICT-02-02/test/coremark.exe
+Delta of 0x100000000 (vaddr=(nil)) for Elf "/home/ICT-02-02/test/coremark.exe"
+Mmaping 0x9e8(0x1000) bytes @0x100000000 for Elf "/home/ICT-02-02/test/coremark.exe"
+Mmaping 0x25c5(0x3000) bytes @0x100001000 for Elf "/home/ICT-02-02/test/coremark.exe"
+Mmaping 0xd94(0x1000) bytes @0x100004000 for Elf "/home/ICT-02-02/test/coremark.exe"
+Allocating 0x3000 (0x100006000/0x370) bytes @0x100006000, will read 0x33c @0x100006cf0 for Elf "/home/ICT-02-02/test/coremark.exe"
+Rename process to "coremark.exe"
+Program linked with GLIBC 2.34+
+Calc stack size, based on 1 elf(s)
+Stack is @0x3faed7a000 size=0x800000 align=0x10
+Allocate a new X86_64 Emu, with EIP=(nil) and Stack=0x3faed7a000/0x800000
+Setup X86_64 Emu
+Grabbing R_X86_64_COPY Relocation(s) in advance for /home/ICT-02-02/test/coremark.exe
+Trying to add "libc.so.6" to maplib
+Trying to load "libc.so.6"
+Simplified name is "libc.so.6"
+Using native(wrapped) libc.so.6
+Trying to add "ld-linux-x86-64.so.2" to maplib
+Trying to load "ld-linux-x86-64.so.2"
+Simplified name is "ld-linux-x86-64.so.2"
+Using native(wrapped) ld-linux-x86-64.so.2
+Trying to add "libpthread.so.0" to maplib
+Trying to load "libpthread.so.0"
+Simplified name is "libpthread.so.0"
+Using native(wrapped) libpthread.so.0
+Trying to add "libdl.so.2" to maplib
+Trying to load "libdl.so.2"
+Simplified name is "libdl.so.2"
+Using native(wrapped) libdl.so.2
+Trying to add "libutil.so.1" to maplib
+Trying to load "libutil.so.1"
+Simplified name is "libutil.so.1"
+Using native(wrapped) libutil.so.1
+Trying to add "libresolv.so.2" to maplib
+Trying to load "libresolv.so.2"
+Simplified name is "libresolv.so.2"
+Using native(wrapped) libresolv.so.2
+Trying to add "librt.so.1" to maplib
+Trying to load "librt.so.1"
+Simplified name is "librt.so.1"
+Using native(wrapped) librt.so.1
+Trying to add "libbsd.so.0" to maplib
+Trying to load "libbsd.so.0"
+Simplified name is "libbsd.so.0"
+Using native(wrapped) libbsd.so.0
+Created lib and added to maplib => success
+Created lib and added to maplib => success
+Created lib and added to maplib => success
+Created lib and added to maplib => success
+Created lib and added to maplib => success
+Created lib and added to maplib => success
+Created lib and added to maplib => success
+Created lib and added to maplib => success
+And now export symbols / relocation for /home/ICT-02-02/test/coremark.exe...
+Forcing /home/ICT-02-02/test/coremark.exe to Bind Now
+Applying 27 Relocation(s) with Addend for /home/ICT-02-02/test/coremark.exe bindnow=1, deepbind=0
+Forcing /home/ICT-02-02/test/coremark.exe to Bind Now
+Applying 8 PLT Relocation(s) with Addend for /home/ICT-02-02/test/coremark.exe bindnow=1, deepbind=0
+Entry Point is 0x100001a80
+Start x64emu on Main
+Run X86 (0x5c999150), RIP=0x100001a80, Stack=0x3faf579578 is32bits=0
+397181|0x100001aa5: Calling __libc_start_main(0x100001150, 0x1, 0x3FAF579580, ...) =>Calling init from main elf
+Calling Init for /home/ICT-02-02/test/coremark.exe @0x100001000
+Extend block 0x3fe0702960, 0x100001016 -> 0x100001016 (ninst=6, jump from -2)
+[01;36m397181|Emitting 264 bytes for 27 x64 bytes ( => /home/ICT-02-02/test/coremark.exe:_init)[m
+	86349797	auipc	a5, pc-0x79cb7000 # 0x3f34d94010
+	fe27b783	ld	a5, -0x1e(a5)
+	000780e7	jalr	ra, 0x0(a5)
+[4;32mNew instruction 0, native=0x3faea4b01c (0x0)[m
+New Instruction x64:0x100001000, native:0x3faea4b01c
+[01;33m0x100001000: F3 0F 1E FA  NOP / ENDBR32 / ENDBR64[m
+[32m0x3faea4b010: 0 emitted opcodes, inst=0, barrier=0 state=0/0(0), set=0/0, use=0, need=0/0, sm=0/0, last_ip=0x100001000[m
+[4;32mNew instruction 1, native=0x3faea4b01c (0x0)[m
+New Instruction x64:0x100001004, native:0x3faea4b01c
+[01;33m0x100001004: 48 83 EC 08  SUB Ed, Ib[m
+[32m0x3faea4b010: 1 emitted opcodes, inst=1, barrier=0 state=3/0(0), set=3F/0, use=0, need=0/0, sm=0/0, pred=0, last_ip=0x100001000[m
+	ff8a0a13	addi	s4_rsp, s4_rsp, -0x8
+[4;32mNew instruction 2, native=0x3faea4b020 (0x4)[m
+New Instruction x64:0x100001008, native:0x3faea4b020
+[01;33m0x100001008: 48 8B 05 C9 5F 00 00  MOV Gd, Ed[m
+[32m0x3faea4b014: 4 emitted opcodes, inst=2, barrier=0 state=0/1(0), set=0/0, use=0, need=0/0, sm=0/0, pred=1, last_ip=0x100001000[m
+	00006637	lui	a2, 0x6000
+	fd86061b	addiw	a2, a2, -0x28
+	00760633	add	a2, a2, t2_rip
+	00063803	ld	a6_rax, 0x0(a2)
+[4;32mNew instruction 3, native=0x3faea4b030 (0x14)[m
+New Instruction x64:0x10000100f, native:0x3faea4b030
+[01;33m0x10000100f: 48 85 C0  TEST Ed, Gd[m
+[32m0x3faea4b024: 7 emitted opcodes, inst=3, barrier=0 state=3/1(0), set=3F/88, use=0, need=0/88, sm=0/0, pred=2, last_ip=0x100001000[m
+	f0a47413	andi	s0_flags, s0_flags, 0xffffff0a
+	03d00693	addi	a3, zero, 0x3d
+	44d52a23	sw	a3, 0x454(a0)
+	010876b3	and	a3, a6_rax, a6_rax
+	46d53423	sd	a3, 0x468(a0)
+	00069463	bne	a3, zero, pc+0x8 # 0x3faea4b04c
+	04046413	ori	s0_flags, s0_flags, 0x40
+[4;32mNew instruction 4, native=0x3faea4b04c (0x30)[m
+New Instruction x64:0x100001012, native:0x3faea4b04c
+[01;33m0x100001012: 74 02  JZ ib[m
+[32m0x3faea4b040: 3 emitted opcodes, inst=4, barrier=0 state=0/3(0), set=0/0, use=8, need=88/80, sm=0/0, pred=3, jmp=6, last_ip=0x100001000[m
+	04047593	andi	a1, s0_flags, 0x40
+	06059863	bne	a1, zero, pc+0x70 # 0x3faea4b0c0
+	00000013	nop
+[4;32mNew instruction 5, native=0x3faea4b058 (0x3c)[m
+New Instruction x64:0x100001014, native:0x3faea4b058
+[01;33m0x100001014: FF D0  CALL Ed[m
+[32m0x3faea4b04c: 26 emitted opcodes, inst=5, barrier=2 state=0/3(0), set=0/0, use=80, need=80/0, sm=0/0, pred=4, last_ip=0x100001000[m
+	01638393	addi	t2_rip, t2_rip, 0x16
+	fe7a3c23	sd	t2_rip, -0x8(s4_rsp)
+	ff8a0a13	addi	s4_rsp, s4_rsp, -0x8
+Jump to next
+	00080393	mv	t2_rip, a6_rax
+  Table64: 0x35914808
+	00000697	auipc	a3, pc+0x0 # 0x3faea4b068
+	0b06b683	ld	a3, 0xb0(a3)
+	02e3d613	srli	a2, t2_rip, 0x2e
+	00361613	slli	a2, a2, 0x3
+	00c686b3	add	a3, a3, a2
+	0006b683	ld	a3, 0x0(a3)
+	00200737	lui	a4, 0x200000
+	ff87071b	addiw	a4, a4, -0x8
+	0193d613	srli	a2, t2_rip, 0x19
+	00e67633	and	a2, a2, a4
+	00c686b3	add	a3, a3, a2
+	0006b683	ld	a3, 0x0(a3)
+	0073d613	srli	a2, t2_rip, 0x7
+	00e67633	and	a2, a2, a4
+	00c686b3	add	a3, a3, a2
+	0006b683	ld	a3, 0x0(a3)
+	3ff3f613	andi	a2, t2_rip, 0x3ff
+	00361613	slli	a2, a2, 0x3
+	00c686b3	add	a3, a3, a2
+	0006b603	ld	a2, 0x0(a3)
+	00038593	mv	a1, t2_rip
+	000600e7	jalr	ra, 0x0(a2)
+Reset Caches with 4
+[4;32mNew instruction 6, native=0x3faea4b0c0 (0xa4)[m
+New Instruction x64:0x100001016, native:0x3faea4b0c0
+[01;33m0x100001016: 48 83 C4 08  ADD Ed, Ib[m
+[32m0x3faea4b0b4: 1 emitted opcodes, inst=6, barrier=0 state=3/3(0), set=3F/80, use=0, need=0/80, sm=0/0, pred=4[m
+	008a0a13	addi	s4_rsp, s4_rsp, 0x8
+[4;32mNew instruction 7, native=0x3faea4b0c4 (0xa8)[m
+New Instruction x64:0x10000101a, native:0x3faea4b0c4
+[01;33m0x10000101a: C3  RET[m
+[32m0x3faea4b0b8: 24 emitted opcodes, inst=7, barrier=0 state=0/3(0), set=0/0, use=80, need=80/0, sm=0/0, pred=6[m
+Ret to epilog
+	000a3383	ld	t2_rip, 0x0(s4_rsp)
+	008a0a13	addi	s4_rsp, s4_rsp, 0x8
+	00038593	mv	a1, t2_rip
+	359156b7	lui	a3, 0x35915000
+	8086869b	addiw	a3, a3, -0x7f8
+	02e3d613	srli	a2, t2_rip, 0x2e
+	00361613	slli	a2, a2, 0x3
+	00c686b3	add	a3, a3, a2
+	0006b683	ld	a3, 0x0(a3)
+	00200737	lui	a4, 0x200000
+	ff87071b	addiw	a4, a4, -0x8
+	0193d613	srli	a2, t2_rip, 0x19
+	00e67633	and	a2, a2, a4
+	00c686b3	add	a3, a3, a2
+	0006b683	ld	a3, 0x0(a3)
+	0073d613	srli	a2, t2_rip, 0x7
+	00e67633	and	a2, a2, a4
+	00c686b3	add	a3, a3, a2
+	0006b683	ld	a3, 0x0(a3)
+	3ff3f613	andi	a2, t2_rip, 0x3ff
+	00361613	slli	a2, a2, 0x3
+	00c686b3	add	a3, a3, a2
+	0006b603	ld	a2, 0x0(a3)
+	000600e7	jalr	ra, 0x0(a2)
+---- END OF BLOCK ---- (8)
+397181|SIGSEGV @0x3faea4b014 (???(0x3faea4b014)) (x64pc=0x100001008//home/ICT-02-02/test/coremark.exe:"/home/ICT-02-02/test/coremark.exe/_init", rsp=0x3faf579558, stack=0x3faed7a000:0x3faf57a000 own=(nil) fp=0x3faf579560), for accessing 0x3f34d93ff2 (code=1/prot=0), db=0x3faf57dca8(0x3faea4b010:0x3faea4b158/0x100001000:0x10000101b//home/ICT-02-02/test/coremark.exe/_init:clean, hash:16d11e8b/16d11e8b) handler=(nil)
+RAX:0x0000000000000000 RCX:0x0000000000000000 RDX:0x0000003faf579590 RBX:0x0000000000000000 
+RSP:0x0000003faf579558 RBP:0x0000003faf579560 RSI:0x0000003faf579580 RDI:0x0000000000000001 
+ R8:0x0000000000000000  R9:0x0000000000010080 R10:0x0000000000000000 R11:0x0000000000000000 
+R12:0x0000000000000000 R13:0x0000000000000000 R14:0x0000000000000000 R15:0x0000000000000000 
+ES:0x002b CS:0x0033 SS:0x002b DS:0x002b FS:0x0043 GS:0x0053 
+RSP-0x20:0x0000000000000000 RSP-0x18:0x0000000000000000 RSP-0x10:0x0000000000000000 RSP-0x08:0x0000000000000000
+RSP+0x00:0x0000000000010080 RSP+0x08:0x0000000000000000 RSP+0x10:0x0000000100001aa5 RSP+0x18:0x0000003faf579578

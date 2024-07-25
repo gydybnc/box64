@@ -787,7 +787,6 @@ if(RV64_DYNAREC)
         "${BOX64_ROOT}/src/dynarec/rv64/rv64_printer.c"
         "${BOX64_ROOT}/src/dynarec/rv64/dynarec_rv64_jmpnext.c"
         "${BOX64_ROOT}/src/rv64detect.c"
-
         "${BOX64_ROOT}/src/dynarec/rv64/rv64_prolog.S"
         "${BOX64_ROOT}/src/dynarec/rv64/rv64_epilog.S"
         "${BOX64_ROOT}/src/dynarec/rv64/rv64_next.S"
@@ -828,6 +827,7 @@ if(RV64_DYNAREC)
     "${BOX64_ROOT}/src/dynarec/rv64/dynarec_rv64_66f0.c"
     "${BOX64_ROOT}/src/dynarec/rv64/dynarec_rv64_f20f.c"
     "${BOX64_ROOT}/src/dynarec/rv64/dynarec_rv64_f30f.c"
+    "${BOX64_ROOT}/src/dynarec/rv64/dynarec_rv64_pass_header.c"    
     )
 endif()
 

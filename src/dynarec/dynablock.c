@@ -26,14 +26,43 @@
 #include "custommem.h"
 #include "khash.h"
 #include "rbtree.h"
+#include <time.h>
+
+// 全局变量用来存储 FillBlock64 函数的累计用时（以微秒为单位）
+extern double global_fillblock64_time;
+
+static dynablock_t* internalDBGetBlock(x64emu_t* emu, uintptr_t addr, uintptr_t filladdr, int create, int need_lock, int is32bits);
+
+typedef struct {
+	    x64emu_t* emu;
+			uintptr_t nextBlockStart;
+			int is32bits;
+} next_block_task_t;
+
+void process_next_block(void* arg) {
+	    next_block_task_t* task = (next_block_task_t*)arg;
+			x64emu_t* emu = task->emu;
+			uintptr_t nextBlockStart = task->nextBlockStart;
+			int is32bits = task->is32bits;
+
+			dynablock_t *nextBlock = getDB(nextBlockStart);
+			if (!nextBlock) {
+				int createPreTranBlock = 1;
+				nextBlock = internalDBGetBlock(emu, nextBlockStart, nextBlockStart, createPreTranBlock, 1, is32bits);
+			}
+
+			free(task);
+}
+
+
 
 uint32_t X31_hash_code(void* addr, int len)
 {
     if(!len) return 0;
     uint8_t* p = (uint8_t*)addr;
-    int32_t h = *p;
-    for (--len, ++p; len; --len, ++p) h = (h << 5) - h + (int32_t)*p;
-    return (uint32_t)h;
+	int32_t h = *p;
+	for (--len, ++p; len; --len, ++p) h = (h << 5) - h + (int32_t)*p;
+	return (uint32_t)h;
 }
 
 dynablock_t* InvalidDynablock(dynablock_t* db, int need_lock)
@@ -48,7 +77,7 @@ dynablock_t* InvalidDynablock(dynablock_t* db, int need_lock)
             mutex_lock(&my_context->mutex_dyndump);
         db->done = 0;
         db->gone = 1;
-        uintptr_t db_size = db->x64_size;
+        int db_size = db->x64_size;
         if(db_size && my_context) {
             uint32_t n = rb_get(my_context->db_sizes, db_size);
             if(n>1)
@@ -94,7 +123,7 @@ void FreeDynablock(dynablock_t* db, int need_lock)
         dynarec_log(LOG_DEBUG, " -- FreeDyrecMap(%p, %d)\n", db->actual_block, db->size);
         db->done = 0;
         db->gone = 1;
-        uintptr_t db_size = db->x64_size;
+        int db_size = db->x64_size;
         if(db_size && my_context) {
             uint32_t n = rb_get(my_context->db_sizes, db_size);
             if(n>1)
@@ -196,6 +225,9 @@ void cancelFillBlock()
 */
 static dynablock_t* internalDBGetBlock(x64emu_t* emu, uintptr_t addr, uintptr_t filladdr, int create, int need_lock, int is32bits)
 {
+    struct timespec start, end;
+    double time_used;
+
     if(hasAlternate((void*)addr))
         return NULL;
     dynablock_t* block = getDB(addr);
@@ -227,7 +259,25 @@ static dynablock_t* internalDBGetBlock(x64emu_t* emu, uintptr_t addr, uintptr_t 
             mutex_unlock(&my_context->mutex_dyndump);
         return NULL;
     }
+
+    // Start timing
+    clock_gettime(CLOCK_MONOTONIC, &start);
+
     void* ret = FillBlock64(block, filladdr, (addr==filladdr)?0:1, is32bits);
+    // End timing
+    clock_gettime(CLOCK_MONOTONIC, &end);
+    // Calculate the elapsed time in microseconds
+    time_used = (end.tv_sec - start.tv_sec) * 1e9;
+    time_used += (end.tv_nsec - start.tv_nsec);
+    time_used /= 1e3;  // convert nanoseconds to microseconds
+
+    // Update the global time variable
+    global_fillblock64_time += time_used;
+
+    // Optionally, you might want to log the accumulated time at certain checkpoints or at the end of the program
+    //printf("Current accumulated FillBlock64 execution time: %.3f microseconds\n", global_fillblock64_time);
+
+    //printf("FillBlock64 called with block at x64_addr: %p (address: %p), filladdr: %p, alternate: %d, is32bits: %d, return: %p\n", block->x64_addr, (void*)block, (void*)filladdr, (addr == filladdr) ? 0 : 1, is32bits, ret);
     if(!ret) {
         dynarec_log(LOG_DEBUG, "Fillblock of block %p for %p returned an error\n", block, (void*)addr);
         customFree(block);
@@ -292,6 +342,17 @@ dynablock_t* DBGetBlock(x64emu_t* emu, uintptr_t addr, int create, int is32bits)
         if(!need_lock)
             mutex_unlock(&my_context->mutex_dyndump);
     } 
+/*		    if (db){
+				        uintptr_t nextBlockStart = (uintptr_t)(db->x64_addr) + db->x64_size;
+								        dynablock_t *nextBlock = getDB(nextBlockStart);
+												if (!nextBlock){
+												        int createPreTranBlock = 1;
+												        nextBlock = internalDBGetBlock(emu, nextBlockStart, nextBlockStart, createPreTranBlock, 1, is32bits);
+																		  }
+							 }
+*/
+
+		//add pretran task to th
     if(!db || !db->block || !db->done)
         emu->test.test = 0;
     return db;

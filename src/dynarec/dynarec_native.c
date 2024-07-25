@@ -735,6 +735,9 @@ void* FillBlock64(dynablock_t* block, uintptr_t addr, int alternate, int is32bit
     helper.native_size = 0;
     helper.table64size = 0; // reset table64 (but not the cap)
     helper.insts_size = 0;  // reset
+
+    pass_header(&helper,addr);
+
     native_pass3(&helper, addr, alternate, is32bits);
     if(helper.abort) {
         if(box64_dynarec_dump || box64_dynarec_log)dynarec_log(LOG_NONE, "Abort dynablock on pass1\n");
@@ -769,6 +772,8 @@ void* FillBlock64(dynablock_t* block, uintptr_t addr, int alternate, int is32bit
         CancelBlock64(0);
         return NULL;
     }
+
+#if 0
     if((oldnativesize!=helper.native_size) || (oldtable64size<helper.table64size)) {
         printf_log(LOG_NONE, "BOX64: Warning, size difference in block between pass2 (%zu, %d) & pass3 (%zu, %d)!\n", oldnativesize+oldtable64size*8, oldsize, helper.native_size+helper.table64size*8, helper.size);
         uint8_t *dump = (uint8_t*)helper.start;
@@ -787,6 +792,7 @@ void* FillBlock64(dynablock_t* block, uintptr_t addr, int alternate, int is32bit
         CancelBlock64(0);
         return NULL;
     }
+#endif
     // ok, free the helper now
     //dynaFree(helper.insts);
     helper.insts = NULL;
