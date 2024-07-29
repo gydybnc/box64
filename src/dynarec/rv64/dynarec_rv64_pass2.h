@@ -1,4 +1,6 @@
-#define INIT        dyn->native_size = 0
+//#define INIT        dyn->native_size = 0
+#define INIT        dyn->native_size = (4*24)
+
 #define FINI                                                                                            \
         if(ninst) {                                                                                     \
                 dyn->insts[ninst].address = (dyn->insts[ninst-1].address+dyn->insts[ninst-1].size);     \
