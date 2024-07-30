@@ -126,7 +126,6 @@ void* LinkNext(x64emu_t* emu, uintptr_t addr, void* x2, uintptr_t* x3)
         return native_epilog;
     }
 
-    increment_block_count(jblock);
  
     //dynablock_t *father = block->father?block->father:block;
     return jblock;
@@ -243,7 +242,6 @@ void DynaRun(x64emu_t* emu)
                 printf("%04d|Running DynaRec Block @%p (%p) of %d x64 insts (hash=0x%x) emu=%p\n", GetTID(), (void*)R_RIP, block->block, block->isize, block->hash, emu);
 		// block is here, let's run it!
 				
-		increment_block_count(block->block);
 		clock_gettime(CLOCK_MONOTONIC, &start);
                 
 		native_prolog(emu, block->block);
