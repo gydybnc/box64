@@ -691,7 +691,7 @@ void* FillBlock64(dynablock_t* block, uintptr_t addr, int alternate, int is32bit
    
     // pass 2, instruction size
    
-    helper.insts[0].size += (24*4);
+    helper.insts[0].size += (31*4);
    
     native_pass2(&helper, addr, alternate, is32bits);
     if(helper.abort) {

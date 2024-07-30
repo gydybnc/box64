@@ -42,7 +42,7 @@ void pass_header(dynarec_rv64_t* dyn, uintptr_t addr) {
     int ninst =0;
     uintptr_t increment_address = (uintptr_t)increment_block_count;
     //printf("increment_address: %p, %b \n",increment_address,increment_address);
-    //uintptr_t pc = (uintptr_t)(dyn->block); // 假设当前PC是当前block的地址 + 4
+    uintptr_t pc = (uintptr_t)(dyn->block); // 假设当前PC是当前block的地址 + 4
     //printf("pc: %p, %b \n",pc,pc);
     //uintptr_t diff = increment_address - pc;
     // 计算从当前PC到increment_block_count的相对地址
@@ -52,8 +52,7 @@ void pass_header(dynarec_rv64_t* dyn, uintptr_t addr) {
     //printf("upper_address: %p, %b \n",upper_offset,upper_offset);
     uintptr_t lower_offset = SPLIT12(increment_address);
     //printf("lower_address: %p, %b \n",lower_offset,lower_offset);   
-    
-    ADDI(xSP,xSP,-(8*9));
+    ADDI(xSP,xSP,-(8*11));
     SD(xRA,xSP,0);
     SD(A0,xSP,8);
     SD(A1,xSP,16);
@@ -63,8 +62,14 @@ void pass_header(dynarec_rv64_t* dyn, uintptr_t addr) {
     SD(A5,xSP,48);
     SD(A6,xSP,56);
     SD(A7,xSP,64);
-
-    MV(A0,A1);
+    SD(xRDI,xSP,72);
+    SD(xR12,xSP,80);
+    
+    LUI(A0,SPLIT20(pc>>8));
+    ADDI(A0,A0,SPLIT12(pc>>8));
+    SLLI(A0, A0, 8);
+    ADDI(A0,A0, pc&0xff);
+    //MV(A0,A1);
     LUI(x5, upper_offset);
     ADDI(x5, x5, lower_offset);
     JALR(x5);
@@ -78,8 +83,10 @@ void pass_header(dynarec_rv64_t* dyn, uintptr_t addr) {
     LD(A5,xSP,48);
     LD(A6,xSP,56);
     LD(A7,xSP,64);
+    LD(xRDI,xSP,72);
+    LD(xR12,xSP,80);
 
-    ADDI(xSP,xSP,(8*9));
+    ADDI(xSP,xSP,(8*11));    
 }
 
 

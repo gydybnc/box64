@@ -1,5 +1,5 @@
 //#define INIT        dyn->native_size = 0
-#define INIT        dyn->native_size = (4*24)
+#define INIT        dyn->native_size = (4*31)
 
 #define FINI                                                                                            \
         if(ninst) {                                                                                     \

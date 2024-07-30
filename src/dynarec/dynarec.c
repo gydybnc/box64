@@ -41,7 +41,7 @@ void increment_block_count(void* addr) {
     unsigned int index = hash(addr);
     unsigned int original_index = index;
     unsigned int step = 1;
-    printf("increment successful\n");
+
     while (block_count_table[index].addr != NULL && block_count_table[index].addr != addr) {
         index = (index + step * step) % HASH_TABLE_SIZE;
         if (index == original_index) { // Table is full
