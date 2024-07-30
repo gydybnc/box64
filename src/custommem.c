@@ -1260,8 +1260,10 @@ void setProtection_mmap(uintptr_t addr, size_t size, uint32_t prot)
     size = ALIGN(size);
     LOCK_PROT();
     rb_set(mmapmem, addr, addr+size, 1);
-    if(!prot)
+    if(!prot) {
         rb_set(mapallmem, addr, addr+size, 1);
+        rb_unset(memprot, addr, addr+size);
+    }
     UNLOCK_PROT();
     if(prot)
         setProtection(addr, size, prot);
@@ -1276,6 +1278,7 @@ void setProtection_elf(uintptr_t addr, size_t size, uint32_t prot)
     else {
         LOCK_PROT();
         rb_set(mapallmem, addr, addr+size, 1);
+        rb_unset(memprot, addr, addr+size);
         UNLOCK_PROT();
     }
 }
@@ -1335,14 +1338,17 @@ void loadProtectionFromMap()
     box64_mapclean = 1;
 }
 
+int isAddrInPrereserve(uintptr_t addr);
 void freeProtection(uintptr_t addr, size_t size)
 {
     size = ALIGN(size);
     addr &= ~(box64_pagesize-1);
     dynarec_log(LOG_DEBUG, "freeProtection %p:%p\n", (void*)addr, (void*)(addr+size-1));
     LOCK_PROT();
-    rb_unset(mapallmem, addr, addr+size);
-    rb_unset(mmapmem, addr, addr+size);
+    if(!isAddrInPrereserve(addr)) {
+        rb_unset(mapallmem, addr, addr+size);
+        rb_unset(mmapmem, addr, addr+size);
+    }
     rb_unset(memprot, addr, addr+size);
     UNLOCK_PROT();
 }
@@ -1361,13 +1367,14 @@ int getMmapped(uintptr_t addr)
 }
 
 #define LOWEST (void*)0x10000
+#define WINE_LOWEST (void*)0x30000000
 #define MEDIUM (void*)0x40000000
 #define HIGH   (void*)0x60000000
 
 void* find31bitBlockNearHint(void* hint, size_t size, uintptr_t mask)
 {
     uint32_t prot;
-    if(hint<LOWEST) hint = LOWEST;
+    if(hint<LOWEST) hint = box64_wine?WINE_LOWEST:LOWEST;
     uintptr_t bend = 0;
     uintptr_t cur = (uintptr_t)hint;
     if(!mask) mask = 0xffff;

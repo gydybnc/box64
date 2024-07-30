@@ -168,9 +168,9 @@
         ed = i;                                                                               \
         wb1 = 1;                                                                              \
     }
-// GETEW will use i for ed, and can use r3 for wback.
+// GETEW will use i for ed, and *may* use x3 for wback.
 #define GETEW(i, D) GETEWW(x3, i, D)
-// GETSEW will use i for ed, and can use r3 for wback. This is the Signed version
+// GETSEW will use i for ed, and *may* use x3 for wback. This is the Signed version
 #define GETSEW(i, D)                                                                           \
     if (MODREG) {                                                                              \
         wback = xRAX + (nextop & 7) + (rex.b << 3);                                            \
@@ -494,16 +494,21 @@
         fixedaddress = 0; /* TODO: optimize this! */                                           \
     }
 
+// Get GX as a quad (might use x1)
+#define GETGX_vector(a, w, sew)                 \
+    gd = ((nextop & 0x38) >> 3) + (rex.r << 3); \
+    a = sse_get_reg_vector(dyn, ninst, x1, gd, w, sew)
+
 // Get EX as a quad, (x1 is used)
-#define GETEX_vector(a, w, D)                                                                \
+#define GETEX_vector(a, w, D, sew)                                                           \
     if (MODREG) {                                                                            \
-        a = sse_get_reg_vector(dyn, ninst, x1, (nextop & 7) + (rex.b << 3), w);              \
+        a = sse_get_reg_vector(dyn, ninst, x1, (nextop & 7) + (rex.b << 3), w, sew);         \
     } else {                                                                                 \
         SMREAD();                                                                            \
         addr = geted(dyn, addr, ninst, nextop, &ed, x3, x2, &fixedaddress, rex, NULL, 1, D); \
         a = fpu_get_scratch(dyn);                                                            \
         ADDI(x2, ed, fixedaddress);                                                          \
-        VLE8_V(a, x2, VECTOR_UNMASKED, VECTOR_NFIELD1);                                      \
+        VLE_V(a, x2, sew, VECTOR_UNMASKED, VECTOR_NFIELD1);                                  \
     }
 
 #define GETGM()                     \
@@ -525,6 +530,11 @@
         addr = geted(dyn, addr, ninst, nextop, &wback, a, x3, &fixedaddress, rex, NULL, 0, D); \
         fixedaddress = 0; /* TODO: optimize this! */                                           \
     }
+
+#define GETGX_empty_vector(a)                   \
+    gd = ((nextop & 0x38) >> 3) + (rex.r << 3); \
+    a = sse_get_reg_empty_vector(dyn, ninst, x1, gd)
+
 
 #define SSE_LOOP_D_ITEM(GX1, EX1, F, i)    \
     LWU(GX1, gback, gdoffset + i * 4);     \
@@ -985,9 +995,6 @@
 #ifndef BARRIER
 #define BARRIER(A)
 #endif
-#ifndef BARRIER_NEXT
-#define BARRIER_NEXT(A)
-#endif
 #ifndef SET_HASCALLRET
 #define SET_HASCALLRET()
 #endif
@@ -1010,6 +1017,9 @@
     *ok = -1;   \
     BARRIER(2)
 #endif
+#ifndef DEFAULT_VECTOR
+#define DEFAULT_VECTOR return 0
+#endif
 
 #ifndef TABLE64
 #define TABLE64(A, V)
@@ -1018,8 +1028,10 @@
 #define FTABLE64(A, V)
 #endif
 
-#define ARCH_INIT()
-
+#define ARCH_INIT() \
+    dyn->vector_sew = VECTOR_SEWNA;
+#define ARCH_RESET() \
+    dyn->vector_sew = VECTOR_SEWNA;
 
 #if STEP < 2
 #define GETIP(A) TABLE64(0, 0)
@@ -1064,6 +1076,19 @@
 #endif
 
 #define MODREG ((nextop & 0xC0) == 0xC0)
+
+#ifndef SET_ELEMENT_WIDTH
+#define SET_ELEMENT_WIDTH(s1, sew)                                            \
+    do {                                                                      \
+        if (sew == VECTOR_SEWNA) {                                            \
+        } else if (sew == VECTOR_SEWANY && dyn->vector_sew != VECTOR_SEWNA) { \
+        } else if (sew == dyn->vector_sew) {                                  \
+        } else {                                                              \
+            vector_vsetvl_emul1(dyn, ninst, s1, sew);                         \
+        }                                                                     \
+        dyn->vector_sew = sew;                                                \
+    } while (0)
+#endif
 
 void rv64_epilog(void);
 void rv64_epilog_fast(void);
@@ -1458,7 +1483,7 @@ void mmx_forget_reg(dynarec_rv64_t* dyn, int ninst, int a);
 //  get float register for a SSE reg, create the entry if needed
 int sse_get_reg(dynarec_rv64_t* dyn, int ninst, int s1, int a, int single);
 // get rvv register for a SSE reg, create the entry if needed
-int sse_get_reg_vector(dynarec_rv64_t* dyn, int ninst, int s1, int a, int forwrite);
+int sse_get_reg_vector(dynarec_rv64_t* dyn, int ninst, int s1, int a, int forwrite, int sew);
 // get float register for a SSE reg, but don't try to synch it if it needed to be created
 int sse_get_reg_empty(dynarec_rv64_t* dyn, int ninst, int s1, int a, int single);
 // get rvv register for an SSE reg, but don't try to synch it if it needed to be created

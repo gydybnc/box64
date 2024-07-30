@@ -18,6 +18,7 @@
 #include "callback.h"
 #include "emu/x64run_private.h"
 #include "emu/x87emu_private.h"
+#include "rv64_emitter.h"
 #include "x64trace.h"
 #include "signals.h"
 #include "dynarec_native.h"
@@ -362,12 +363,30 @@ int fpuCacheNeedsTransform(dynarec_rv64_t* dyn, int ninst) {
             if(!cache_i2.extcache[i].v) {    // but there is nothing at i2 for i
                 ret = 1;
             } else if(dyn->insts[ninst].e.extcache[i].v!=cache_i2.extcache[i].v) {  // there is something different
-                ret = 1;
+                if (dyn->insts[ninst].e.extcache[i].n != cache_i2.extcache[i].n) {  // not the same x64 reg
+                    ret = 1;
+                } else if (dyn->insts[ninst].e.extcache[i].t == EXT_CACHE_XMMR && cache_i2.extcache[i].t == EXT_CACHE_XMMW) { /* nothing */
+                } else
+                    ret = 1;
             }
         } else if(cache_i2.extcache[i].v)
             ret = 1;
     }
     return ret;
+}
+
+int sewNeedsTransform(dynarec_rv64_t* dyn, int ninst)
+{
+    int i2 = dyn->insts[ninst].x64.jmp_insts;
+
+    if (dyn->insts[i2].vector_sew == VECTOR_SEWNA)
+        return 0;
+    else if (dyn->insts[i2].vector_sew == VECTOR_SEWANY && dyn->insts[ninst].vector_sew != VECTOR_SEWNA)
+        return 0;
+    else if (dyn->insts[i2].vector_sew == dyn->insts[ninst].vector_sew)
+        return 0;
+
+    return 1;
 }
 
 void extcacheUnwind(extcache_t* cache)
@@ -480,7 +499,7 @@ void extcacheUnwind(extcache_t* cache)
                     break;
                 case EXT_CACHE_XMMR:
                 case EXT_CACHE_XMMW:
-                    cache->ssecache[cache->extcache[i].n].reg = i;
+                    cache->ssecache[cache->extcache[i].n].reg = EXTREG(i);
                     cache->ssecache[cache->extcache[i].n].vector = 1;
                     cache->ssecache[cache->extcache[i].n].write = (cache->extcache[i].t == EXT_CACHE_XMMW) ? 1 : 0;
                     ++cache->fpu_reg;
@@ -592,22 +611,22 @@ void inst_name_pass3(dynarec_native_t* dyn, int ninst, const char* name, rex_t r
     };
     if(box64_dynarec_dump) {
         printf_x64_instruction(rex.is32bits?my_context->dec32:my_context->dec, &dyn->insts[ninst].x64, name);
-        dynarec_log(LOG_NONE, "%s%p: %d emitted opcodes, inst=%d, barrier=%d state=%d/%d(%d), %s=%X/%X, use=%X, need=%X/%X, sm=%d/%d",
-            (box64_dynarec_dump>1)?"\e[32m":"",
-            (void*)(dyn->native_start+dyn->insts[ninst].address),
-            dyn->insts[ninst].size/4,
+        dynarec_log(LOG_NONE, "%s%p: %d emitted opcodes, inst=%d, barrier=%d state=%d/%d(%d), %s=%X/%X, use=%X, need=%X/%X, sm=%d/%d, sew=%d",
+            (box64_dynarec_dump > 1) ? "\e[32m" : "",
+            (void*)(dyn->native_start + dyn->insts[ninst].address),
+            dyn->insts[ninst].size / 4,
             ninst,
             dyn->insts[ninst].x64.barrier,
             dyn->insts[ninst].x64.state_flags,
             dyn->f.pending,
             dyn->f.dfnone,
-            dyn->insts[ninst].x64.may_set?"may":"set",
+            dyn->insts[ninst].x64.may_set ? "may" : "set",
             dyn->insts[ninst].x64.set_flags,
             dyn->insts[ninst].x64.gen_flags,
             dyn->insts[ninst].x64.use_flags,
             dyn->insts[ninst].x64.need_before,
             dyn->insts[ninst].x64.need_after,
-            dyn->smread, dyn->smwrite);
+            dyn->smread, dyn->smwrite, dyn->insts[ninst].vector_sew);
         if(dyn->insts[ninst].pred_sz) {
             dynarec_log(LOG_NONE, ", pred=");
             for(int ii=0; ii<dyn->insts[ninst].pred_sz; ++ii)

@@ -109,6 +109,7 @@ int rv64_zbb = 0;
 int rv64_zbc = 0;
 int rv64_zbs = 0;
 int rv64_vector = 0;
+int rv64_vlen = 0;
 int rv64_xtheadba = 0;
 int rv64_xtheadbb = 0;
 int rv64_xtheadbs = 0;
@@ -154,6 +155,7 @@ int box64_prefer_wrapped = 0;
 int box64_sse_flushto0 = 0;
 int box64_x87_no80bits = 0;
 int box64_sync_rounding = 0;
+int box64_shaext = 1;
 int box64_sse42 = 1;
 #if defined(DYNAREC) && defined(ARM64)
 int box64_avx = 1;
@@ -508,7 +510,7 @@ HWCAP2_AFP
     if(rv64_zbb) printf_log(LOG_INFO, " Zbb");
     if(rv64_zbc) printf_log(LOG_INFO, " Zbc");
     if(rv64_zbs) printf_log(LOG_INFO, " Zbs");
-    if(rv64_vector) printf_log(LOG_INFO, " Vector");
+    if(rv64_vector) printf_log(LOG_INFO, " Vector (vlen: %d)", rv64_vlen);
     if(rv64_xtheadba) printf_log(LOG_INFO, " XTheadBa");
     if(rv64_xtheadbb) printf_log(LOG_INFO, " XTheadBb");
     if(rv64_xtheadbs) printf_log(LOG_INFO, " XTheadBs");
@@ -1065,6 +1067,15 @@ void LoadLogEnv()
             printf_log(LOG_INFO, "Disable the use of futex waitv syscall\n");
         #endif
     }
+    p = getenv("BOX64_SHAEXT");
+    if(p) {
+        if(strlen(p)==1) {
+            if(p[0]>='0' && p[0]<='0'+1)
+                box64_shaext = p[0]-'0';
+        }
+        if(!box64_shaext)
+            printf_log(LOG_INFO, "Do not expose SHAEXT capabilities\n");
+    }
     p = getenv("BOX64_SSE42");
     if(p) {
         if(strlen(p)==1) {
@@ -1405,6 +1416,7 @@ void LoadEnvVars(box64context_t *context)
     AddPath("libunwind.so.8", &context->box64_emulated_libs, 0);
     AddPath("libpng12.so.0", &context->box64_emulated_libs, 0);
     AddPath("libcurl.so.4", &context->box64_emulated_libs, 0);
+    //AddPath("libgnutls.so.30", &context->box64_emulated_libs, 0);
     AddPath("libtbbmalloc.so.2", &context->box64_emulated_libs, 0);
     AddPath("libtbbmalloc_proxy.so.2", &context->box64_emulated_libs, 0);
 

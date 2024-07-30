@@ -470,7 +470,7 @@ uintptr_t dynarec64_00(dynarec_la64_t* dyn, uintptr_t addr, uintptr_t ip, int ni
                     }
                 } else {
                     if (MODREG) { // reg <= reg
-                        AND(gd, TO_LA64((nextop & 7) + (rex.b << 3)), xMASK);
+                        ZEROUP2(gd, TO_LA64((nextop & 7) + (rex.b << 3)));
                     } else { // mem <= reg
                         SMREAD();
                         addr = geted(dyn, addr, ninst, nextop, &ed, x2, x1, &fixedaddress, rex, NULL, 1, 0);
@@ -808,7 +808,7 @@ uintptr_t dynarec64_00(dynarec_la64_t* dyn, uintptr_t addr, uintptr_t ip, int ni
                         emit_cmp32(dyn, ninst, rex, ed, x2, x3, x4, x5, x6);
                     } else {
                         if (!rex.w && MODREG) {
-                            AND(x1, ed, xMASK);
+                            ZEROUP2(x1, ed);
                             ed = x1;
                         }
                         emit_cmp32_0(dyn, ninst, rex, ed, x3, x4);
@@ -845,9 +845,10 @@ uintptr_t dynarec64_00(dynarec_la64_t* dyn, uintptr_t addr, uintptr_t ip, int ni
             } else {
                 GETGB(x3);
                 addr = geted(dyn, addr, ninst, nextop, &ed, x2, x1, &fixedaddress, rex, LOCK_LOCK, 0, 0);
-                if (la64_lam_bh)
+                if (la64_lam_bh) {
                     AMSWAP_DB_B(x1, gd, ed);
-                else {
+                    BSTRINS_D(gb1, x1, gb2 + 7, gb2);
+                } else {
                     SMDMB();
 
                     // calculate shift amount
@@ -858,32 +859,25 @@ uintptr_t dynarec64_00(dynarec_la64_t* dyn, uintptr_t addr, uintptr_t ip, int ni
                     ADDI_D(x4, xZR, 0xffc);
                     AND(x6, ed, x4);
 
-                    // load aligned data
-                    LD_WU(x5, x6, 0);
-
-                    // insert gd byte into the aligned data
+                    // prepare mask
                     ADDI_D(x4, xZR, 0xff);
                     SLL_D(x4, x4, x1);
                     NOR(x4, x4, xZR);
-                    AND(x4, x5, x4);
-                    SLL_D(x5, gd, x1);
-                    OR(x4, x4, x5);
 
-                    // do aligned ll/sc sequence
+                    SLL_D(x7, gd, x1);
+
+                    // do aligned ll/sc sequence, reusing x2 (ed might be x2 but is no longer needed)
                     MARKLOCK;
-                    LL_W(x1, x6, 0);
-                    MV(x5, x4);
+                    LL_W(x2, x6, 0);
+                    AND(x5, x2, x4);
+                    OR(x5, x5, x7);
                     SC_W(x5, x6, 0);
                     BEQZ_MARKLOCK(x5);
 
-                    // calculate shift amount again
-                    ANDI(x4, ed, 0x3);
-                    SLLI_D(x4, x4, 3);
-
                     // extract loaded byte
-                    SRL_D(x1, x1, x4);
+                    SRL_D(gd, x2, x1);
+                    BSTRINS_D(gb1, gd, gb2 + 7, gb2);
                 }
-                BSTRINS_D(gb1, x1, gb2 + 7, gb2);
             }
             break;
         case 0x87:
@@ -1630,18 +1624,19 @@ uintptr_t dynarec64_00(dynarec_la64_t* dyn, uintptr_t addr, uintptr_t ip, int ni
                     jump_to_epilog_fast(dyn, 0, xRIP, ninst);
                 }
             } else {
+                INST_NAME("INT 3");
                 if (!box64_ignoreint3) {
-                    INST_NAME("INT 3");
                     // check if TRAP signal is handled
-                    LD_D(x1, xEmu, offsetof(x64emu_t, context));
-                    MOV64x(x2, offsetof(box64context_t, signals[SIGTRAP]));
-                    ADD_D(x2, x2, x1);
-                    LD_D(x3, x2, 0);
+                    TABLE64(x1, (uintptr_t)my_context);
+                    MOV32w(x2, offsetof(box64context_t, signals[SIGTRAP]));
+                    LDX_D(x3, x1, x2);
                     CBZ_NEXT(x3);
-                    GETIP(ip);
+                    GETIP(addr);
                     STORE_XEMU_CALL();
                     CALL(native_int3, -1);
                     LOAD_XEMU_CALL();
+                    *need_epilog = 0;
+                    *ok = 0;
                 }
             }
             break;
@@ -1680,6 +1675,14 @@ uintptr_t dynarec64_00(dynarec_la64_t* dyn, uintptr_t addr, uintptr_t ip, int ni
                     WBACK;
                     if (!wback && !rex.w) ZEROUP(ed);
                     break;
+                case 1:
+                    INST_NAME("ROR Ed, 1");
+                    SETFLAGS(X_OF | X_CF, SF_SUBSET_PENDING);
+                    GETED(0);
+                    emit_ror32c(dyn, ninst, rex, ed, 1, x3, x4);
+                    WBACK;
+                    if (!wback && !rex.w) ZEROUP(ed);
+                    break;
                 case 4:
                 case 6:
                     INST_NAME("SHL Ed, 1");
@@ -1714,6 +1717,14 @@ uintptr_t dynarec64_00(dynarec_la64_t* dyn, uintptr_t addr, uintptr_t ip, int ni
                     SETFLAGS(X_OF | X_CF, SF_SUBSET);
                     GETED(0);
                     emit_rol32(dyn, ninst, rex, ed, xRCX, x3, x4);
+                    WBACK;
+                    if (!wback && !rex.w) ZEROUP(ed);
+                    break;
+                case 1:
+                    INST_NAME("ROR Ed, CL");
+                    SETFLAGS(X_OF | X_CF, SF_SUBSET);
+                    GETED(0);
+                    emit_ror32(dyn, ninst, rex, ed, xRCX, x3, x4);
                     WBACK;
                     if (!wback && !rex.w) ZEROUP(ed);
                     break;
@@ -1835,7 +1846,6 @@ uintptr_t dynarec64_00(dynarec_la64_t* dyn, uintptr_t addr, uintptr_t ip, int ni
                     SETFLAGS(X_ALL, SF_SET); // Hack to set flags to "dont'care" state
                     SKIPTEST(x1);
                     BARRIER(BARRIER_FULL);
-                    // BARRIER_NEXT(BARRIER_FULL);
                     if (dyn->last_ip && (addr - dyn->last_ip < 0x1000)) {
                         ADDI_D(x2, xRIP, addr - dyn->last_ip);
                     } else {
@@ -2003,6 +2013,13 @@ uintptr_t dynarec64_00(dynarec_la64_t* dyn, uintptr_t addr, uintptr_t ip, int ni
                     UFLAG_RES(x1);
                     BSTRINS_D(xRAX, x1, 15, 0);
                     break;
+                case 6:
+                    INST_NAME("DIV Eb");
+                    MESSAGE(LOG_DUMP, "Need Optimization\n");
+                    SETFLAGS(X_ALL, SF_SET_DF);
+                    GETEB(x1, 0);
+                    CALL(div8, -1);
+                    break;
                 default:
                     DEFAULT;
             }
@@ -2047,13 +2064,13 @@ uintptr_t dynarec64_00(dynarec_la64_t* dyn, uintptr_t addr, uintptr_t ip, int ni
                         MUL_D(xRAX, xRAX, ed);
                         if (gd != xRDX) { MV(xRDX, gd); }
                     } else {
-                        AND(x3, xRAX, xMASK);
+                        ZEROUP2(x3, xRAX);
                         if (MODREG) {
-                            AND(x4, ed, xMASK);
+                            ZEROUP2(x4, ed);
                             ed = x4;
                         }
                         MUL_D(xRDX, x3, ed); // 64 <- 32x32
-                        AND(xRAX, xRDX, xMASK);
+                        ZEROUP2(xRAX, xRDX);
                         SRLI_D(xRDX, xRDX, 32);
                     }
                     UFLAG_RES(xRAX);
@@ -2075,7 +2092,7 @@ uintptr_t dynarec64_00(dynarec_la64_t* dyn, uintptr_t addr, uintptr_t ip, int ni
                     } else {
                         ADDI_W(x3, xRAX, 0); // sign extend 32bits-> 64bits
                         MUL_D(xRDX, x3, ed); // 64 <- 32x32
-                        AND(xRAX, xRDX, xMASK);
+                        ZEROUP2(xRAX, xRDX);
                         SRLI_D(xRDX, xRDX, 32);
                     }
                     UFLAG_RES(xRAX);
@@ -2089,15 +2106,15 @@ uintptr_t dynarec64_00(dynarec_la64_t* dyn, uintptr_t addr, uintptr_t ip, int ni
                         SET_DFNONE();
                         GETED(0);
                         SLLI_D(x3, xRDX, 32);
-                        AND(x2, xRAX, xMASK);
+                        ZEROUP2(x2, xRAX);
                         OR(x3, x3, x2);
                         if (MODREG) {
-                            AND(x4, ed, xMASK);
+                            ZEROUP2(x4, ed);
                             ed = x4;
                         }
                         DIV_DU(x2, x3, ed);
                         MOD_DU(xRDX, x3, ed);
-                        AND(xRAX, x2, xMASK);
+                        ZEROUP2(xRAX, x2);
                         ZEROUP(xRDX);
                     } else {
                         if (ninst
@@ -2132,11 +2149,11 @@ uintptr_t dynarec64_00(dynarec_la64_t* dyn, uintptr_t addr, uintptr_t ip, int ni
                         SET_DFNONE()
                         GETSED(0);
                         SLLI_D(x3, xRDX, 32);
-                        AND(x2, xRAX, xMASK);
+                        ZEROUP2(x2, xRAX);
                         OR(x3, x3, x2);
                         DIV_D(x2, x3, ed);
                         MOD_D(xRDX, x3, ed);
-                        AND(xRAX, x2, xMASK);
+                        ZEROUP2(xRAX, x2);
                         ZEROUP(xRDX);
                     } else {
                         if (ninst && dyn->insts

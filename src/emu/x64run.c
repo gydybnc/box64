@@ -1488,6 +1488,7 @@ x64emurun:
             STEP2;
             break;
         case 0xCC:                      /* INT 3 */
+            R_RIP = addr;   // update RIP
             #ifndef TEST_INTERPRETER
             x64Int3(emu, &addr);
             if(emu->quit) goto fini;    // R_RIP is up to date when returning from x64Int3
@@ -1511,17 +1512,26 @@ x64emurun:
                 printf_log(LOG_DEBUG, "INT 29 called => __fastfail(0x%x)\n", R_ECX);
                 emit_interruption(emu, 0x29, (void*)R_RIP);
             } else if (tmp8u==0x80) {
+                R_RIP = addr;
                 // 32bits syscall
                 #ifndef TEST_INTERPRETER
                 x86Syscall(emu);
-                STEP;
+                STEP2;
+                #else
+                test->notest = 1;
+                #endif
+            } else if (tmp8u==0x03) {
+                R_RIP = addr;
+                #ifndef TEST_INTERPRETER
+                emit_signal(emu, SIGTRAP, NULL, 3);
+                STEP2;
                 #else
                 test->notest = 1;
                 #endif
             } else {
                 #ifndef TEST_INTERPRETER
-                emit_signal(emu, SIGSEGV, (void*)R_RIP, 0);
-                STEP;
+                emit_interruption(emu, tmp8u, (void*)R_RIP);
+                STEP2;
                 #else
                 test->notest = 1;
                 #endif
@@ -1533,11 +1543,12 @@ x64emurun:
                 goto fini;
             }
             emu->old_ip = R_RIP;
+            R_RIP = addr;
             #ifndef TEST_INTERPRETER
             CHECK_FLAGS(emu);
             if(ACCESS_FLAG(F_OF))
                 emit_signal(emu, SIGSEGV, (void*)R_RIP, 128);
-            STEP;
+            STEP2;
             #endif
             break;
         case 0xCF:                      /* IRET */
@@ -2176,10 +2187,11 @@ x64emurun:
         }
 #ifndef TEST_INTERPRETER
         // check the TRACE flag before going to next
-        if(ACCESS_FLAG(F_TF)) {
-            if(tf_next) {
+        if(ACCESS_FLAG(F_TF) || (tf_next<0)) {
+            if(tf_next>0) {
                 tf_next = 0;
             } else {
+                tf_next = 0;
                 R_RIP = addr;
                 emit_signal(emu, SIGTRAP, (void*)addr, 1);
                 if(emu->quit) goto fini;

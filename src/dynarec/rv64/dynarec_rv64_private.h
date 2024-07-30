@@ -110,6 +110,7 @@ typedef struct instruction_rv64_s {
     flagcache_t         f_exit;     // flags status at end of intruction
     extcache_t          e;          // extcache at end of intruction (but before poping)
     flagcache_t         f_entry;    // flags status before the instruction begin
+    uint8_t             vector_sew;
 } instruction_rv64_t;
 
 typedef struct dynarec_rv64_s {
@@ -148,11 +149,12 @@ typedef struct dynarec_rv64_s {
     uint16_t            ymm_zero;   // bitmap of ymm to zero at purge
     uint8_t             always_test;
     uint8_t             abort;
+    uint8_t             vector_sew;
 } dynarec_rv64_t;
 
 // convert idx (0..24) to reg index (10..31 0..1)
 #define EXTREG(A)   (((A)+10)&31)
-// convert reg index (10..31 0..1) or idx (0..24)
+// convert reg index (10..31 0..1) to idx (0..24)
 #define EXTIDX(A)   (((A)-10)&31)
 
 void add_next(dynarec_rv64_t *dyn, uintptr_t addr);

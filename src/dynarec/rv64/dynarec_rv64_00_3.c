@@ -420,18 +420,20 @@ uintptr_t dynarec64_00_3(dynarec_rv64_t* dyn, uintptr_t addr, uintptr_t ip, int 
                     }
                 }
             } else {
-                if(!box64_ignoreint3) {
-                    INST_NAME("INT 3");
+                INST_NAME("INT 3");
+                if (!box64_ignoreint3) {
                     // check if TRAP signal is handled
-                    LD(x1, xEmu, offsetof(x64emu_t, context));
-                    MOV64x(x2, offsetof(box64context_t, signals[SIGTRAP]));
+                    TABLE64(x1, (uintptr_t)my_context);
+                    MOV32w(x2, offsetof(box64context_t, signals[SIGTRAP]));
                     ADD(x2, x2, x1);
                     LD(x3, x2, 0);
                     CBZ_NEXT(x3);
-                    GETIP(ip);
+                    GETIP(addr);
                     STORE_XEMU_CALL(x3);
                     CALL(native_int3, -1);
                     LOAD_XEMU_CALL();
+                    *need_epilog = 0;
+                    *ok = 0;
                 }
                 break;
             }
@@ -442,7 +444,7 @@ uintptr_t dynarec64_00_3(dynarec_rv64_t* dyn, uintptr_t addr, uintptr_t ip, int 
                 INST_NAME("INT 29/2c/2d");
                 // lets do nothing
                 MESSAGE(LOG_INFO, "INT 29/2c/2d Windows interruption\n");
-                GETIP(ip);
+                GETIP(ip);  // priviledged instruction, IP not updated
                 STORE_XEMU_CALL(x3);
                 MOV32w(x1, u8);
                 CALL(native_int, -1);
@@ -462,10 +464,20 @@ uintptr_t dynarec64_00_3(dynarec_rv64_t* dyn, uintptr_t addr, uintptr_t ip, int 
                 MARK;
                 LOAD_XEMU_REM(x3);
                 jump_to_epilog(dyn, 0, xRIP, ninst);
+            } else if (u8==0x03) {
+                INST_NAME("INT 3");
+                SETFLAGS(X_ALL, SF_SET_NODF); // Hack to set flags in "don't care" state
+                GETIP(addr);
+                STORE_XEMU_CALL(x3);
+                CALL(native_int3, -1);
+                LOAD_XEMU_CALL();
+                jump_to_epilog(dyn, 0, xRIP, ninst);
+                *need_epilog = 0;
+                *ok = 0;
             } else {
                 INST_NAME("INT n");
                 SETFLAGS(X_ALL, SF_SET_NODF); // Hack to set flags in "don't care" state
-                GETIP(ip);
+                GETIP(ip);  // priviledged instruction, IP not updated
                 STORE_XEMU_CALL(x3);
                 CALL(native_priv, -1);
                 LOAD_XEMU_CALL();
@@ -850,7 +862,6 @@ uintptr_t dynarec64_00_3(dynarec_rv64_t* dyn, uintptr_t addr, uintptr_t ip, int 
                     SETFLAGS(X_ALL, SF_SET_NODF);    // Hack to set flags to "dont'care" state
                     SKIPTEST(x1);
                     BARRIER(BARRIER_FULL);
-                    //BARRIER_NEXT(BARRIER_FULL);
                     if(dyn->last_ip && (addr-dyn->last_ip<0x1000)) {
                         ADDI(x2, xRIP, addr-dyn->last_ip);
                     } else {

@@ -11,6 +11,7 @@
 #include "dynarec.h"
 #include "emu/x64emu_private.h"
 #include "emu/x64run_private.h"
+#include "rv64_emitter.h"
 #include "x64run.h"
 #include "x64emu.h"
 #include "box64stack.h"
@@ -1611,8 +1612,9 @@ int sse_get_reg_empty(dynarec_rv64_t* dyn, int ninst, int s1, int a, int single)
 
         if (dyn->e.ssecache[a].single != single) {
             if (single) {
-                // writing back the double, to clear upper 32 bit.
-                FSD(dyn->e.ssecache[a].reg, xEmu, offsetof(x64emu_t, xmm[a]));
+                // writing back the float
+                FSW(dyn->e.ssecache[a].reg, xEmu, offsetof(x64emu_t, xmm[a]));
+                // there is no need to clear upper bits, it's cleared manually when needed.
             }
             dyn->e.olds[a].changed = 1;
             dyn->e.olds[a].purged = 0;
@@ -1651,13 +1653,13 @@ void sse_forget_reg(dynarec_rv64_t* dyn, int ninst, int s1, int a)
 }
 
 // get rvv register for a SSE reg, create the entry if needed
-int sse_get_reg_vector(dynarec_rv64_t* dyn, int ninst, int s1, int a, int forwrite)
+int sse_get_reg_vector(dynarec_rv64_t* dyn, int ninst, int s1, int a, int forwrite, int sew)
 {
     if (dyn->e.ssecache[a].v != -1) {
         if (dyn->e.ssecache[a].vector == 0) {
             // it's in the fpu, forget it first...
             sse_forget_reg(dyn, ninst, s1, a);
-            return sse_get_reg_vector(dyn, ninst, s1, a, forwrite);
+            return sse_get_reg_vector(dyn, ninst, s1, a, forwrite, sew);
         }
 
         if (forwrite) {
@@ -1673,7 +1675,7 @@ int sse_get_reg_vector(dynarec_rv64_t* dyn, int ninst, int s1, int a, int forwri
     dyn->e.ssecache[a].vector = 1;
     dyn->e.ssecache[a].single = 0; // just to be clean
     ADDI(s1, xEmu, offsetof(x64emu_t, xmm[a]));
-    VLE8_V(ret, s1, VECTOR_UNMASKED, VECTOR_NFIELD1);
+    VLE_V(ret, s1, sew, VECTOR_UNMASKED, VECTOR_NFIELD1);
     return ret;
 }
 
@@ -1707,6 +1709,7 @@ void sse_forget_reg_vector(dynarec_rv64_t* dyn, int ninst, int s1, int a)
     if (dyn->e.ssecache[a].vector == 0)
         return sse_forget_reg(dyn, ninst, s1, a);
     if (dyn->e.extcache[EXTIDX(dyn->e.ssecache[a].reg)].t == EXT_CACHE_XMMW) {
+        SET_ELEMENT_WIDTH(s1, VECTOR_SEW8);
         ADDI(s1, xEmu, offsetof(x64emu_t, xmm[a]));
         VSE8_V(dyn->e.ssecache[a].reg, s1, VECTOR_UNMASKED, VECTOR_NFIELD1);
     }
@@ -1726,6 +1729,7 @@ void sse_purge07cache(dynarec_rv64_t* dyn, int ninst, int s1)
                 ++old;
             }
             if (dyn->e.ssecache[i].vector) {
+                SET_ELEMENT_WIDTH(s1, VECTOR_SEW8);
                 ADDI(s1, xEmu, offsetof(x64emu_t, xmm[i]));
                 VSE8_V(dyn->e.ssecache[i].reg, s1, VECTOR_UNMASKED, VECTOR_NFIELD1);
             } else if (dyn->e.ssecache[i].single)
@@ -1751,6 +1755,7 @@ static void sse_purgecache(dynarec_rv64_t* dyn, int ninst, int next, int s1)
                 ++old;
             }
             if (dyn->e.ssecache[i].vector) {
+                SET_ELEMENT_WIDTH(s1, VECTOR_SEW8);
                 ADDI(s1, xEmu, offsetof(x64emu_t, xmm[i]));
                 VSE8_V(dyn->e.ssecache[i].reg, s1, VECTOR_UNMASKED, VECTOR_NFIELD1);
             } else if (dyn->e.ssecache[i].single)
@@ -1781,6 +1786,7 @@ static void sse_reflectcache(dynarec_rv64_t* dyn, int ninst, int s1)
     for (int i = 0; i < 16; ++i)
         if (dyn->e.ssecache[i].v != -1) {
             if (dyn->e.ssecache[i].vector) {
+                SET_ELEMENT_WIDTH(s1, VECTOR_SEW8);
                 ADDI(s1, xEmu, offsetof(x64emu_t, xmm[i]));
                 VSE8_V(dyn->e.ssecache[i].reg, s1, VECTOR_UNMASKED, VECTOR_NFIELD1);
             } else if (dyn->e.ssecache[i].single)
@@ -1795,6 +1801,7 @@ void sse_reflect_reg(dynarec_rv64_t* dyn, int ninst, int s1, int a)
     if (dyn->e.ssecache[a].v == -1)
         return;
     if (dyn->e.ssecache[a].vector) {
+        SET_ELEMENT_WIDTH(s1, VECTOR_SEW8);
         ADDI(s1, xEmu, offsetof(x64emu_t, xmm[a]));
         VSE8_V(dyn->e.ssecache[a].reg, s1, VECTOR_UNMASKED, VECTOR_NFIELD1);
     } else if (dyn->e.ssecache[a].single)
@@ -1818,6 +1825,7 @@ void fpu_pushcache(dynarec_rv64_t* dyn, int ninst, int s1, int not07)
         for (int i=start; i<8; ++i)
             if(dyn->e.ssecache[i].v!=-1) {
                 if (dyn->e.ssecache[i].vector) {
+                    SET_ELEMENT_WIDTH(s1, VECTOR_SEW8);
                     ADDI(s1, xEmu, offsetof(x64emu_t, xmm[i]));
                     VSE8_V(dyn->e.ssecache[i].reg, s1, VECTOR_UNMASKED, VECTOR_NFIELD1);
                 } else if (dyn->e.ssecache[i].single)
@@ -1864,6 +1872,7 @@ void fpu_popcache(dynarec_rv64_t* dyn, int ninst, int s1, int not07)
         for (int i=start; i<8; ++i)
             if(dyn->e.ssecache[i].v!=-1) {
                 if (dyn->e.ssecache[i].vector) {
+                    SET_ELEMENT_WIDTH(s1, VECTOR_SEW8);
                     ADDI(s1, xEmu, offsetof(x64emu_t, xmm[i]));
                     VLE8_V(dyn->e.ssecache[i].reg, s1, VECTOR_UNMASKED, VECTOR_NFIELD1);
                 } else if (dyn->e.ssecache[i].single)
@@ -1957,7 +1966,7 @@ static void swapCache(dynarec_rv64_t* dyn, int ninst, int i, int j, extcache_t *
         if (!cache->extcache[i].v) {
             // a mov is enough, no need to swap
             MESSAGE(LOG_DUMP, "\t  - Moving %d <- %d\n", i, j);
-            VOR_VV(i, j, j, VECTOR_UNMASKED);
+            VMV_V_V(i, j);
             cache->extcache[i].v = cache->extcache[j].v;
             cache->extcache[j].v = 0;
             return;
@@ -2022,7 +2031,7 @@ static void loadCache(dynarec_rv64_t* dyn, int ninst, int stack_cnt, int s1, int
         int j = i + 1;
         while (cache->extcache[j].v) ++j;
         MESSAGE(LOG_DUMP, "\t  - Moving away %d\n", i);
-        VOR_VV(j, i, i, VECTOR_UNMASKED);
+        VMV_V_V(j, i);
         cache->extcache[j].v = cache->extcache[i].v;
     } else if (cache->extcache[i].v) {
         int single = 0;
@@ -2044,8 +2053,9 @@ static void loadCache(dynarec_rv64_t* dyn, int ninst, int stack_cnt, int s1, int
         case EXT_CACHE_XMMR:
         case EXT_CACHE_XMMW:
             MESSAGE(LOG_DUMP, "\t  - Loading %s\n", getCacheName(t, n));
+            SET_ELEMENT_WIDTH(s1, VECTOR_SEW8);
             ADDI(s1, xEmu, offsetof(x64emu_t, xmm[n]));
-            VLE8_V(i, s1, VECTOR_UNMASKED, VECTOR_NFIELD1);
+            VLE8_V(reg, s1, VECTOR_UNMASKED, VECTOR_NFIELD1);
             break;
         case EXT_CACHE_SS:
             MESSAGE(LOG_DUMP, "\t  - Loading %s\n", getCacheName(t, n));
@@ -2103,8 +2113,9 @@ static void unloadCache(dynarec_rv64_t* dyn, int ninst, int stack_cnt, int s1, i
             break;
         case EXT_CACHE_XMMW:
             MESSAGE(LOG_DUMP, "\t  - Unloading %s\n", getCacheName(t, n));
+            SET_ELEMENT_WIDTH(s1, VECTOR_SEW8);
             ADDI(s1, xEmu, offsetof(x64emu_t, xmm[n]));
-            VSE8_V(i, s1, VECTOR_UNMASKED, VECTOR_NFIELD1);
+            VSE8_V(reg, s1, VECTOR_UNMASKED, VECTOR_NFIELD1);
             break;
         case EXT_CACHE_SS:
             MESSAGE(LOG_DUMP, "\t  - Unloading %s\n", getCacheName(t, n));
@@ -2195,7 +2206,6 @@ static void fpuCacheTransform(dynarec_rv64_t* dyn, int ninst, int s1, int s2, in
     int s2_val = 0;
     // unload every uneeded cache
     // check SSE first, than MMX, in order, for optimisation issue
-    if (rv64_vector) vector_vsetvl_emul1(dyn, ninst, s1, VECTOR_SEW8);
     for (int i = 0; i < 16; ++i) {
         int j = findCacheSlot(dyn, ninst, EXT_CACHE_SS, i, &cache);
         if (j >= 0 && findCacheSlot(dyn, ninst, EXT_CACHE_SS, i, &cache_i2) == -1)
@@ -2337,10 +2347,24 @@ static void flagsCacheTransform(dynarec_rv64_t* dyn, int ninst, int s1)
 #endif
 }
 
+static void sewTransform(dynarec_rv64_t* dyn, int ninst, int s1)
+{
+#if STEP > 1
+    int j64;
+    int jmp = dyn->insts[ninst].x64.jmp_insts;
+    if (jmp < 0) return;
+    if (dyn->insts[jmp].vector_sew == VECTOR_SEWNA) return;
+    MESSAGE(LOG_DUMP, "\tSEW changed to %d ---- ninst=%d -> %d\n", dyn->insts[jmp].vector_sew, ninst, jmp);
+    vector_vsetvl_emul1(dyn, ninst, s1, dyn->insts[jmp].vector_sew);
+#endif
+}
+
 void CacheTransform(dynarec_rv64_t* dyn, int ninst, int cacheupd, int s1, int s2, int s3) {
-    if(cacheupd&2)
+    if (cacheupd & 3)
+        sewTransform(dyn, ninst, s1);
+    if (cacheupd & 2)
         fpuCacheTransform(dyn, ninst, s1, s2, s3);
-    if(cacheupd&1)
+    if (cacheupd & 1)
         flagsCacheTransform(dyn, ninst, s1);
 }
 
@@ -2424,16 +2448,18 @@ void fpu_reset_cache(dynarec_rv64_t* dyn, int ninst, int reset_n)
 {
     MESSAGE(LOG_DEBUG, "Reset Caches with %d\n",reset_n);
     #if STEP > 1
-    // for STEP 2 & 3, just need to refrest with current, and undo the changes (push & swap)
+    // for STEP 2 & 3, just need to refresh with current, and undo the changes (push & swap)
     dyn->e = dyn->insts[ninst].e;
+    dyn->vector_sew = dyn->insts[ninst].vector_sew;
     #else
     dyn->e = dyn->insts[reset_n].e;
+    dyn->vector_sew = dyn->insts[reset_n].vector_sew;
     #endif
     extcacheUnwind(&dyn->e);
     #if STEP == 0
     if(box64_dynarec_dump) dynarec_log(LOG_NONE, "New x87stack=%d\n", dyn->e.x87stack);
     #endif
-    #if defined(HAVE_TRACE) && (STEP>2)
+    #if defined(HAVE_TRACE) && (STEP > 2)
     if(box64_dynarec_dump)
         if(memcmp(&dyn->e, &dyn->insts[reset_n].e, sizeof(ext_cache_t))) {
             MESSAGE(LOG_DEBUG, "Warning, difference in extcache: reset=");
@@ -2462,7 +2488,7 @@ void fpu_reset_cache(dynarec_rv64_t* dyn, int ninst, int reset_n)
                 MESSAGE(LOG_DEBUG, " (%d:%d)", dyn->e.stack_push, -dyn->e.stack_pop);
             MESSAGE(LOG_DEBUG, "\n");
         }
-    #endif //HAVE_TRACE
+#endif // HAVE_TRACE
 }
 
 // propagate ST stack state, especial stack pop that are deferred
@@ -2490,6 +2516,8 @@ void fpu_propagate_stack(dynarec_rv64_t* dyn, int ninst)
 // other configs are set automatically.
 void vector_vsetvl_emul1(dynarec_rv64_t* dyn, int ninst, int s1, int sew)
 {
+    if (sew == VECTOR_SEWNA) return;
+    if (sew == VECTOR_SEWANY) sew = VECTOR_SEW8;
     /* mu:   mask undisturbed
      * tu:   tail undisturbed
      * sew:  selected element width

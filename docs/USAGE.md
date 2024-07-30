@@ -7,6 +7,8 @@ Env. var with * can also be put inside box64rc files.
 Box64 look for 2 places for rcfile: `/etc/box64.box64rc` and `~/.box64rc`
 The second takes precedence to the first, on an APP level 
 (that means if an [MYAPP] my appears in both file, only the settings in `~/.box64rc` will be applied)
+There is also some égeneric" name, like [*SETUP*] that will be applied to every program containg "setup" in the name
+(Note that this is not a full regex rules, it's just a name between '[*' and '*]', nothing else)
 
 #### BOX64_LOG *
 Controls the Verbosity level of the logs
@@ -317,6 +319,11 @@ Disables the loading of wrapped GTK libraries.
 Disables the load of vulkan libraries.
  * 0 : Load vulkan libraries if found.
  * 1 : Disables the load of vulkan libraries, both the native and the i386 version (can be useful on Pi4, where the vulkan driver is not quite there yet.)
+
+#### BOX64_SHAEXT *
+Expose or not SHAEXT (a.k.a. SHA_NI) capabilites
+ * 0 : Do not expose SHAEXT capabilites
+ * 1 : Expose SHAEXT capabilites (Default.)
 
 #### BOX64_SSE42 *
 Expose or not SSE 4.2 capabilites

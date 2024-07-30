@@ -1078,9 +1078,6 @@
 #ifndef BARRIER
 #define BARRIER(A)
 #endif
-#ifndef BARRIER_NEXT
-#define BARRIER_NEXT(A)
-#endif
 #ifndef SET_HASCALLRET
 #define SET_HASCALLRET()
 #endif
@@ -1107,6 +1104,7 @@
     dyn->smread = dyn->smwrite = 0; \
     dyn->doublepush = 0;            \
     dyn->doublepop = 0;
+#define ARCH_RESET()
 
 #if STEP < 2
 #define GETIP(A) TABLE64(0, 0)
