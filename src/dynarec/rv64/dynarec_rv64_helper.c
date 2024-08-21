@@ -125,7 +125,7 @@ uintptr_t geted(dynarec_rv64_t* dyn, uintptr_t addr, int ninst, uint8_t nextop, 
             i64 = F32S;
         else
             i64 = F8S;
-        if(i64==0 || ((i64>=-2048) && (i64<=2047)  && i12)) {
+        if(i64==0 || ((i64>=-2048) && (i64<=maxval)  && i12)) {
             *fixaddress = i64;
             if((nextop&7)==4) {
                 if (sib_reg!=4) {
@@ -247,7 +247,7 @@ static uintptr_t geted_32(dynarec_rv64_t* dyn, uintptr_t addr, int ninst, uint8_
             i32 = F32S;
         else
             i32 = F8S;
-        if(i32==0 || ((i32>=-2048) && (i32<=2047)  && i12)) {
+        if(i32==0 || ((i32>=-2048) && (i32<=maxval)  && i12)) {
             *fixaddress = i32;
             if((nextop&7)==4) {
                 if (sib_reg!=4) {
@@ -385,7 +385,7 @@ uintptr_t geted32(dynarec_rv64_t* dyn, uintptr_t addr, int ninst, uint8_t nextop
             i64 = F32S;
         else
             i64 = F8S;
-        if(i64==0 || ((i64>=-2048) && (i64<=2047)  && i12)) {
+        if(i64==0 || ((i64>=-2048) && (i64<=maxval)  && i12)) {
             *fixaddress = i64;
             if((nextop&7)==4) {
                 if (sib_reg!=4) {
@@ -1160,6 +1160,8 @@ static void x87_unreflectcache(dynarec_rv64_t* dyn, int ninst, int s1, int s2, i
         ADDI(s2, s2, a);
         ANDI(s2, s2, 7);
         SW(s2, xEmu, offsetof(x64emu_t, top));
+        // update tags
+        LH(s1, xEmu, offsetof(x64emu_t, fpu_tags));
         if(a>0) {
             SLLI(s3, xMASK, 16);    // 0xffff0000
             OR(s1, s1, s3);
@@ -1167,6 +1169,7 @@ static void x87_unreflectcache(dynarec_rv64_t* dyn, int ninst, int s1, int s2, i
         } else {
             SLLI(s1, s1, -a*2);
         }
+        SH(s1, xEmu, offsetof(x64emu_t, fpu_tags));
     }
 }
 

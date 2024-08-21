@@ -184,6 +184,9 @@ static const scwrap_t syscallwrap[] = {
     [118] = {__NR_getresuid, 3},
     [120] = {__NR_getresgid, 3},
     [121] = {__NR_getpgid, 1},
+    [122] = {__NR_setfsuid, 1},
+    [123] = {__NR_setfsgid, 1},
+    [124] = {__NR_getsid, 1},
     [125] = {__NR_capget, 2},
     [126] = {__NR_capset, 2},
     [127] = {__NR_rt_sigpending, 2},
@@ -300,6 +303,15 @@ static const scwrap_t syscallwrap[] = {
     #endif
     #ifdef __NR_fchmodat4
     [434] = {__NR_fchmodat4, 4},
+    #endif
+    #ifdef __NR_landlock_create_ruleset	
+    [444] = {__NR_landlock_create_ruleset, 3},
+    #endif
+    #ifdef __NR_landlock_add_rule
+    [445] = {__NR_landlock_add_rule, 4},
+    #endif
+    #ifdef __NR_landlock_restrict_self
+    [446] = {__NR_landlock_restrict_self, 2},
     #endif
     //[449] = {__NR_futex_waitv, 5},
 };
@@ -720,6 +732,10 @@ void EXPORT x64Syscall(x64emu_t *emu)
                 S_RAX = -errno;
             break;
         #endif
+        case 175: // sys_init_module
+            // huh?
+            S_RAX = -EPERM;
+            break;
         #ifndef __NR_time
         case 201: // sys_time
             R_RAX = (uintptr_t)time((void*)R_RDI);
@@ -1027,6 +1043,10 @@ long EXPORT my_syscall(x64emu_t *emu)
         case 160:
             return setrlimit(S_ESI, (void*)R_RDX);
         #endif
+        case 175: // sys_init_module
+            // huh?
+            errno = -EPERM;
+            return -1;
         #ifndef __NR_time
         case 201: // sys_time
             return (intptr_t)time((void*)R_RSI);

@@ -1933,7 +1933,7 @@ uintptr_t dynarec64_00(dynarec_arm_t* dyn, uintptr_t addr, uintptr_t ip, int nin
                     INST_NAME("ROL Eb, Ib");
                     u8 = geted_ib(dyn, addr, ninst, nextop)&0x1f;
                     if(u8) {
-                        SETFLAGS(X_CF|X_OF, SF_SUBSET_PENDING);
+                        SETFLAGS(X_OF|X_CF, SF_SUBSET); // removed PENDING on purpose
                         GETEB(x1, 1);
                         u8 = F8&0x1f;
                         emit_rol8c(dyn, ninst, x1, u8, x4, x5);
@@ -1947,7 +1947,7 @@ uintptr_t dynarec64_00(dynarec_arm_t* dyn, uintptr_t addr, uintptr_t ip, int nin
                     INST_NAME("ROR Eb, Ib");
                     u8 = geted_ib(dyn, addr, ninst, nextop)&0x1f;
                     if(u8) {
-                        SETFLAGS(X_CF|X_OF, SF_SUBSET_PENDING);
+                        SETFLAGS(X_OF|X_CF, SF_SUBSET); // removed PENDING on purpose
                         GETEB(x1, 1);
                         u8 = F8&0x1f;
                         emit_ror8c(dyn, ninst, x1, u8, x4, x5);
@@ -1962,7 +1962,7 @@ uintptr_t dynarec64_00(dynarec_arm_t* dyn, uintptr_t addr, uintptr_t ip, int nin
                     u8 = geted_ib(dyn, addr, ninst, nextop)&0x1f;
                     if(u8) {
                         READFLAGS(X_CF);
-                        SETFLAGS(X_OF|X_CF, SF_SUBSET_PENDING);
+                        SETFLAGS(X_OF|X_CF, SF_SUBSET); // removed PENDING on purpose
                         GETEB(x1, 1);
                         u8 = F8&0x1f;
                         emit_rcl8c(dyn, ninst, x1, u8, x4, x5);
@@ -1977,7 +1977,7 @@ uintptr_t dynarec64_00(dynarec_arm_t* dyn, uintptr_t addr, uintptr_t ip, int nin
                     u8 = geted_ib(dyn, addr, ninst, nextop)&0x1f;
                     if(u8) {
                         READFLAGS(X_CF);
-                        SETFLAGS(X_OF|X_CF, SF_SUBSET_PENDING);
+                        SETFLAGS(X_OF|X_CF, SF_SUBSET); // removed PENDING on purpose
                         GETEB(x1, 1);
                         u8 = F8&0x1f;
                         emit_rcr8c(dyn, ninst, x1, u8, x4, x5);
@@ -2039,7 +2039,7 @@ uintptr_t dynarec64_00(dynarec_arm_t* dyn, uintptr_t addr, uintptr_t ip, int nin
                     INST_NAME("ROL Ed, Ib");
                     u8 = geted_ib(dyn, addr, ninst, nextop)&(0x1f+(rex.w*0x20));
                     if(u8) {
-                        SETFLAGS(X_CF|X_OF, SF_SUBSET_PENDING);
+                        SETFLAGS(X_OF|X_CF, SF_SUBSET); // removed PENDING on purpose
                         GETED(1);
                         u8 = (F8)&(rex.w?0x3f:0x1f);
                         emit_rol32c(dyn, ninst, rex, ed, u8, x3, x4);
@@ -2058,7 +2058,7 @@ uintptr_t dynarec64_00(dynarec_arm_t* dyn, uintptr_t addr, uintptr_t ip, int nin
                     INST_NAME("ROR Ed, Ib");
                     u8 = geted_ib(dyn, addr, ninst, nextop)&(0x1f+(rex.w*0x20));
                     if(u8) {
-                        SETFLAGS(X_CF|X_OF, SF_SUBSET_PENDING);
+                        SETFLAGS(X_OF|X_CF, SF_SUBSET); // removed PENDING on purpose
                         GETED(1);
                         u8 = (F8)&(rex.w?0x3f:0x1f);
                         emit_ror32c(dyn, ninst, rex, ed, u8, x3, x4);
@@ -2384,11 +2384,13 @@ uintptr_t dynarec64_00(dynarec_arm_t* dyn, uintptr_t addr, uintptr_t ip, int nin
                     LDRx_REG(x3, x1, x2);
                     //LDRx_U12(x3, x1, offsetof(box64context_t, signals[SIGTRAP]));
                     CMPSx_U12(x3, 0);
-                    B_NEXT(cEQ);
+                    B_MARK(cEQ);
                     GETIP(addr);  // update RIP
                     STORE_XEMU_CALL(xRIP);
                     CALL(native_int3, -1);
                     LOAD_XEMU_CALL(xRIP);
+                    MARK;
+                    jump_to_epilog(dyn, addr, 0, ninst);
                     *need_epilog = 0;
                     *ok = 0;
                 }
@@ -2470,14 +2472,14 @@ uintptr_t dynarec64_00(dynarec_arm_t* dyn, uintptr_t addr, uintptr_t ip, int nin
             switch((nextop>>3)&7) {
                 case 0:
                     INST_NAME("ROL Eb, 1");
-                    SETFLAGS(X_OF|X_CF, SF_SUBSET_PENDING);
+                    SETFLAGS(X_OF|X_CF, SF_SUBSET); // removed PENDING on purpose
                     GETEB(x1, 0);
                     emit_rol8c(dyn, ninst, ed, 1, x4, x5);
                     EBBACK;
                     break;
                 case 1:
                     INST_NAME("ROR Eb, 1");
-                    SETFLAGS(X_OF|X_CF, SF_SUBSET_PENDING);
+                    SETFLAGS(X_OF|X_CF, SF_SUBSET); // removed PENDING on purpose
                     GETEB(x1, 0);
                     emit_ror8c(dyn, ninst, ed, 1, x4, x5);
                     EBBACK;
@@ -2527,14 +2529,14 @@ uintptr_t dynarec64_00(dynarec_arm_t* dyn, uintptr_t addr, uintptr_t ip, int nin
             switch((nextop>>3)&7) {
                 case 0:
                     INST_NAME("ROL Ed, 1");
-                    SETFLAGS(X_OF|X_CF, SF_SUBSET_PENDING);
+                    SETFLAGS(X_OF|X_CF, SF_SUBSET); // removed PENDING on purpose
                     GETED(0);
                     emit_rol32c(dyn, ninst, rex, ed, 1, x3, x4);
                     WBACK;
                     break;
                 case 1:
                     INST_NAME("ROR Ed, 1");
-                    SETFLAGS(X_OF|X_CF, SF_SUBSET_PENDING);
+                    SETFLAGS(X_OF|X_CF, SF_SUBSET); // removed PENDING on purpose
                     GETED(0);
                     emit_ror32c(dyn, ninst, rex, ed, 1, x3, x4);
                     WBACK;

@@ -24,6 +24,9 @@
 #include "dynarec_arm64_functions.h"
 #include "dynarec_arm64_helper.h"
 
+static const float addsubps[4] = {-1.f, 1.f, -1.f, 1.f};
+static const double addsubpd[2] = {-1., 1.};
+
 uintptr_t dynarec64_AVX_66_0F38(dynarec_arm_t* dyn, uintptr_t addr, uintptr_t ip, int ninst, vex_t vex, int* ok, int* need_epilog)
 {
     (void)ip; (void)need_epilog;
@@ -1208,7 +1211,18 @@ uintptr_t dynarec64_AVX_66_0F38(dynarec_arm_t* dyn, uintptr_t addr, uintptr_t ip
             }
             YMM0(gd);
             break;
-
+        case 0x9A:
+            INST_NAME("VFNMSUB132PS/D Gx, Vx, Ex");
+            nextop = F8;
+            q0 = fpu_get_scratch(dyn, ninst);
+            for(int l=0; l<1+vex.l; ++l) {
+                if(!l) { GETGX_VXEX(v0, v2, v1, 0); } else { GETGY_VYEY(v0, v2, v1); }
+                if(rex.w) VFNEGQD(q0, v2); else VFNEGQS(q0, v2);
+                if(rex.w) VFMLAQD(q0, v0, v1); else VFMLAQS(q0, v0, v1);
+                VMOVQ(v0, q0);
+            }
+            if(!vex.l) YMM0(gd);
+            break;
         case 0x9B:
             INST_NAME("VFMSUB132SS/D Gx, Vx, Ex");
             nextop = F8;
@@ -1233,7 +1247,7 @@ uintptr_t dynarec64_AVX_66_0F38(dynarec_arm_t* dyn, uintptr_t addr, uintptr_t ip
                 if(!l && v0!=v2) q0 = fpu_get_scratch(dyn, ninst);
                 if(v0!=v2) VMOVQ(q0, v2); else q0 = v2;
                 if(rex.w) VFMLSQD(q0, v0, v1); else VFMLSQS(q0, v0, v1);
-                VMOVQ(v0, q0);
+                if(q0!=v0) VMOVQ(v0, q0);
             }
             if(!vex.l) YMM0(gd);
             break;
@@ -1269,6 +1283,27 @@ uintptr_t dynarec64_AVX_66_0F38(dynarec_arm_t* dyn, uintptr_t addr, uintptr_t ip
                 VMOVeS(v0, 0, q0, 0);
             }
             YMM0(gd);
+            break;
+
+        case 0xA6:
+            INST_NAME("VFMADDSUB213PS/D Gx, Vx, Ex");
+            nextop = F8;
+            q0 = fpu_get_scratch(dyn, ninst);
+            TABLE64(x2, (rex.w)?((uintptr_t)&addsubpd):((uintptr_t)&addsubps));
+            VLDR128_U12(q0, x2, 0);
+            q1 = fpu_get_scratch(dyn, ninst);
+            for(int l=0; l<1+vex.l; ++l) {
+                if(!l) { GETGX_VXEX(v0, v2, v1, 0); } else { GETGY_VYEY(v0, v2, v1); }
+                if(rex.w) {
+                    VFMULQD(q1, v1, q0);
+                    VFMLAQD(q1, v0, v2);
+                } else {
+                    VFMULQS(q1, v1, q0);
+                    VFMLAQS(q1, v0, v2);
+                }
+                VMOVQ(v0, q1);
+            }
+            if(!vex.l) YMM0(gd);
             break;
 
         case 0xA8:
@@ -1404,9 +1439,6 @@ uintptr_t dynarec64_AVX_66_0F38(dynarec_arm_t* dyn, uintptr_t addr, uintptr_t ip
             INST_NAME("VFMADDSUB231PS/D Gx, Vx, Ex");
             nextop = F8;
             q0 = fpu_get_scratch(dyn, ninst);
-            static float addsubps[4] = {-1.f, 1.f, -1.f, 1.f};
-            static double addsubpd[2] = {-1., 1.};
-            MAYUSE(addsubps); MAYUSE(addsubpd);
             TABLE64(x2, (rex.w)?((uintptr_t)&addsubpd):((uintptr_t)&addsubps));
             VLDR128_U12(q0, x2, 0);
             for(int l=0; l<1+vex.l; ++l) {

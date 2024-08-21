@@ -58,6 +58,7 @@ int box64_dynarec_test = 0;
 path_collection_t box64_addlibs = {0};
 int box64_maxcpu = 0;
 int box64_maxcpu_immutable = 0;
+int box64_is32bits = 0;
 #if defined(SD845) || defined(SD888) || defined(SD8G2) || defined(TEGRAX1)
 int box64_mmap32 = 1;
 #else
@@ -67,6 +68,7 @@ int box64_ignoreint3 = 0;
 int box64_rdtsc = 0;
 int box64_rdtsc_1ghz = 0;
 uint8_t box64_rdtsc_shift = 0;
+char* box64_new_args = NULL;
 #ifdef DYNAREC
 int box64_dynarec = 1;
 int box64_dynarec_dump = 0;
@@ -510,7 +512,13 @@ HWCAP2_AFP
     if(rv64_zbb) printf_log(LOG_INFO, " Zbb");
     if(rv64_zbc) printf_log(LOG_INFO, " Zbc");
     if(rv64_zbs) printf_log(LOG_INFO, " Zbs");
-    if(rv64_vector) printf_log(LOG_INFO, " Vector (vlen: %d)", rv64_vlen);
+    if (rv64_vector) {
+        char* p = getenv("BOX64_DYNAREC_RV64VEXT");
+        if (p != NULL && p[0] == '1')
+            printf_log(LOG_INFO, " Vector (vlen: %d)", rv64_vlen);
+        else
+            rv64_vector = 0;
+    }
     if(rv64_xtheadba) printf_log(LOG_INFO, " XTheadBa");
     if(rv64_xtheadbb) printf_log(LOG_INFO, " XTheadBb");
     if(rv64_xtheadbs) printf_log(LOG_INFO, " XTheadBs");
@@ -2030,7 +2038,32 @@ int initialize(int argc, const char **argv, char** env, x64emu_t** emulator, elf
     {
         add_argv("-cef-disable-gpu-compositor");
     }
-
+    if(box64_new_args) {
+        char tmp[256];
+        char* p = box64_new_args;
+        int state = 0;
+        char* p2 = p;
+        while(state>=0) {
+            switch(*p2) {
+                case 0: // end of flux
+                    if(state && (p2!=p)) add_argv(p);
+                    state = -1;
+                    break;
+                case '"': // start/end of quotes
+                    if(state<2) {if(!state) p=p2; state=2;} else state=1;
+                    break;
+                case ' ':
+                    if(state==1) {strncpy(tmp, p, p2-p); tmp[p2-p]='\0'; add_argv(tmp); state=0;}
+                    break;
+                default:
+                    if(state==0) {state=1; p=p2;}
+                    break;
+            }
+            ++p2;
+        }
+        box_free(box64_new_args);
+        box64_new_args = NULL;
+    }
     // check if file exist
     if(!my_context->argv[0] || !FileExist(my_context->argv[0], IS_FILE)) {
         printf_log(LOG_NONE, "Error: File is not found. (check BOX64_PATH)\n");
@@ -2058,6 +2091,13 @@ int initialize(int argc, const char **argv, char** env, x64emu_t** emulator, elf
         FreeCollection(&ld_preload);
         return -1;
     }
+    #ifdef BOX32
+    box64_is32bits = FileIsX86ELF(my_context->fullpath);
+    if(box64_is32bits) {
+        printf_log(LOG_INFO, "BOX64: Using Box32 to load 32bits elf\n");
+        reserveHighMem();
+    }
+    #endif
     elfheader_t *elf_header = LoadAndCheckElfHeader(f, my_context->fullpath, 1);
     if(!elf_header) {
         int x86 = my_context->box86path?FileIsX86ELF(my_context->fullpath):0;
@@ -2110,6 +2150,18 @@ int initialize(int argc, const char **argv, char** env, x64emu_t** emulator, elf
         FreeBox64Context(&my_context);
         FreeCollection(&ld_preload);
         return -1;
+    }
+    if(!strcmp(prgname, "heroic")) {
+        // check if heroic needs patching (for the 2.15.1 version)
+        uint8_t* address = GetBaseAddress(elf_header);
+        if(address[0x422f6e1]==0x72 && address[0x422f6e2]==0x44 && address[0x422f6e0]==0xF8 && address[0x422f727]==0xcc) {
+            printf_log(LOG_INFO, "Patched heroic!\n");
+            uintptr_t page = ((uintptr_t)&address[0x422f6e1])&~(box64_pagesize-1);
+            int prot = getProtection(page);
+            mprotect((void*)page, box64_pagesize, PROT_READ|PROT_WRITE|PROT_EXEC);
+            address[0x422f6e1]=0x90; address[0x422f6e2]=0x90;
+            mprotect((void*)page, box64_pagesize, prot);
+        }
     }
     if(ElfCheckIfUseTCMallocMinimal(elf_header)) {
         if(!box64_tcmalloc_minimal) {
