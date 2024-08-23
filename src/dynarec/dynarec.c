@@ -277,7 +277,9 @@ void DynaRun(x64emu_t* emu)
             emu->quit = 0;
     }
     // clear the setjmp
-    print_block_counts();
+    if(box64_dynarec_count){
+    	print_block_counts();
+    }
     emu->jmpbuf = old_jmpbuf;
     #ifdef RV64
     emu->xSPSave = old_savesp;

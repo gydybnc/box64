@@ -690,9 +690,9 @@ void* FillBlock64(dynablock_t* block, uintptr_t addr, int alternate, int is32bit
     }
    
     // pass 2, instruction size
-   
-    helper.insts[0].size += (31*4);
-   
+   if(box64_dynarec_count){
+    	helper.insts[0].size += (31*4);
+   }
     native_pass2(&helper, addr, alternate, is32bits);
     if(helper.abort) {
         if(box64_dynarec_dump || box64_dynarec_log)dynarec_log(LOG_NONE, "Abort dynablock on pass2\n");
@@ -738,9 +738,9 @@ void* FillBlock64(dynablock_t* block, uintptr_t addr, int alternate, int is32bit
     helper.native_size = 0;
     helper.table64size = 0; // reset table64 (but not the cap)
     helper.insts_size = 0;  // reset
-
-    pass_header(&helper,addr);
-
+    if(box64_dynarec_count){
+    	pass_header(&helper,addr);
+    }
     native_pass3(&helper, addr, alternate, is32bits);
     if(helper.abort) {
         if(box64_dynarec_dump || box64_dynarec_log)dynarec_log(LOG_NONE, "Abort dynablock on pass3\n");

@@ -87,6 +87,7 @@ int box64_dynarec_tbb = 1;
 int box64_dynarec_wait = 1;
 int box64_dynarec_missing = 0;
 int box64_dynarec_aligned_atomics = 0;
+int box64_dynarec_count = 0;
 uintptr_t box64_nodynarec_start = 0;
 uintptr_t box64_nodynarec_end = 0;
 uintptr_t box64_dynarec_test_start = 0;
@@ -691,6 +692,18 @@ void LoadLogEnv()
         }
         if(box64_dynarec_forced)
             printf_log(LOG_INFO, "Dynarec is forced on all addresses\n");
+    } 
+    p = getenv("BOX64_DYNAREC_COUNT");
+    if(p) {
+        if(strlen(p)==1) {
+            if(p[0]>='0' && p[0]<='1')
+                box64_dynarec_count = p[0]-'0';
+        }
+        if(!box64_dynarec_count)
+            printf_log(LOG_INFO, "Dynarec will not count block execute times\n");
+        else
+            printf_log(LOG_INFO, "Dynarec will count block execute times\n");
+
     }
     p = getenv("BOX64_DYNAREC_BIGBLOCK");
     if(p) {
