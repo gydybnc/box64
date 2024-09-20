@@ -81,6 +81,11 @@ void* LinkNext(x64emu_t* emu, uintptr_t addr, void* x2, uintptr_t* x3)
     } else if(addr<0x10000) {
         dynablock_t* db = FindDynablockFromNativeAddress(x2-4);
         printf_log(LOG_NONE, "Warning, jumping to low address %p from %p (db=%p, x64addr=%p/%s)\n", (void*)addr, x2-4, db, db?(void*)getX64Address(db, (uintptr_t)x2-4):NULL, db?getAddrFunctionName(getX64Address(db, (uintptr_t)x2-4)):"(nil)");
+    #ifdef BOX32
+    } else if(emu->segs[_CS]==0x23 && addr>0x100000000LL) {
+        dynablock_t* db = FindDynablockFromNativeAddress(x2-4);
+        printf_log(LOG_NONE, "Warning, jumping to high address %p from %p (db=%p, x64addr=%p/%s)\n", (void*)addr, x2-4, db, db?(void*)getX64Address(db, (uintptr_t)x2-4):NULL, db?getAddrFunctionName(getX64Address(db, (uintptr_t)x2-4)):"(nil)");
+    #endif
     }
     #endif
     void * jblock;
@@ -140,6 +145,7 @@ void DynaCall(x64emu_t* emu, uintptr_t addr)
     uint64_t old_rsi = R_RSI;
     uint64_t old_rbp = R_RBP;
     uint64_t old_rip = R_RIP;
+    x64flags_t old_eflags = emu->eflags;
     // save defered flags
     deferred_flags_t old_df = emu->df;
     multiuint_t old_op1 = emu->op1;
@@ -149,10 +155,15 @@ void DynaCall(x64emu_t* emu, uintptr_t addr)
     multiuint_t old_res_sav= emu->res_sav;
     deferred_flags_t old_df_sav= emu->df_sav;
     // uc_link
-    x64_ucontext_t* old_uc_link = emu->uc_link;
+    void* old_uc_link = emu->uc_link;
     emu->uc_link = NULL;
 
-    PushExit(emu);
+    #ifdef BOX32
+    if(box64_is32bits)
+        PushExit_32(emu);
+    else
+    #endif
+        PushExit(emu);
     R_RIP = addr;
     emu->df = d_none;
     DynaRun(emu);
@@ -172,6 +183,7 @@ void DynaCall(x64emu_t* emu, uintptr_t addr)
         emu->res_sav = old_res_sav;
         emu->df_sav = old_df_sav;
         // and the old registers
+        emu->eflags = old_eflags;
         R_RBX = old_rbx;
         R_RDI = old_rdi;
         R_RSI = old_rsi;
@@ -182,6 +194,9 @@ void DynaCall(x64emu_t* emu, uintptr_t addr)
 }
 
 int my_setcontext(x64emu_t* emu, void* ucp);
+#ifdef BOX32
+int my32_setcontext(x64emu_t* emu, void* ucp);
+#endif
 void DynaRun(x64emu_t* emu)
 {
     struct timespec start, end;
@@ -269,7 +284,12 @@ void DynaRun(x64emu_t* emu)
             }
             if(emu->quit && emu->uc_link) {
                 emu->quit = 0;
-                my_setcontext(emu, emu->uc_link);
+                #ifdef BOX32
+                if(box64_is32bits)
+                    my32_setcontext(emu, emu->uc_link);
+                else
+                #endif
+                    my_setcontext(emu, emu->uc_link);
             }
         }
 #endif

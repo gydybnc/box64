@@ -22,7 +22,7 @@ int CalcStackSize(box64context_t *context)
         CalcStack(context->elfs[i], &context->stacksz, &context->stackalign);
 
     //if (posix_memalign((void**)&context->stack, context->stackalign, context->stacksz)) {
-    context->stack = internal_mmap(NULL, context->stacksz, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS|MAP_GROWSDOWN, -1, 0);
+    context->stack = mmap(NULL, context->stacksz, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS|MAP_GROWSDOWN, -1, 0);
     if (context->stack==(void*)-1) {
         printf_log(LOG_NONE, "Cannot allocate aligned memory (0x%lx/0x%zx) for stack\n", context->stacksz, context->stackalign);
         return 1;
@@ -42,9 +42,19 @@ void PushString(x64emu_t *emu, const char* s)
     memcpy((void*)R_RSP, s, sz);
 }
 
+void SetupInitialStack32(x64emu_t *emu)
+#ifndef BOX32
+ { }
+#else
+ ;
+#endif
 EXPORTDYN
 void SetupInitialStack(x64emu_t *emu)
 {
+    if(box64_is32bits) {
+        SetupInitialStack32(emu);
+        return;
+    }
     // start with 0
     Push64(emu, 0);
     // push program executed

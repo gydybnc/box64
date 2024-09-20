@@ -33,7 +33,7 @@ uintptr_t from_hash_d(ulong_t l);
 
 static inline ptr_t to_ptr(uintptr_t p) {
     if(p!=0xffffffffffffffffLL && (p>>32)) {
-        printf_log(LOG_NONE, "Warning, pointer %p is not a 32bits value\n", (void*)p);
+        printf_log(LOG_NONE, "Warning, uintptr_t %p is not a 32bits value\n", (void*)p);
         #ifdef TEST_ABORT
         abort();
         #endif
@@ -43,7 +43,7 @@ static inline ptr_t to_ptr(uintptr_t p) {
 static inline ptr_t to_ptrv(void* p2) {
     uintptr_t p = (uintptr_t)p2;
     if(p!=0xffffffffffffffffLL && (p>>32)) {
-        printf_log(LOG_NONE, "Warning, pointer %p is not a 32bits value\n", (void*)p);
+        printf_log(LOG_NONE, "Warning, pointer %p is not a 32bits value\n", p2);
         #ifdef TEST_ABORT
         abort();
         #endif
@@ -58,7 +58,7 @@ static inline long_t to_long(long l) {
 }
 static inline ulong_t to_ulong(unsigned long l) {
     if(l!=0xffffffffffffffffLL && (l>>32))
-        printf_log(LOG_NONE, "Warning, long 0x%p is not a 32bits value\n", (void*)l);
+        printf_log(LOG_NONE, "Warning, ulong 0x%p is not a 32bits value\n", (void*)l);
     return (ulong_t)l;
 }
 #else //TEST32
@@ -99,14 +99,13 @@ void* from_locale_d(ptr_t l);
 ptr_t to_locale(void* p);
 ptr_t to_locale_d(void* p);
 
+char* from_cstring(ptr_t p);
+ptr_t to_cstring(char* p);
+ptr_t to_cstring_d(char* p);
+
 void init_hash_helper();
 void fini_hash_helper();
 
 typedef struct x86emu_s x86emu_t;
-
-void* my_mmap(x86emu_t* emu, void* addr, unsigned long length, int prot, int flags, int fd, int offset);
-void* my_mmap64(x86emu_t* emu, void *addr, unsigned long length, int prot, int flags, int fd, int64_t offset);
-int my_munmap(x86emu_t* emu, void* addr, unsigned long length);
-int my_mprotect(x86emu_t* emu, void *addr, unsigned long len, int prot);
 
 #endif //__BOX32_64__H_

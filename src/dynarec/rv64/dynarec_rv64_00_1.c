@@ -134,7 +134,16 @@ uintptr_t dynarec64_00_1(dynarec_rv64_t* dyn, uintptr_t addr, uintptr_t ip, int 
                 DEFAULT;
             }
             break;
-
+        case 0x62:
+            if(rex.is32bits) {
+                // BOUND here
+                DEFAULT;                
+            } else {
+                INST_NAME("BOUND Gd, Ed");
+                nextop = F8;
+                FAKEED;
+            }
+            break;
         case 0x63:
             if(rex.is32bits) {
                 // this is ARPL opcode
@@ -291,7 +300,6 @@ uintptr_t dynarec64_00_1(dynarec_rv64_t* dyn, uintptr_t addr, uintptr_t ip, int 
             break;
 
         #define GO(GETFLAGS, NO, YES, F)                                \
-            if (box64_dynarec_test == 2) { NOTEST(x1); }                \
             READFLAGS(F);                                               \
             i8 = F8S;                                                   \
             BARRIER(BARRIER_MAYBE);                                     \

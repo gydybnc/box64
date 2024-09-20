@@ -21,6 +21,11 @@ typedef struct instsize_s instsize_t;
 #define EXT_CACHE_XMMW   8
 #define EXT_CACHE_XMMR   9
 
+#define EXT_CACHE_OLD_SD   0
+#define EXT_CACHE_OLD_SS   1
+#define EXT_CACHE_OLD_XMMW 2
+#define EXT_CACHE_OLD_XMMR 3
+
 typedef union ext_cache_s {
     int8_t           v;
     struct {
@@ -32,11 +37,10 @@ typedef union ext_cache_s {
 typedef union sse_cache_s {
     int16_t v;
     struct {
-        uint16_t reg : 7;
+        uint16_t reg : 13;
         uint16_t vector : 1;
         uint16_t single : 1;
         uint16_t write : 1;
-        uint16_t unused : 7;
     };
 } sse_cache_t;
 
@@ -46,7 +50,7 @@ typedef union sse_old_s {
         uint8_t     changed:1;
         uint8_t     purged:1;
         uint8_t     reg:4;
-        uint8_t     single:1;
+        uint8_t     type:2;
     };
 } sse_old_t;
 
@@ -87,10 +91,10 @@ typedef struct flagcache_s {
 
 typedef struct instruction_rv64_s {
     instruction_x64_t   x64;
-    uintptr_t           address;    // (start) address of the arm emitted instruction
+    uintptr_t           address;    // (start) address of the riscv emitted instruction
     uintptr_t           epilog;     // epilog of current instruction (can be start of next, or barrier stuff)
-    int                 size;       // size of the arm emitted instruction
-    int                 size2;      // size of the arm emitted instrucion after pass2
+    int                 size;       // size of the riscv emitted instruction
+    int                 size2;      // size of the riscv emitted instruction after pass2
     int                 pred_sz;    // size of predecessor list
     int                 *pred;      // predecessor array
     uintptr_t           mark[3];
@@ -104,13 +108,14 @@ typedef struct instruction_rv64_s {
     uint16_t            ymm0_in;    // bitmap of ymm to zero at purge
     uint16_t            ymm0_add;   // the ymm0 added by the opcode
     uint16_t            ymm0_sub;   // the ymm0 removed by the opcode
-    uint16_t            ymm0_out;   // the ymmm0 at th end of the opcode
+    uint16_t            ymm0_out;   // the ymm0 at th end of the opcode
     uint16_t            ymm0_pass2, ymm0_pass3;
     int                 barrier_maybe;
-    flagcache_t         f_exit;     // flags status at end of intruction
-    extcache_t          e;          // extcache at end of intruction (but before poping)
+    flagcache_t         f_exit;     // flags status at end of instruction
+    extcache_t          e;          // extcache at end of instruction (but before poping)
     flagcache_t         f_entry;    // flags status before the instruction begin
-    uint8_t             vector_sew;
+    uint8_t             vector_sew_entry; // sew status before the instruction begin
+    uint8_t             vector_sew_exit;  // sew status at the end of instruction
 } instruction_rv64_t;
 
 typedef struct dynarec_rv64_s {
@@ -120,8 +125,8 @@ typedef struct dynarec_rv64_s {
     uintptr_t           start;      // start of the block
     uint32_t            isize;      // size in byte of x64 instructions included
     void*               block;      // memory pointer where next instruction is emitted
-    uintptr_t           native_start;  // start of the arm code
-    size_t              native_size;   // size of emitted arm code
+    uintptr_t           native_start;  // start of the riscv code
+    size_t              native_size;   // size of emitted riscv code
     uintptr_t           last_ip;    // last set IP in RIP (or NULL if unclean state) TODO: move to a cache something
     uint64_t*           table64;   // table of 64bits value
     int                 table64size;// size of table (will be appended at end of executable code)
@@ -149,13 +154,15 @@ typedef struct dynarec_rv64_s {
     uint16_t            ymm_zero;   // bitmap of ymm to zero at purge
     uint8_t             always_test;
     uint8_t             abort;
-    uint8_t             vector_sew;
+    uint8_t             vector_sew; // current sew status
+    uint8_t             vector_eew; // current effective sew status, should only be used after SET_ELEMENT_WIDTH
 } dynarec_rv64_t;
 
-// convert idx (0..24) to reg index (10..31 0..1)
-#define EXTREG(A)   (((A)+10)&31)
-// convert reg index (10..31 0..1) to idx (0..24)
-#define EXTIDX(A)   (((A)-10)&31)
+// v0 is hardware wired to vector mask register, which should be always reserved
+// convert idx (0..23) to reg index (10..31 1..2)
+#define EXTREG(A) (((A) + 10 + ((A) > 21)) & 31)
+// convert reg index (10..31 1..2) to idx (0..23)
+#define EXTIDX(A) (((A) - 10 - ((A) < 3)) & 31)
 
 void add_next(dynarec_rv64_t *dyn, uintptr_t addr);
 uintptr_t get_closest_next(dynarec_rv64_t *dyn, uintptr_t addr);

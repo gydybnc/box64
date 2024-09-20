@@ -269,6 +269,10 @@ static void sigstack_key_alloc() {
     pthread_key_create(&sigstack_key, sigstack_destroy);
 }
 
+x64_stack_t* sigstack_getstack() {
+    return (x64_stack_t*)pthread_getspecific(sigstack_key);
+}
+
 // this allow handling "safe" function that just abort if accessing a bad address
 static __thread JUMPBUFF signal_jmpbuf;
 #ifdef ANDROID
@@ -478,13 +482,10 @@ uintptr_t getX64Address(dynablock_t* db, uintptr_t arm_addr)
             ++i;
         } while((db->instsize[i-1].x64==15) || (db->instsize[i-1].nat==15));
         // if the opcode is a NOP on ARM side (so armsz==0), it cannot be an address to find
-        if(armsz) {
-            if((arm_addr>=armaddr) && (arm_addr<(armaddr+armsz)))
-                return x64addr;
-            armaddr+=armsz;
-            x64addr+=x64sz;
-        } else
-            x64addr+=x64sz;
+        if((arm_addr>=armaddr) && (arm_addr<(armaddr+armsz)))
+            return x64addr;
+        armaddr+=armsz;
+        x64addr+=x64sz;
     } while(db->instsize[i].x64 || db->instsize[i].nat);
     return x64addr;
 }
@@ -923,8 +924,17 @@ int sigbus_specialcases(siginfo_t* info, void * ucntx, void* pc, void* _fpsimd)
     return 0;
 }
 
+#ifdef BOX32
+void my_sigactionhandler_oldcode_32(int32_t sig, int simple, siginfo_t* info, void * ucntx, int* old_code, void* cur_db);
+#endif
 void my_sigactionhandler_oldcode(int32_t sig, int simple, siginfo_t* info, void * ucntx, int* old_code, void* cur_db)
 {
+    #ifdef BOX32
+    if(box64_is32bits) {
+        my_sigactionhandler_oldcode_32(sig, simple, info, ucntx, old_code, cur_db);
+        return;
+    }
+    #endif
     int Locks = unlockMutex();
 
     printf_log(LOG_DEBUG, "Sigactionhanlder for signal #%d called (jump to %p/%s)\n", sig, (void*)my_context->signals[sig], GetNativeName((void*)my_context->signals[sig]));
@@ -1101,6 +1111,7 @@ void my_sigactionhandler_oldcode(int32_t sig, int simple, siginfo_t* info, void 
     fpu_xsave_mask(emu, xstate, 0, 0b111);
     memcpy(&sigcontext->xstate, xstate, sizeof(sigcontext->xstate));
     ((struct x64_fpstate*)xstate)->res[12] = 0x46505853;   // magic number to signal an XSTATE type of fpregs
+    ((struct x64_fpstate*)xstate)->res[13] = 0; // offset to xstate after this?
     // get signal mask
 
     if(new_ss) {
@@ -1834,8 +1845,8 @@ dynarec_log(/*LOG_DEBUG*/LOG_INFO, "Repeated SIGSEGV with Access error on %p for
             }
             if(sig==SIGILL) {
                 printf_log(log_minimum, " opcode=%02X %02X %02X %02X %02X %02X %02X %02X (%02X %02X %02X %02X %02X)\n", ((uint8_t*)pc)[0], ((uint8_t*)pc)[1], ((uint8_t*)pc)[2], ((uint8_t*)pc)[3], ((uint8_t*)pc)[4], ((uint8_t*)pc)[5], ((uint8_t*)pc)[6], ((uint8_t*)pc)[7], ((uint8_t*)x64pc)[0], ((uint8_t*)x64pc)[1], ((uint8_t*)x64pc)[2], ((uint8_t*)x64pc)[3], ((uint8_t*)x64pc)[4]);
-            } else if(sig==SIGBUS) {
-                printf_log(log_minimum, " x86opcode=%02X %02X %02X %02X %02X %02X %02X %02X (opcode=%08x)\n", ((uint8_t*)x64pc)[0], ((uint8_t*)x64pc)[1], ((uint8_t*)x64pc)[2], ((uint8_t*)x64pc)[3], ((uint8_t*)x64pc)[4], ((uint8_t*)x64pc)[5], ((uint8_t*)x64pc)[6], ((uint8_t*)x64pc)[7], *(uint32_t*)pc);
+            } else if(sig==SIGBUS || (sig==SIGSEGV && (x64pc!=(uintptr_t)addr) && (pc!=addr))) {
+                printf_log(log_minimum, " %sopcode=%02X %02X %02X %02X %02X %02X %02X %02X (opcode=%08x)\n", (emu->segs[_CS]==0x23)?"x86":"x64", ((uint8_t*)x64pc)[0], ((uint8_t*)x64pc)[1], ((uint8_t*)x64pc)[2], ((uint8_t*)x64pc)[3], ((uint8_t*)x64pc)[4], ((uint8_t*)x64pc)[5], ((uint8_t*)x64pc)[6], ((uint8_t*)x64pc)[7], *(uint32_t*)pc);
             } else {
                 printf_log(log_minimum, "\n");
             }
@@ -2184,7 +2195,7 @@ EXPORT int my_getcontext(x64emu_t* emu, void* ucp)
     // get signal mask
     sigprocmask(SIG_SETMASK, NULL, (sigset_t*)&u->uc_sigmask);
     // ensure uc_link is properly initialized
-    u->uc_link = emu->uc_link;
+    u->uc_link = (x64_ucontext_t*)emu->uc_link;
 
     return 0;
 }

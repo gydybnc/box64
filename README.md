@@ -18,6 +18,8 @@ Box64 integrates with DynaRec (dynamic recompiler) for the ARM64 and RV64 platfo
 
 Some x64 internal opcodes use parts of "Realmode X86 Emulator Library", see [x64primop.c](src/emu/x64primop.c) for copyright details
 
+Box64 now have an option Box32 part, that allows to run 32bits x86 program on 64bits system. Note that this option is experimental and a work in progress. Basically, nothing work with it yet, so unless you plan an helping with the development, don't bother enabling it (and don't create issue ticket about box32 not being able to run X or Y program). The main goals with box32 is to be able to run SteamCMD first. Then Linux Steam and Wine/Proton might come later.
+
 <img src="docs/img/Box64Icon.png" width="96" height="96">
 
 Logo and Icon made by @grayduck, thanks!
@@ -114,7 +116,7 @@ I want to thank everyone who has contributed to box64 development.
 There are many ways to contribute: code contribution, financial, hardware and advertisement!
 So, in no particular order, I want to thank:
  * For their major code contribution: rajdakin, mogery, ksco, xctan
- * For their major financial contribution: [Playtron](https://playtron.one), FlyingFathead, stormchaser3000, dennis1248, sll00, [libre-computer-project](https://libre.computer/), [CubeCoders Limited](http://cubecoders.com/)
+ * For their major financial contribution: [Playtron](https://playtron.one), tohodakilla, FlyingFathead, stormchaser3000, dennis1248, sll00, [libre-computer-project](https://libre.computer/), [CubeCoders Limited](http://cubecoders.com/)
  * For hardware contribution and LoongArch migration: [xiaoji](https://www.linuxgame.cn/), Deepin Beijing Develop Team
  * For their hardware contribution: [ADLINK](https://www.adlinktech.com/Products/Computer_on_Modules/COM-HPC-Server-Carrier-and-Starter-Kit/Ampere_Altra_Developer_Platform?lang=en) with [Ampere](https://amperecomputing.com/home/edge), [SOPHGO](https://www.sophon.ai/), [Radxa](https://rockpi.org/), [StarFive](https://rvspace.org/), [Pine64](https://www.pine64.org/), [AYN](https://www.ayntec.com/), [AYANEO](https://ayaneo.com/), [jiangcuo](https://github.com/jiangcuo)
  * For their continuous advertisements for the box64 project: salva ([microLinux](https://www.youtube.com/channel/UCwFQAEj1lp3out4n7BeBatQ)), [PILab](https://www.youtube.com/channel/UCgfQjdc5RceRlTGfuthBs7g)/[TwisterOS](https://twisteros.com/) team, [The Byteman](https://www.youtube.com/channel/UCEr8lpIJ3B5Ctc5BvcOHSnA), [NicoD](https://www.youtube.com/channel/UCpv7NFr0-9AB5xoklh3Snhg), ekianjo ([Boilingsteam](https://boilingsteam.com/))

@@ -29,6 +29,9 @@
 #include "dynablock.h"
 #include "dynarec/native_lock.h"
 #endif
+#ifdef BOX32
+#include "box32.h"
+#endif
 
 //void _pthread_cleanup_push_defer(void* buffer, void* routine, void* arg);	// declare hidden functions
 //void _pthread_cleanup_pop_restore(void* buffer, int exec);
@@ -124,14 +127,6 @@ int GetStackSize(x64emu_t* emu, uintptr_t attr, void** stack, size_t* stacksize)
 
 void my_longjmp(x64emu_t* emu, /*struct __jmp_buf_tag __env[1]*/void *p, int32_t __val);
 
-typedef struct emuthread_s {
-	uintptr_t 	fnc;
-	void*		arg;
-	x64emu_t*	emu;
-	int			cancel_cap, cancel_size;
-	x64_unwind_buff_t **cancels;
-} emuthread_t;
-
 static pthread_key_t thread_key;
 
 static void emuthread_destroy(void* p)
@@ -139,15 +134,12 @@ static void emuthread_destroy(void* p)
 	emuthread_t *et = (emuthread_t*)p;
 	if(!et)
 		return;
-	// check tlsdata
-	/*void* ptr;
-	if (my_context && (ptr = pthread_getspecific(my_context->tlskey)) != NULL)
-        free_tlsdatasize(ptr);*/
-	// free x64emu
-	if(et) {
-		FreeX64Emu(&et->emu);
-		box_free(et);
-	}
+	#ifdef BOX32
+	if(!et->join && et->fnc)
+		to_hash_d(et->self);
+	#endif
+	FreeX64Emu(&et->emu);
+	box_free(et);
 }
 
 static void emuthread_cancel(void* p)
@@ -158,9 +150,13 @@ static void emuthread_cancel(void* p)
 	// check cancels threads
 	for(int i=et->cancel_size-1; i>=0; --i) {
 		et->emu->flags.quitonlongjmp = 0;
-		my_longjmp(et->emu, et->cancels[i]->__cancel_jmp_buf, 1);
+		my_longjmp(et->emu, ((x64_unwind_buff_t*)et->cancels[i])->__cancel_jmp_buf, 1);
 		DynaRun(et->emu);	// will return after a __pthread_unwind_next()
 	}
+	#ifdef BOX32
+	/*if(box64_is32bits)
+		to_hash_d(et->self);*/ // not removing hash for old pthread_t
+	#endif
 	box_free(et->cancels);
 	et->cancels=NULL;
 	et->cancel_size = et->cancel_cap = 0;
@@ -182,6 +178,12 @@ void thread_set_emu(x64emu_t* emu)
 	}
 	et->emu = emu;
 	et->emu->type = EMUTYPE_MAIN;
+	#ifdef BOX32
+	if(box64_is32bits) {
+		et->self = (uintptr_t)pthread_self();
+		et->hself = to_hash(et->self);
+	}
+	#endif
 	pthread_setspecific(thread_key, et);
 }
 
@@ -233,8 +235,7 @@ static void* pthread_routine(void* p)
 	Push64(emu, 0);	// PUSH BP
 	R_RBP = R_RSP;	// MOV BP, SP
 	R_RSP -= 64;	// Guard zone
-	if(R_RSP&0x8)	// align if needed (shouldn't be)
-		R_RSP-=8;
+	R_RSP &= ~15LL;
 	PushExit(emu);
 	R_RIP = et->fnc;
 	R_RDI = (uintptr_t)et->arg;
@@ -376,6 +377,10 @@ EXPORT int my_pthread_attr_setaffinity_np(x64emu_t* emu, pthread_attr_t* attr, s
 	int ret = pthread_attr_setaffinity_np(PTHREAD_ATTR(attr), cpusize, cpuset);
 	PTHREAD_ATTR_UNALIGN(attr);
 	return ret;
+}
+EXPORT int my_pthread_attr_setaffinity_np_old(x64emu_t* emu, pthread_attr_t* attr, void* cpuset)
+{
+	return my_pthread_attr_setaffinity_np(emu, attr, 128, cpuset);
 }
 #endif
 EXPORT int my_pthread_attr_setdetachstate(x64emu_t* emu, pthread_attr_t* attr, int state)
@@ -778,6 +783,11 @@ EXPORT int my_pthread_getaffinity_np(x64emu_t* emu, pthread_t thread, size_t cpu
 
     return ret;
 }
+EXPORT int my_pthread_getaffinity_np_old(x64emu_t* emu, pthread_t thread, void* cpuset)
+{
+	return my_pthread_getaffinity_np(emu, thread, 128, cpuset);
+}
+
 
 EXPORT int my_pthread_setaffinity_np(x64emu_t* emu, pthread_t thread, size_t cpusetsize, void* cpuset)
 {
@@ -788,6 +798,10 @@ EXPORT int my_pthread_setaffinity_np(x64emu_t* emu, pthread_t thread, size_t cpu
 	}
 
     return ret;
+}
+EXPORT int my_pthread_setaffinity_np_old(x64emu_t* emu, pthread_t thread, void* cpuset)
+{
+	return my_pthread_setaffinity_np(emu, thread, 128, cpuset);
 }
 #endif
 
@@ -1045,6 +1059,68 @@ EXPORT int my_pthread_cond_broadcast(x64emu_t* emu, pthread_cond_t *pc)
 }
 #endif
 
+typedef struct pthread_cond_old_s {
+	pthread_cond_t* cond;
+} pthread_cond_old_t;
+
+static pthread_cond_t* get_cond(pthread_cond_old_t* cond) {
+	if(!cond->cond) {
+		pthread_cond_t* newcond = box_calloc(1, sizeof(pthread_cond_t));
+		#ifdef DYNAREC
+		if(native_lock_storeifnull(&cond->cond, newcond))
+			box_free(newcond);
+		#else
+		static pthread_mutex_t mutex_cond = PTHREAD_MUTEX_INITIALIZER;
+		pthread_mutex_lock(&mutex_cond);
+		if(!cond->cond)
+			cond->cond = newcond;
+		else
+			box_free(newcond);
+		#endif
+	}
+	return cond->cond;
+}
+
+EXPORT int my_pthread_cond_broadcast_old(x64emu_t* emu, pthread_cond_old_t* cond)
+{
+    (void)emu;
+	pthread_cond_t * c = get_cond(cond);
+	return pthread_cond_broadcast(c);
+}
+EXPORT int my_pthread_cond_destroy_old(x64emu_t* emu, pthread_cond_old_t* cond)
+{
+    (void)emu;
+	pthread_cond_t * c = get_cond(cond);
+	int ret = pthread_cond_destroy(c);
+	box_free(cond->cond);
+	return ret;
+}
+EXPORT int my_pthread_cond_init_old(x64emu_t* emu, pthread_cond_old_t* cond, void* attr)
+{
+    (void)emu;
+	pthread_cond_t *c = get_cond(cond);
+	return pthread_cond_init(c, (const pthread_condattr_t*)attr);
+}
+EXPORT int my_pthread_cond_signal_old(x64emu_t* emu, pthread_cond_old_t* cond)
+{
+    (void)emu;
+	pthread_cond_t * c = get_cond(cond);
+	return pthread_cond_signal(c);
+}
+EXPORT int my_pthread_cond_timedwait_old(x64emu_t* emu, pthread_cond_old_t* cond, void* mutex, void* abstime)
+{
+    (void)emu;
+	pthread_cond_t * c = get_cond(cond);
+	return pthread_cond_timedwait(c, mutex, (const struct timespec*)abstime);
+	#undef T
+}
+EXPORT int my_pthread_cond_wait_old(x64emu_t* emu, pthread_cond_old_t* cond, void* mutex)
+{
+    (void)emu;
+	pthread_cond_t * c = get_cond(cond);
+	return pthread_cond_wait(c, mutex);
+}
+
 typedef union my_barrierattr_s {
 	int						x86;
 	pthread_barrierattr_t 	nat;
@@ -1097,6 +1173,10 @@ EXPORT int my_pthread_barrier_init(x64emu_t* emu, pthread_barrier_t* bar, my_bar
 
 void init_pthread_helper()
 {
+	#ifdef BOX32
+	if(box64_is32bits)
+		init_pthread_helper_32();
+	#endif
 	real_pthread_cleanup_push_defer = (vFppp_t)dlsym(NULL, "_pthread_cleanup_push_defer");
 	real_pthread_cleanup_pop_restore = (vFpi_t)dlsym(NULL, "_pthread_cleanup_pop_restore");
 	real_pthread_cond_clockwait = (iFppip_t)dlsym(NULL, "pthread_cond_clockwait");
@@ -1109,6 +1189,8 @@ void init_pthread_helper()
 			real_phtread_kill_old = (iFli_t)dlvsym(NULL, "pthread_kill", buff);
 		}
 	}
+	if(!real_phtread_kill_old)
+		real_phtread_kill_old = (iFli_t)dlvsym(NULL, "pthread_kill", "GLIBC_2.2.5");
 	if(!real_phtread_kill_old) {
 		printf_log(LOG_INFO, "Warning, older then 2.34 pthread_kill not found, using current one\n");
 		real_phtread_kill_old = (iFli_t)pthread_kill;
@@ -1129,6 +1211,10 @@ void clean_current_emuthread()
 
 void fini_pthread_helper(box64context_t* context)
 {
+	#ifdef BOX32
+	if(box64_is32bits)
+		fini_pthread_helper_32(context);
+	#endif
 	CleanStackSize(context);
 	clean_current_emuthread();
 }

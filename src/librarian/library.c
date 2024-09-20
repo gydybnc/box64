@@ -40,6 +40,16 @@
 #endif
 
 #undef GO
+#ifdef BOX32
+#define GO(P, N) int wrapped##N##_init32(library_t* lib, box64context_t *box64); \
+                 void wrapped##N##_fini32(library_t* lib);
+#ifdef STATICBUILD
+#include "library_list_static_32.h"
+#else
+#include "library_list_32.h"
+#endif
+#undef GO
+#endif
 
 #define GO(P, N) {P, wrapped##N##_init, wrapped##N##_fini},
 wrappedlib_t wrappedlibs[] = {
@@ -47,6 +57,17 @@ wrappedlib_t wrappedlibs[] = {
 #include "library_list_static.h"
 #else
 #include "library_list.h"
+#endif
+};
+#undef GO
+#define GO(P, N) {P, wrapped##N##_init32, wrapped##N##_fini32},
+wrappedlib_t wrappedlibs32[] = {
+#ifdef BOX32
+#ifdef STATICBUILD
+#include "library_list_static_32.h"
+#else
+#include "library_list_32.h"
+#endif
 #endif
 };
 #undef GO
@@ -232,14 +253,11 @@ int DummyLib_GetLocal(library_t* lib, const char* name, uintptr_t *offs, uintptr
 }
 
 static void initWrappedLib(library_t *lib, box64context_t* context) {
-    if(box64_is32bits) {
-        // TODO
-        return; // nothing wrapped yet
-    }
-    int nb = sizeof(wrappedlibs) / sizeof(wrappedlib_t);
+    int nb = (box64_is32bits?sizeof(wrappedlibs32):sizeof(wrappedlibs)) / sizeof(wrappedlib_t);
     for (int i=0; i<nb; ++i) {
-        if(strcmp(lib->name, wrappedlibs[i].name)==0) {
-            if(wrappedlibs[i].init(lib, context)) {
+        wrappedlib_t* w = box64_is32bits?(&wrappedlibs32[i]):(&wrappedlibs[i]);
+        if(strcmp(lib->name, w->name)==0) {
+            if(w->init(lib, context)) {
                 // error!
                 const char* error_str = dlerror();
                 if(error_str)   // don't print the message if there is no error string from last error
@@ -247,7 +265,7 @@ static void initWrappedLib(library_t *lib, box64context_t* context) {
                 return; // non blocker...
             }
             printf_dump(LOG_INFO, "Using native(wrapped) %s\n", lib->name);
-            lib->fini = wrappedlibs[i].fini;
+            lib->fini = w->fini;
             lib->getglobal = WrappedLib_GetGlobal;
             lib->getweak = WrappedLib_GetWeak;
             lib->getlocal = WrappedLib_GetLocal;
@@ -366,7 +384,7 @@ static void initEmulatedLib(const char* path, library_t *lib, box64context_t* co
 {
     char libname[MAX_PATH];
     strcpy(libname, path);
-    int found = FileIsX64ELF(libname);
+    int found = box64_is32bits?FileIsX86ELF(libname):FileIsX64ELF(libname);
     if(found)
         if(loadEmulatedLib(libname, lib, context, verneeded))
             return;
@@ -375,14 +393,14 @@ static void initEmulatedLib(const char* path, library_t *lib, box64context_t* co
         {
             strcpy(libname, context->box64_ld_lib.paths[i]);
             strcat(libname, path);
-            if(FileIsX64ELF(libname))
+            if(box64_is32bits?FileIsX86ELF(libname):FileIsX64ELF(libname))
                 if(loadEmulatedLib(libname, lib, context, verneeded))
                     return;
             // also try x86_64 variant
             strcpy(libname, context->box64_ld_lib.paths[i]);
-            strcat(libname, "x86_64/");
+            strcat(libname, box64_is32bits?"i386/":"x86_64/");
             strcat(libname, path);
-            if(FileIsX64ELF(libname))
+            if(box64_is32bits?FileIsX86ELF(libname):FileIsX64ELF(libname))
                 if(loadEmulatedLib(libname, lib, context, verneeded))
                     return;            
         }
@@ -434,7 +452,7 @@ library_t *NewLibrary(const char* path, box64context_t* context, elfheader_t* ve
     printf_dump(LOG_DEBUG, "Trying to load \"%s\"\n", path);
     //library_t *lib = (library_t*)box_calloc(1, sizeof(library_t));
     if(cur_lib==lib_cap) {
-        lib_brick_t *new_brick = calloc(1, sizeof(lib_brick_t));
+        lib_brick_t *new_brick = box_calloc(1, sizeof(lib_brick_t));
         if(!lib_head)
             cur_brick = lib_head = new_brick;
         else {
@@ -793,7 +811,7 @@ static int getSymbolInDataMaps(library_t*lib, const char* name, int noweak, uint
         if(lib->w.altmy)
             strcpy(buff, lib->w.altmy);
         else
-            strcpy(buff, "my_");
+            strcpy(buff, box64_is32bits?"my32_":"my_");
         strcat(buff, name);
         #ifdef STATICBUILD
         symbol = (void*)kh_value(lib->w.mydatamap, k).addr;
@@ -818,9 +836,10 @@ static int getSymbolInDataMaps(library_t*lib, const char* name, int noweak, uint
 }
 static int getSymbolInSymbolMaps(library_t*lib, const char* name, int noweak, uintptr_t *addr, uintptr_t *size, int* weak)
 {
+    const khint_t hash = kh_hash(symbolmap, name);
     void* symbol;
     // check in mysymbolmap
-    khint_t k = kh_get(symbolmap, lib->w.mysymbolmap, name);
+    khint_t k = kh_get_with_hash(symbolmap, lib->w.mysymbolmap, name, hash);
     if (k!=kh_end(lib->w.mysymbolmap)) {
         symbol1_t *s = &kh_value(lib->w.mysymbolmap, k);
         if(!s->resolved) {
@@ -828,7 +847,7 @@ static int getSymbolInSymbolMaps(library_t*lib, const char* name, int noweak, ui
             if(lib->w.altmy)
                 strcpy(buff, lib->w.altmy);
             else
-                strcpy(buff, "my_");
+                strcpy(buff, box64_is32bits?"my32_":"my_");
             strcat(buff, name);
             #ifdef STATICBUILD
             symbol = (void*)s->addr;
@@ -848,7 +867,7 @@ static int getSymbolInSymbolMaps(library_t*lib, const char* name, int noweak, ui
         return 1;
     }
     // check in stsymbolmap (return struct...)
-    k = kh_get(symbolmap, lib->w.stsymbolmap, name);
+    k = kh_get_with_hash(symbolmap, lib->w.stsymbolmap, name, hash);
     if (k!=kh_end(lib->w.stsymbolmap)) {
         symbol1_t *s = &kh_value(lib->w.stsymbolmap, k);
         if(!s->resolved) {
@@ -856,7 +875,7 @@ static int getSymbolInSymbolMaps(library_t*lib, const char* name, int noweak, ui
             if(lib->w.altmy)
                 strcpy(buff, lib->w.altmy);
             else
-                strcpy(buff, "my_");
+                strcpy(buff, box64_is32bits?"my32_":"my_");
             strcat(buff, name);
             #ifdef STATICBUILD
             symbol = (void*)s->addr;
@@ -876,7 +895,7 @@ static int getSymbolInSymbolMaps(library_t*lib, const char* name, int noweak, ui
         return 1;
     }
     // check in symbolmap
-    k = kh_get(symbolmap, lib->w.symbolmap, name);
+    k = kh_get_with_hash(symbolmap, lib->w.symbolmap, name, hash);
     if (k!=kh_end(lib->w.symbolmap)) {
         symbol1_t *s = &kh_value(lib->w.symbolmap, k);
         if(!s->resolved) {
@@ -913,7 +932,7 @@ static int getSymbolInSymbolMaps(library_t*lib, const char* name, int noweak, ui
     }
     if(!noweak) {
         // check in wmysymbolmap
-        khint_t k = kh_get(symbolmap, lib->w.wmysymbolmap, name);
+        khint_t k = kh_get_with_hash(symbolmap, lib->w.wmysymbolmap, name, hash);
         if (k!=kh_end(lib->w.wmysymbolmap)) {
             symbol1_t *s = &kh_value(lib->w.wmysymbolmap, k);
             if(!s->resolved) {
@@ -921,7 +940,7 @@ static int getSymbolInSymbolMaps(library_t*lib, const char* name, int noweak, ui
                 if(lib->w.altmy)
                     strcpy(buff, lib->w.altmy);
                 else
-                    strcpy(buff, "my_");
+                    strcpy(buff, box64_is32bits?"my32_":"my_");
                 strcat(buff, name);
                 #ifdef STATICBUILD
                 symbol = (void*)s->addr;
@@ -940,7 +959,7 @@ static int getSymbolInSymbolMaps(library_t*lib, const char* name, int noweak, ui
             *weak = 1;
             return 1;
         }
-        k = kh_get(symbolmap, lib->w.wsymbolmap, name);
+        k = kh_get_with_hash(symbolmap, lib->w.wsymbolmap, name, hash);
         if (k!=kh_end(lib->w.wsymbolmap)) {
             symbol1_t *s = &kh_value(lib->w.wsymbolmap, k);
             if(!s->resolved) {
@@ -977,7 +996,9 @@ static int getSymbolInSymbolMaps(library_t*lib, const char* name, int noweak, ui
         }
     }
     // check in symbol2map
-    k = kh_get(symbol2map, lib->w.symbol2map, name);
+    // 
+    // NOTE: symbol2map & symbolmap share the same hash function, so we can use the same hash
+    k = kh_get_with_hash(symbol2map, lib->w.symbol2map, name, hash);
     if (k!=kh_end(lib->w.symbol2map))  {
         symbol2_t *s = &kh_value(lib->w.symbol2map, k);
         if(!noweak || !s->weak)
@@ -1078,6 +1099,64 @@ int GetDeepBind(library_t* lib)
     return lib->deepbind;
 }
 
+#ifdef BOX32
+linkmap32_t* getLinkMapLib32(library_t* lib)
+{
+    linkmap32_t* lm = my_context->linkmap32;
+    while(lm) {
+        if(lm->l_lib == lib)
+            return lm;
+        lm = (linkmap32_t*)from_ptrv(lm->l_next);
+    }
+    return NULL;
+}
+linkmap32_t* getLinkMapElf32(elfheader_t* h)
+{
+    linkmap32_t* lm = my_context->linkmap32;
+    while(lm) {
+        if(lm->l_lib && lm->l_lib->type==LIB_EMULATED && lm->l_lib->e.elf == h)
+            return lm;
+        lm = (linkmap32_t*)from_ptrv(lm->l_next);
+    }
+    return NULL;
+}
+linkmap32_t* addLinkMapLib32(library_t* lib)
+{
+    if(!my_context->linkmap32) {
+        my_context->linkmap32 = (linkmap32_t*)box_calloc(1, sizeof(linkmap32_t));
+        my_context->linkmap32->l_lib = lib;
+        return my_context->linkmap32;
+    }
+    linkmap32_t* lm = my_context->linkmap32;
+    while(lm->l_next)
+        lm = (linkmap32_t*)from_ptrv(lm->l_next);
+    lm->l_next = to_ptrv(box_calloc(1, sizeof(linkmap32_t)));
+    linkmap32_t* l_next = (linkmap32_t*)from_ptrv(lm->l_next);
+    l_next->l_lib = lib;
+    l_next->l_prev = to_ptrv(lm);
+    return l_next;
+}
+void removeLinkMapLib32(library_t* lib)
+{
+    linkmap32_t* lm = getLinkMapLib32(lib);
+    if(!lm) return;
+    if(lm->l_next)
+        ((linkmap32_t*)from_ptrv(lm->l_next))->l_prev = lm->l_prev;
+    if(lm->l_prev)
+        ((linkmap32_t*)from_ptrv(lm->l_prev))->l_next = lm->l_next;
+    box_free(lm);
+}
+
+void AddMainElfToLinkmap32(elfheader_t* elf)
+{
+    linkmap32_t* lm = addLinkMapLib32(NULL);    // main elf will have a null lib link
+
+    lm->l_addr = (Elf32_Addr)to_ptrv(GetElfDelta(elf));
+    lm->l_name = to_ptrv(my_context->fullpath);
+    lm->l_ld = to_ptrv(GetDynamicSection(elf));
+}
+#endif
+
 linkmap_t* getLinkMapLib(library_t* lib)
 {
     linkmap_t* lm = my_context->linkmap;
@@ -1135,23 +1214,23 @@ void AddMainElfToLinkmap(elfheader_t* elf)
 
 needed_libs_t* new_neededlib(int n)
 {
-    needed_libs_t* ret = (needed_libs_t*)calloc(1, sizeof(needed_libs_t));
+    needed_libs_t* ret = (needed_libs_t*)box_calloc(1, sizeof(needed_libs_t));
     ret->cap = ret->size = n;
     ret->init_size = n;
-    ret->libs = (library_t**)calloc(n, sizeof(library_t*));
-    ret->names = (char**)calloc(n, sizeof(char*));
+    ret->libs = (library_t**)box_calloc(n, sizeof(library_t*));
+    ret->names = (char**)box_calloc(n, sizeof(char*));
     return ret;
 }
 void free_neededlib(needed_libs_t* needed)
 {
     if(!needed)
         return;
-    free(needed->libs);
-    free(needed->names);
+    box_free(needed->libs);
+    box_free(needed->names);
     needed->libs = NULL;
     needed->names = NULL;
     needed->cap = needed->size = 0;
-    free(needed);
+    box_free(needed);
 }
 void add1_neededlib(needed_libs_t* needed)
 {
@@ -1160,8 +1239,8 @@ void add1_neededlib(needed_libs_t* needed)
     if(needed->size+1<=needed->cap)
         return;
     needed->cap = needed->size+1;
-    needed->libs = (library_t**)realloc(needed->libs, needed->cap*sizeof(library_t*));
-    needed->names = (char**)realloc(needed->names, needed->cap*sizeof(char*));
+    needed->libs = (library_t**)box_realloc(needed->libs, needed->cap*sizeof(library_t*));
+    needed->names = (char**)box_realloc(needed->names, needed->cap*sizeof(char*));
     needed->size++;
     needed->init_size++;
 }
@@ -1176,8 +1255,8 @@ void add1lib_neededlib(needed_libs_t* needed, library_t* lib, const char* name)
     // add it
     if(needed->size==needed->cap) {
         needed->cap = needed->size+1;
-        needed->libs = (library_t**)realloc(needed->libs, needed->cap*sizeof(library_t*));
-        needed->names = (char**)realloc(needed->names, needed->cap*sizeof(char*));
+        needed->libs = (library_t**)box_realloc(needed->libs, needed->cap*sizeof(library_t*));
+        needed->names = (char**)box_realloc(needed->names, needed->cap*sizeof(char*));
     }
     needed->libs[needed->size] = lib;
     needed->names[needed->size] = (char*)name;
@@ -1195,8 +1274,8 @@ void add1lib_neededlib_name(needed_libs_t* needed, library_t* lib, const char* n
     // add it
     if(needed->size==needed->cap) {
         needed->cap = needed->size+1;
-        needed->libs = (library_t**)realloc(needed->libs, needed->cap*sizeof(library_t*));
-        needed->names = (char**)realloc(needed->names, needed->cap*sizeof(char*));
+        needed->libs = (library_t**)box_realloc(needed->libs, needed->cap*sizeof(library_t*));
+        needed->names = (char**)box_realloc(needed->names, needed->cap*sizeof(char*));
     }
     needed->libs[needed->size] = lib;
     needed->names[needed->size] = (char*)name;
@@ -1214,8 +1293,8 @@ void add1libref_neededlib(needed_libs_t* needed, library_t* lib)
     // add it
     if(needed->size==needed->cap) {
         needed->cap = needed->size+4;
-        needed->libs = (library_t**)realloc(needed->libs, needed->cap*sizeof(library_t*));
-        needed->names = (char**)realloc(needed->names, needed->cap*sizeof(char*));
+        needed->libs = (library_t**)box_realloc(needed->libs, needed->cap*sizeof(library_t*));
+        needed->names = (char**)box_realloc(needed->names, needed->cap*sizeof(char*));
     }
     needed->libs[needed->size] = lib;
     needed->names[needed->size] = (char*)lib->name;
@@ -1226,12 +1305,12 @@ needed_libs_t* copy_neededlib(needed_libs_t* needed)
 {
     if(!needed)
         return NULL;
-    needed_libs_t* ret = (needed_libs_t*)calloc(1, sizeof(needed_libs_t));
+    needed_libs_t* ret = (needed_libs_t*)box_calloc(1, sizeof(needed_libs_t));
     ret->cap = needed->cap;
     ret->size = needed->size;
     ret->init_size = needed->init_size;
-    ret->libs = (library_t**)calloc(ret->cap, sizeof(library_t*));
-    ret->names = (char**)calloc(ret->cap, sizeof(char*));
+    ret->libs = (library_t**)box_calloc(ret->cap, sizeof(library_t*));
+    ret->names = (char**)box_calloc(ret->cap, sizeof(char*));
     memcpy(ret->libs, needed->libs, ret->size*sizeof(library_t*));
     memcpy(ret->names, needed->names, ret->size*sizeof(char*));
     return ret;

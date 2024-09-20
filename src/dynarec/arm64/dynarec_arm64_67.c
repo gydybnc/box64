@@ -220,6 +220,39 @@ uintptr_t dynarec64_67(dynarec_arm_t* dyn, uintptr_t addr, uintptr_t ip, int nin
                     }
                     break;
 
+                case 0x38:  /* MAP 0F38 */
+                    opcode = F8;
+                    switch(opcode) {
+                        case 0xF6:
+                            switch(rep) {
+                                case 2:
+                                    INST_NAME("ADOX Gd, Ed");
+                                    nextop = F8;
+                                    READFLAGS(X_OF);
+                                    SETFLAGS(X_OF, SF_SUBSET);
+                                    GETED32(0);
+                                    GETGD;
+                                    MRS_nzvc(x3);
+                                    LSRw(x4, xFlags, F_OF);
+                                    BFIx(x3, x4, 29, 1); // set C
+                                    MSR_nzvc(x3);      // load CC into ARM CF
+                                    IFX(X_OF) {
+                                        ADCSxw_REG(gd, gd, ed);
+                                        CSETw(x3, cCS);
+                                        BFIw(xFlags, x3, F_OF, 1);
+                                    } else {
+                                        ADCxw_REG(gd, gd, ed);
+                                    }
+                                    break;
+                                default:
+                                    DEFAULT;
+                            }
+                            break;
+                        default:
+                            DEFAULT;
+                    }
+                    break;
+
                 case 0x6F:
                     switch(rep) {
                         case 0:
@@ -678,6 +711,31 @@ uintptr_t dynarec64_67(dynarec_arm_t* dyn, uintptr_t addr, uintptr_t ip, int nin
                 case 0x0F:
                     nextop = F8;
                     switch(nextop) {
+                        case 0x7E:
+                            INST_NAME("MOVD Ed,Gx");
+                            nextop = F8;
+                            GETGX(v0, 0);
+                            if(rex.w) {
+                                if(MODREG) {
+                                    ed = xRAX + (nextop&7) + (rex.b<<3);
+                                    VMOVQDto(ed, v0, 0);
+                                } else {
+                                    addr = geted32(dyn, addr, ninst, nextop, &ed, x1, &fixedaddress, &unscaled, 0xfff<<3, 7, rex, NULL, 0, 0);
+                                    VST64(v0, ed, fixedaddress);
+                                    SMWRITE2();
+                                }
+                            } else {
+                                if(MODREG) {
+                                    ed = xRAX + (nextop&7) + (rex.b<<3);
+                                    VMOVSto(ed, v0, 0);
+                                } else {
+                                    addr = geted32(dyn, addr, ninst, nextop, &ed, x1, &fixedaddress, &unscaled, 0xfff<<2, 3, rex, NULL, 0, 0);
+                                    VST32(v0, ed, fixedaddress);
+                                    SMWRITE2();
+                                }
+                            }
+                            break;
+
                         case 0xD6:
                             INST_NAME("MOVQ Ex, Gx");
                             nextop = F8;

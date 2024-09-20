@@ -1653,11 +1653,14 @@ uintptr_t dynarec64_0F(dynarec_rv64_t* dyn, uintptr_t addr, uintptr_t ip, int ni
             SD(x3, wback, fixedaddress);
             break;
 #define GO(GETFLAGS, NO, YES, F)                                                            \
-    if (box64_dynarec_test == 2) { NOTEST(x1); }                                            \
     READFLAGS(F);                                                                           \
     i32_ = F32S;                                                                            \
+    if(rex.is32bits)                                                                        \
+        j64 = (uint32_t)(addr+i32_);                                                        \
+    else                                                                                    \
+        j64 = addr+i32_;                                                                    \
     BARRIER(BARRIER_MAYBE);                                                                 \
-    JUMP(addr + i32_, 1);                                                                   \
+    JUMP(j64, 1);                                                                           \
     GETFLAGS;                                                                               \
     if (dyn->insts[ninst].x64.jmp_insts == -1 || CHECK_CACHE()) {                           \
         /* out of the block */                                                              \
@@ -1666,7 +1669,7 @@ uintptr_t dynarec64_0F(dynarec_rv64_t* dyn, uintptr_t addr, uintptr_t ip, int ni
         if (dyn->insts[ninst].x64.jmp_insts == -1) {                                        \
             if (!(dyn->insts[ninst].x64.barrier & BARRIER_FLOAT))                           \
                 fpu_purgecache(dyn, ninst, 1, x1, x2, x3);                                  \
-            jump_to_next(dyn, addr + i32_, 0, ninst, rex.is32bits);                         \
+            jump_to_next(dyn, j64, 0, ninst, rex.is32bits);                                 \
         } else {                                                                            \
             CacheTransform(dyn, ninst, cacheupd, x1, x2, x3);                               \
             i32 = dyn->insts[dyn->insts[ninst].x64.jmp_insts].address - (dyn->native_size); \
@@ -1718,7 +1721,7 @@ uintptr_t dynarec64_0F(dynarec_rv64_t* dyn, uintptr_t addr, uintptr_t ip, int ni
             NOTEST(x1);
             MV(A1, xRAX);
             CALL_(my_cpuid, -1, 0);
-            // BX and DX are not synchronized durring the call, so need to force the update
+            // BX and DX are not synchronized during the call, so need to force the update
             LD(xRDX, xEmu, offsetof(x64emu_t, regs[_DX]));
             LD(xRBX, xEmu, offsetof(x64emu_t, regs[_BX]));
             break;
@@ -1861,7 +1864,7 @@ uintptr_t dynarec64_0F(dynarec_rv64_t* dyn, uintptr_t addr, uintptr_t ip, int ni
                         fpu_purgecache(dyn, ninst, 0, x1, x2, x3);
                         addr = geted(dyn, addr, ninst, nextop, &ed, x1, x3, &fixedaddress, rex, NULL, 0, 0);
                         if (ed != x1) { MV(x1, ed); }
-                        CALL(rex.w ? ((void*)fpu_fxsave64) : ((void*)fpu_fxsave32), -1);
+                        CALL(rex.is32bits ? ((void*)fpu_fxsave32) : ((void*)fpu_fxsave64), -1);
                         break;
                     case 1:
                         INST_NAME("FXRSTOR Ed");
@@ -1870,7 +1873,7 @@ uintptr_t dynarec64_0F(dynarec_rv64_t* dyn, uintptr_t addr, uintptr_t ip, int ni
                         fpu_purgecache(dyn, ninst, 0, x1, x2, x3);
                         addr = geted(dyn, addr, ninst, nextop, &ed, x1, x3, &fixedaddress, rex, NULL, 0, 0);
                         if (ed != x1) { MV(x1, ed); }
-                        CALL(rex.w ? ((void*)fpu_fxrstor64) : ((void*)fpu_fxrstor32), -1);
+                        CALL(rex.is32bits ? ((void*)fpu_fxrstor32) : ((void*)fpu_fxrstor64), -1);
                         break;
                     case 2:
                         INST_NAME("LDMXCSR Md");

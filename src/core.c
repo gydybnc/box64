@@ -46,6 +46,7 @@ int box64_exit_code = 0;
 int box64_log = LOG_INFO; //LOG_NONE;
 int box64_dump = 0;
 int box64_nobanner = 0;
+int box64_stdout_no_w = 0;
 int box64_dynarec_log = LOG_NONE;
 uintptr_t box64_pagesize;
 uintptr_t box64_load_addr = 0;
@@ -68,6 +69,7 @@ int box64_ignoreint3 = 0;
 int box64_rdtsc = 0;
 int box64_rdtsc_1ghz = 0;
 uint8_t box64_rdtsc_shift = 0;
+char* box64_insert_args = NULL;
 char* box64_new_args = NULL;
 #ifdef DYNAREC
 int box64_dynarec = 1;
@@ -172,6 +174,7 @@ int box64_dummy_crashhandler = 1;
 int box64_mapclean = 0;
 int box64_zoom = 0;
 int box64_steam = 0;
+int box64_steamcmd = 0;
 int box64_wine = 0;
 int box64_musl = 0;
 int box64_nopulse = 0;
@@ -190,6 +193,7 @@ char* box64_custom_gstreamer = NULL;
 uintptr_t fmod_smc_start = 0;
 uintptr_t fmod_smc_end = 0;
 uint32_t default_gs = 0x53;
+uint32_t default_fs = 0x53;
 int jit_gdb = 0;
 int box64_tcmalloc_minimal = 0;
 
@@ -250,8 +254,10 @@ void openFTrace(const char* newtrace)
                 ftrace_name = strdup(p);
                 /*fclose(ftrace);
                 ftrace = NULL;*/
-                if(!box64_nobanner)
+                if(!box64_nobanner) {
                     printf("BOX64 Trace %s to \"%s\"\n", append?"appended":"redirected", p);
+                    box64_stdout_no_w = 1;
+                }
                 PrintBox64Version();
             }
         }
@@ -513,13 +519,7 @@ HWCAP2_AFP
     if(rv64_zbb) printf_log(LOG_INFO, " Zbb");
     if(rv64_zbc) printf_log(LOG_INFO, " Zbc");
     if(rv64_zbs) printf_log(LOG_INFO, " Zbs");
-    if (rv64_vector) {
-        char* p = getenv("BOX64_DYNAREC_RV64VEXT");
-        if (p != NULL && p[0] == '1')
-            printf_log(LOG_INFO, " Vector (vlen: %d)", rv64_vlen);
-        else
-            rv64_vector = 0;
-    }
+    if (rv64_vector) printf_log(LOG_INFO, " Vector (vlen: %d)", rv64_vlen);
     if(rv64_xtheadba) printf_log(LOG_INFO, " XTheadBa");
     if(rv64_xtheadbb) printf_log(LOG_INFO, " XTheadBb");
     if(rv64_xtheadbs) printf_log(LOG_INFO, " XTheadBs");
@@ -615,6 +615,8 @@ void LoadLogEnv()
         if(!box64_nobanner)
             printf_log(LOG_INFO, "Debug level is %d\n", box64_log);
     }
+    if((box64_nobanner || box64_log) && ftrace==stdout)
+        box64_stdout_no_w = 1;
 
 #if !defined(DYNAREC) && (defined(ARM64) || defined(RV64) || defined(LA64))
     printf_log(LOG_INFO, "Warning: DynaRec is available on this host architecture, an interpreter-only build is probably not intended.\n");
@@ -654,7 +656,7 @@ void LoadLogEnv()
     p = getenv("BOX64_DYNAREC_DUMP");
     if(p) {
         if(strlen(p)==1) {
-            if(p[0]>='0' && p[0]<='2')
+            if (p[0] >= '0' && p[0] <= '2')
                 box64_dynarec_dump = p[0]-'0';
         }
         if (box64_dynarec_dump) printf_log(LOG_INFO, "Dynarec blocks are dumped%s\n", (box64_dynarec_dump>1)?" in color":"");
@@ -863,7 +865,7 @@ void LoadLogEnv()
     p = getenv("BOX64_DYNAREC_TEST");
     if(p) {
         if(strlen(p)==1) {
-            if(p[0]>='0' && p[0]<='2')
+            if(p[0]>='0' && p[0]<='1')
                 box64_dynarec_test = p[0]-'0';
             box64_dynarec_test_start = 0x0;
             box64_dynarec_test_end = 0x0;
@@ -887,9 +889,7 @@ void LoadLogEnv()
             box64_dynarec_x87double = 1;
             box64_dynarec_div0 = 1;
             box64_dynarec_callret = 0;
-            printf_log(LOG_INFO, "Dynarec will compare it's execution with the interpreter%s (%s slow, only for testing)\n",
-                                 box64_dynarec_test == 2 ? " thread-safely" : "",
-                                 box64_dynarec_test == 2 ? "extremely" : "super");
+            printf_log(LOG_INFO, "Dynarec will compare it's execution with the interpreter (super slow, only for testing)\n");
         }
     }
 
@@ -1288,7 +1288,11 @@ int GatherEnv(char*** dest, char** env, char* prog)
         (*dest)[idx++] = box_strdup("BOX64_PATH=.:bin");
     }
     if(!ld_path) {
+        #ifdef BOX32
+        (*dest)[idx++] = box_strdup("BOX64_LD_LIBRARY_PATH=.:lib:lib64:x86_64:bin64:libs64:i386:libs:bin");
+        #else
         (*dest)[idx++] = box_strdup("BOX64_LD_LIBRARY_PATH=.:lib:lib64:x86_64:bin64:libs64");
+        #endif
     }
     // add "_=prog" at the end...
     if(prog) {
@@ -1401,24 +1405,7 @@ void LoadEnvVars(box64context_t *context)
             }
         } while(p);
     }
-    // check BOX64_LD_LIBRARY_PATH and load it
-    LoadEnvPath(&context->box64_ld_lib, ".:lib:lib64:x86_64:bin64:libs64", "BOX64_LD_LIBRARY_PATH");
-    #ifndef TERMUX
-    if(FileExist("/lib/x86_64-linux-gnu", 0))
-        AddPath("/lib/x86_64-linux-gnu", &context->box64_ld_lib, 1);
-    if(FileExist("/usr/lib/x86_64-linux-gnu", 0))
-        AddPath("/usr/lib/x86_64-linux-gnu", &context->box64_ld_lib, 1);
-    if(FileExist("/usr/x86_64-linux-gnu/lib", 0))
-        AddPath("/usr/x86_64-linux-gnu/lib", &context->box64_ld_lib, 1);
-    if(FileExist("/data/data/com.termux/files/usr/glibc/lib/x86_64-linux-gnu", 0))
-        AddPath("/data/data/com.termux/files/usr/glibc/lib/x86_64-linux-gnu", &context->box64_ld_lib, 1);
-    #else
-    //TODO: Add Termux Library Path - Lily
-    if(FileExist("/data/data/com.termux/files/usr/lib/x86_64-linux-gnu", 0))
-        AddPath("/data/data/com.termux/files/usr/lib/x86_64-linux-gnu", &context->box64_ld_lib, 1);
-    #endif
-    if(getenv("LD_LIBRARY_PATH"))
-        PrependList(&context->box64_ld_lib, getenv("LD_LIBRARY_PATH"), 1);   // in case some of the path are for x86 world
+
     if(getenv("BOX64_EMULATED_LIBS")) {
         char* p = getenv("BOX64_EMULATED_LIBS");
         ParseList(p, &context->box64_emulated_libs, 0);
@@ -1517,6 +1504,58 @@ void LoadEnvVars(box64context_t *context)
 }
 
 EXPORTDYN
+void LoadLDPath(box64context_t *context)
+{
+    // check BOX64_LD_LIBRARY_PATH and load it
+    #ifdef BOX32
+    if(box64_is32bits)
+        LoadEnvPath(&context->box64_ld_lib, ".:lib:i386:bin:libs", "BOX64_LD_LIBRARY_PATH");
+    else
+    #endif
+    LoadEnvPath(&context->box64_ld_lib, ".:lib:lib64:x86_64:bin64:libs64", "BOX64_LD_LIBRARY_PATH");
+    #ifndef TERMUX
+    if(box64_is32bits) {
+        #ifdef BOX32
+        if(FileExist("/lib/i386-linux-gnu", 0))
+            AddPath("/lib/i386-linux-gnu", &context->box64_ld_lib, 1);
+        if(FileExist("/usr/lib/i386-linux-gnu", 0))
+            AddPath("/usr/lib/i386-linux-gnu", &context->box64_ld_lib, 1);
+        if(FileExist("/usr/i386-linux-gnu/lib", 0))
+            AddPath("/usr/i386-linux-gnu/lib", &context->box64_ld_lib, 1);
+        if(FileExist("/usr/lib/box64-i386-linux-gnu", 0))
+            AddPath("/usr/lib/box64-i386-linux-gnu", &context->box64_ld_lib, 1);
+        if(FileExist("/data/data/com.termux/files/usr/glibc/lib/i386-linux-gnu", 0))
+            AddPath("/data/data/com.termux/files/usr/glibc/lib/i386-linux-gnu", &context->box64_ld_lib, 1);
+        #endif
+    } else {
+        if(FileExist("/lib/x86_64-linux-gnu", 0))
+            AddPath("/lib/x86_64-linux-gnu", &context->box64_ld_lib, 1);
+        if(FileExist("/usr/lib/x86_64-linux-gnu", 0))
+            AddPath("/usr/lib/x86_64-linux-gnu", &context->box64_ld_lib, 1);
+        if(FileExist("/usr/x86_64-linux-gnu/lib", 0))
+            AddPath("/usr/x86_64-linux-gnu/lib", &context->box64_ld_lib, 1);
+        if(FileExist("/usr/lib/box64-x86_64-linux-gnu", 0))
+            AddPath("/usr/lib/box64-x86_64-linux-gnu", &context->box64_ld_lib, 1);
+        if(FileExist("/data/data/com.termux/files/usr/glibc/lib/x86_64-linux-gnu", 0))
+            AddPath("/data/data/com.termux/files/usr/glibc/lib/x86_64-linux-gnu", &context->box64_ld_lib, 1);
+    }
+    #else
+    //TODO: Add Termux Library Path - Lily
+    if(box64_is32bits) {
+        #ifdef BOX32
+        if(FileExist("/data/data/com.termux/files/usr/lib/i386-linux-gnu", 0))
+            AddPath("/data/data/com.termux/files/usr/lib/i386-linux-gnu", &context->box64_ld_lib, 1);
+        #endif
+    } else {
+        if(FileExist("/data/data/com.termux/files/usr/lib/x86_64-linux-gnu", 0))
+            AddPath("/data/data/com.termux/files/usr/lib/x86_64-linux-gnu", &context->box64_ld_lib, 1);
+    }
+    #endif
+    if(getenv("LD_LIBRARY_PATH"))
+        PrependList(&context->box64_ld_lib, getenv("LD_LIBRARY_PATH"), 1);   // in case some of the path are for x86 world
+}
+
+EXPORTDYN
 void setupTraceInit()
 {
 #ifdef HAVE_TRACE
@@ -1534,10 +1573,16 @@ void setupTraceInit()
             if(s_trace_start || s_trace_end)
                 SetTraceEmu(s_trace_start, s_trace_end);
         } else {
-            if (GetGlobalSymbolStartEnd(my_context->maplib, p, &s_trace_start, &s_trace_end, NULL, -1, NULL, 0, NULL)) {
-                SetTraceEmu(s_trace_start, s_trace_end);
-                printf_log(LOG_INFO, "TRACE on %s only (%p-%p)\n", p, (void*)s_trace_start, (void*)s_trace_end);
-            } else if(GetLocalSymbolStartEnd(my_context->maplib, p, &s_trace_start, &s_trace_end, NULL, -1, NULL, 0, NULL)) {
+            int veropt = 1;
+            int ver = 0;
+            const char* vername = NULL;
+            int search = 0;
+            for(int i=0; i<my_context->elfsize && !search; ++i) {
+                search = ElfGetSymbolStartEnd(my_context->elfs[i], &s_trace_start, &s_trace_end, p, &ver, &vername, 1, &veropt)?1:0;
+                if(!search)
+                    search = ElfGetSymTabStartEnd(my_context->elfs[i], &s_trace_start, &s_trace_end, p);
+            }
+            if(search) {
                 SetTraceEmu(s_trace_start, s_trace_end);
                 printf_log(LOG_INFO, "TRACE on %s only (%p-%p)\n", p, (void*)s_trace_start, (void*)s_trace_end);
             } else {
@@ -1561,42 +1606,19 @@ void setupTraceMapLib(lib_t* maplib)
         return;
     char* p = trace_func;
     uintptr_t s_trace_start=0, s_trace_end=0;
-    if(maplib) {
-        if (GetGlobalSymbolStartEnd(maplib, p, &s_trace_start, &s_trace_end, NULL, -1, NULL, 0, NULL)) {
-            SetTraceEmu(s_trace_start, s_trace_end);
-            printf_log(LOG_INFO, "TRACE on %s only (%p-%p)\n", p, (void*)s_trace_start, (void*)s_trace_end);
-            box_free(trace_func);
-            trace_func = NULL;
-            return;
-        } else if(GetLocalSymbolStartEnd(maplib, p, &s_trace_start, &s_trace_end, NULL, -1, NULL, 0, NULL)) {
-            SetTraceEmu(s_trace_start, s_trace_end);
-            printf_log(LOG_INFO, "TRACE on %s only (%p-%p)\n", p, (void*)s_trace_start, (void*)s_trace_end);
-            box_free(trace_func);
-            trace_func = NULL;
-            return;
-        } else if(GetSymTabStartEnd(maplib, p, &s_trace_start, &s_trace_end)) {
-            SetTraceEmu(s_trace_start, s_trace_end);
-            printf_log(LOG_INFO, "TRACE on %s only (%p-%p)\n", p, (void*)s_trace_start, (void*)s_trace_end);
-            box_free(trace_func);
-            trace_func = NULL;
-            return;
-        }
-    }
-    if (my_context->elfs && GetGlobalSymbolStartEnd(my_context->maplib, p, &s_trace_start, &s_trace_end, NULL, -1, NULL, 0, NULL)) {
+    void* search = NULL;
+    if(GetAnySymbolStartEnd(maplib, p, &s_trace_start, &s_trace_end, 0, NULL, 1)) {
         SetTraceEmu(s_trace_start, s_trace_end);
         printf_log(LOG_INFO, "TRACE on %s only (%p-%p)\n", p, (void*)s_trace_start, (void*)s_trace_end);
         box_free(trace_func);
         trace_func = NULL;
-    } else if(my_context->elfs && GetLocalSymbolStartEnd(my_context->maplib, p, &s_trace_start, &s_trace_end, NULL, -1, NULL, 0, NULL)) {
+        return;
+    } else if(GetSymTabStartEnd(maplib, p, &s_trace_start, &s_trace_end)) {
         SetTraceEmu(s_trace_start, s_trace_end);
         printf_log(LOG_INFO, "TRACE on %s only (%p-%p)\n", p, (void*)s_trace_start, (void*)s_trace_end);
         box_free(trace_func);
         trace_func = NULL;
-    } else if(GetSymTabStartEnd(my_context->maplib, p, &s_trace_start, &s_trace_end)) {
-        SetTraceEmu(s_trace_start, s_trace_end);
-        printf_log(LOG_INFO, "TRACE on %s only (%p-%p)\n", p, (void*)s_trace_start, (void*)s_trace_end);
-        box_free(trace_func);
-        trace_func = NULL;
+        return;
     } else {
         printf_log(LOG_NONE, "Warning, Symbol to trace (\"%s\") not found. Trying to set trace later\n", p);
         SetTraceEmu(0, 1);  // disabling trace, mostly
@@ -1628,10 +1650,18 @@ void setupTrace()
                 }
             }
         } else {
-            if (my_context->elfs && GetGlobalSymbolStartEnd(my_context->maplib, p, &s_trace_start, &s_trace_end, NULL, -1, NULL, 0, NULL)) {
-                SetTraceEmu(s_trace_start, s_trace_end);
-                printf_log(LOG_INFO, "TRACE on %s only (%p-%p)\n", p, (void*)s_trace_start, (void*)s_trace_end);
-            } else if(my_context->elfs && GetLocalSymbolStartEnd(my_context->maplib, p, &s_trace_start, &s_trace_end, NULL, -1, NULL, 0, NULL)) {
+            int search = 0;
+            if (my_context->elfs) {
+                int veropt = 1;
+                int ver = 0;
+                const char* vername = NULL;
+                for(int i=0; i<my_context->elfsize && !search; ++i) {
+                    search = ElfGetSymbolStartEnd(my_context->elfs[i], &s_trace_start, &s_trace_end, p, &ver, &vername, 1, &veropt)?1:0;
+                    if(!search)
+                        search = ElfGetSymTabStartEnd(my_context->elfs[i], &s_trace_start, &s_trace_end, p);
+                }
+            } 
+            if(search) {
                 SetTraceEmu(s_trace_start, s_trace_end);
                 printf_log(LOG_INFO, "TRACE on %s only (%p-%p)\n", p, (void*)s_trace_start, (void*)s_trace_end);
             } else {
@@ -1705,10 +1735,16 @@ static void add_argv(const char* what) {
         if(!strcmp(my_context->argv[i], what))
             there = 1;
     if(!there) {
-        printf_log(LOG_INFO, "Inserting \"%s\" to the arguments\n", what);
+        // try to prepend the arg, not appending
+        static int where = 0;
+        if(!where)
+            where = (box64_wine)?2:1;
+        printf_log(LOG_INFO, "Inserting \"%s\" to the argument %d\n", what, where);
         my_context->argv = (char**)box_realloc(my_context->argv, (my_context->argc+1)*sizeof(char*));
-        my_context->argv[my_context->argc] = box_strdup(what);
+        memmove(my_context->argv+where+1, my_context->argv+where, (my_context->argc-where)*sizeof(char*));
+        my_context->argv[where] = box_strdup(what);
         my_context->argc++;
+        where++;
     }
 }
 
@@ -1910,9 +1946,14 @@ int initialize(int argc, const char **argv, char** env, x64emu_t** emulator, elf
         }
         ++nextarg;
         prog = argv[nextarg];
-    }
-    // check if this is wineserver
-    if(!strcmp(prog, "wineserver") || !strcmp(prog, "wineserver64") || (strlen(prog)>9 && !strcmp(prog+strlen(prog)-strlen("/wineserver"), "/wineserver"))) {
+    } else if(!strcmp(prog, "steam") || (strrchr(prog, '/') && !strcmp(strrchr(prog,'/'), "/steam"))) {
+        printf_log(LOG_INFO, "steam detected\n");
+        box64_steam = 1;
+    } else if(!strcmp(prog, "steamcmd") || (strrchr(prog, '/') && !strcmp(strrchr(prog,'/'), "/steamcmd"))) {
+        printf_log(LOG_INFO, "steamcmd detected\n");
+        box64_steamcmd = 1;
+    } else  if(!strcmp(prog, "wineserver") || !strcmp(prog, "wineserver64") || (strlen(prog)>9 && !strcmp(prog+strlen(prog)-strlen("/wineserver"), "/wineserver"))) {
+        // check if this is wineserver
         box64_wine = 1;
     }
     // Create a new context
@@ -1972,16 +2013,21 @@ int initialize(int argc, const char **argv, char** env, x64emu_t** emulator, elf
     PrintCollection(&my_context->box64_path, "BOX64 BIN PATH");
     // lets build argc/argv stuff
     printf_log(LOG_INFO, "Looking for %s\n", prog);
-    my_context->argv[0] = ResolveFileSoft(prog, &my_context->box64_path);
+    if(strchr(prog, '/'))
+        my_context->argv[0] = box_strdup(prog);
+    else
+        my_context->argv[0] = ResolveFileSoft(prog, &my_context->box64_path);
     // check if box86 is present
     {
         my_context->box86path = box_strdup(my_context->box64path);
+        #ifndef BOX32
         char* p = strrchr(my_context->box86path, '6');  // get the 6 of box64
         p[0] = '8'; p[1] = '6'; // change 64 to 86
         if(!FileExist(my_context->box86path, IS_FILE)) {
             box_free(my_context->box86path);
             my_context->box86path = NULL;
         }
+        #endif
     }
     const char* prgname = strrchr(prog, '/');
     if(!prgname)
@@ -2051,9 +2097,37 @@ int initialize(int argc, const char **argv, char** env, x64emu_t** emulator, elf
     {
         add_argv("-cef-disable-gpu-compositor");
     }
+    // add new args only if there is no args already
     if(box64_new_args) {
         char tmp[256];
         char* p = box64_new_args;
+        int state = 0;
+        char* p2 = p;
+        if(my_context->argc==1 || (my_context->argc==2 && box64_wine))
+            while(state>=0) {
+                switch(*p2) {
+                    case 0: // end of flux
+                        if(state && (p2!=p)) add_argv(p);
+                        state = -1;
+                        break;
+                    case '"': // start/end of quotes
+                        if(state<2) {if(!state) p=p2; state=2;} else state=1;
+                        break;
+                    case ' ':
+                        if(state==1) {strncpy(tmp, p, p2-p); tmp[p2-p]='\0'; add_argv(tmp); state=0;}
+                        break;
+                    default:
+                        if(state==0) {state=1; p=p2;}
+                        break;
+                }
+                ++p2;
+            }
+        box_free(box64_new_args);
+        box64_new_args = NULL;
+    }
+    if(box64_insert_args) {
+        char tmp[256];
+        char* p = box64_insert_args;
         int state = 0;
         char* p2 = p;
         while(state>=0) {
@@ -2074,8 +2148,8 @@ int initialize(int argc, const char **argv, char** env, x64emu_t** emulator, elf
             }
             ++p2;
         }
-        box_free(box64_new_args);
-        box64_new_args = NULL;
+        box_free(box64_insert_args);
+        box64_insert_args = NULL;
     }
     // check if file exist
     if(!my_context->argv[0] || !FileExist(my_context->argv[0], IS_FILE)) {
@@ -2108,9 +2182,12 @@ int initialize(int argc, const char **argv, char** env, x64emu_t** emulator, elf
     box64_is32bits = FileIsX86ELF(my_context->fullpath);
     if(box64_is32bits) {
         printf_log(LOG_INFO, "BOX64: Using Box32 to load 32bits elf\n");
+        loadProtectionFromMap();
         reserveHighMem();
+        init_pthread_helper_32();
     }
     #endif
+    LoadLDPath(my_context);
     elfheader_t *elf_header = LoadAndCheckElfHeader(f, my_context->fullpath, 1);
     if(!elf_header) {
         int x86 = my_context->box86path?FileIsX86ELF(my_context->fullpath):0;
@@ -2271,10 +2348,15 @@ int initialize(int argc, const char **argv, char** env, x64emu_t** emulator, elf
     // stack setup is much more complicated then just that!
     SetupInitialStack(emu); // starting here, the argv[] don't need free anymore
     SetupX64Emu(emu, NULL);
-    SetRSI(emu, my_context->argc);
-    SetRDX(emu, (uint64_t)my_context->argv);
-    SetRCX(emu, (uint64_t)my_context->envv);
-    SetRBP(emu, 0); // Frame pointer so to "No more frame pointer"
+    if(box64_is32bits) {
+        SetEAX(emu, my_context->argc);
+        SetEBX(emu, my_context->argv32);
+    } else {
+        SetRSI(emu, my_context->argc);
+        SetRDX(emu, (uint64_t)my_context->argv);
+        SetRCX(emu, (uint64_t)my_context->envv);
+        SetRBP(emu, 0); // Frame pointer so to "No more frame pointer"
+    }
 
     // child fork to handle traces
     pthread_atfork(NULL, NULL, my_child_fork);
@@ -2358,10 +2440,19 @@ int emulate(x64emu_t* emu, elfheader_t* elf_header)
     // emulate!
     printf_log(LOG_DEBUG, "Start x64emu on Main\n");
     // Stack is ready, with stacked: NULL env NULL argv argc
-    SetRIP(emu, my_context->ep);
     ResetFlags(emu);
-    Push64(emu, my_context->exit_bridge);  // push to pop it just after
-    SetRDX(emu, Pop64(emu));    // RDX is exit function
+    #ifdef BOX32
+    if(box64_is32bits) {
+        SetEIP(emu, my_context->ep);
+        Push32(emu, my_context->exit_bridge);  // push to pop it just after
+        SetEDX(emu, Pop32(emu));    // RDX is exit function
+    } else
+    #endif
+    {
+        SetRIP(emu, my_context->ep);
+        Push64(emu, my_context->exit_bridge);  // push to pop it just after
+        SetRDX(emu, Pop64(emu));    // RDX is exit function
+    }
     Run(emu, 0);
     // Get EAX
     int ret = GetEAX(emu);

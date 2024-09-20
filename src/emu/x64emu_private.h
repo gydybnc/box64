@@ -5,6 +5,9 @@
 
 typedef struct box64context_s box64context_t;
 typedef struct x64_ucontext_s x64_ucontext_t;
+#ifdef BOX32
+typedef struct i386_ucontext_s i386_ucontext_t;
+#endif
 
 #define ERR_UNIMPL  1
 #define ERR_DIVBY0  2
@@ -37,7 +40,6 @@ typedef struct x64test_s {
     int         memsize;
     int         test;
     int         clean;
-    int         notest;
     uint8_t     mem[32];
 } x64test_t;
 
@@ -116,6 +118,7 @@ typedef struct x64emu_s {
     uintptr_t   prev2_ip;
     #endif
     // scratch stack, used for alignment of double and 64bits ints on arm. 200 elements should be enough
+    __int128_t  dummy_align;    // here to have scratch 128bits aligned
     uint64_t    scratch[200];
     // local stack, do be deleted when emu is freed
     void*       stack2free; // this is the stack to free (can be NULL)
@@ -126,9 +129,22 @@ typedef struct x64emu_s {
     uintptr_t   old_savedsp;
     #endif
 
-    x64_ucontext_t *uc_link; // to handle setcontext
+    void*       uc_link; // to handle setcontext (can be x64_ucontext_t or a i386_ucontext_t)
 
     int         type;       // EMUTYPE_xxx define
+    #ifdef BOX32
+    int         libc_err;   // copy of errno from libc
+    int         libc_herr;  // copy of h_errno from libc
+    unsigned short          libctype[384];   // copy from __ctype_b address might be too high
+    const unsigned short**  ref_ctype;
+    const unsigned short*   ctype;
+    int         libctolower[384];   // copy from __ctype_b_tolower address might be too high
+    const int** ref_tolower;
+    const int*  tolower;
+    int         libctoupper[384];   // copy from __ctype_b_toupper address might be too high
+    const int** ref_toupper;
+    const int*  toupper;
+    #endif
 } x64emu_t;
 
 #define EMUTYPE_NONE    0

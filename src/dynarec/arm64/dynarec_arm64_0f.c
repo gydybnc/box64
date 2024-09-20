@@ -1547,11 +1547,14 @@ uintptr_t dynarec64_0F(dynarec_arm_t* dyn, uintptr_t addr, uintptr_t ip, int nin
             break;
 
         #define GO(GETFLAGS, NO, YES, F)   \
-            if (box64_dynarec_test == 2) { NOTEST(x1); }                \
             READFLAGS(F);                                               \
             i32_ = F32S;                                                \
+            if(rex.is32bits)                                            \
+                j64 = (uint32_t)(addr+i32_);                            \
+            else                                                        \
+                j64 = addr+i32_;                                        \
             BARRIER(BARRIER_MAYBE);                                     \
-            JUMP(addr+i32_, 1);                                         \
+            JUMP(j64, 1);                                               \
             GETFLAGS;                                                   \
             if(dyn->insts[ninst].x64.jmp_insts==-1 ||                   \
                 CHECK_CACHE()) {                                        \
@@ -1561,7 +1564,7 @@ uintptr_t dynarec64_0F(dynarec_arm_t* dyn, uintptr_t addr, uintptr_t ip, int nin
                 if(dyn->insts[ninst].x64.jmp_insts==-1) {               \
                     if(!(dyn->insts[ninst].x64.barrier&BARRIER_FLOAT))  \
                         fpu_purgecache(dyn, ninst, 1, x1, x2, x3);      \
-                    jump_to_next(dyn, addr+i32_, 0, ninst, rex.is32bits); \
+                    jump_to_next(dyn, j64, 0, ninst, rex.is32bits);     \
                 } else {                                                \
                     CacheTransform(dyn, ninst, cacheupd, x1, x2, x3);   \
                     i32 = dyn->insts[dyn->insts[ninst].x64.jmp_insts].address-(dyn->native_size);    \
@@ -1782,7 +1785,7 @@ uintptr_t dynarec64_0F(dynarec_arm_t* dyn, uintptr_t addr, uintptr_t ip, int nin
                         fpu_purgecache(dyn, ninst, 0, x1, x2, x3);
                         addr = geted(dyn, addr, ninst, nextop, &ed, x1, &fixedaddress, NULL, 0, 0, rex, NULL, 0, 0);
                         if(ed!=x1) {MOVx_REG(x1, ed);}
-                        CALL(rex.w?((void*)fpu_fxsave64):((void*)fpu_fxsave32), -1);
+                        CALL(rex.is32bits?((void*)fpu_fxsave32):((void*)fpu_fxsave64), -1);
                         break;
                     case 1:
                         INST_NAME("FXRSTOR Ed");
@@ -1790,7 +1793,7 @@ uintptr_t dynarec64_0F(dynarec_arm_t* dyn, uintptr_t addr, uintptr_t ip, int nin
                         fpu_purgecache(dyn, ninst, 0, x1, x2, x3);
                         addr = geted(dyn, addr, ninst, nextop, &ed, x1, &fixedaddress, NULL, 0, 0, rex, NULL, 0, 0);
                         if(ed!=x1) {MOVx_REG(x1, ed);}
-                        CALL(rex.w?((void*)fpu_fxrstor64):((void*)fpu_fxrstor32), -1);
+                        CALL(rex.is32bits?((void*)fpu_fxrstor32):((void*)fpu_fxrstor64), -1);
                         break;
                     case 2:
                         INST_NAME("LDMXCSR Md");
@@ -2323,16 +2326,28 @@ uintptr_t dynarec64_0F(dynarec_arm_t* dyn, uintptr_t addr, uintptr_t ip, int nin
                 VMOVeS(v0, 1, v0, 0);
             } else if(v0==v1 && (u8==0xe5)) {   // easy special case
                 VMOVeS(v0, 0, v0, 1);
+            } else if(u8==0x4E && MODREG) {
+                VEXTQ_8(v0, v0, v1, 8);
             } else {
                 d0 = fpu_get_scratch(dyn, ninst);
                 // first two elements from Gx
-                for(int i=0; i<2; ++i) {
-                    VMOVeS(d0, i, v0, (u8>>(i*2))&3);
+                if((u8&0xf)==0x04)
+                    VMOVeD(d0, 0, v0, 0);
+                else if((u8&0xf)==0x0e)
+                    VMOVeD(d0, 0, v0, 1);
+                else
+                    for(int i=0; i<2; ++i) {
+                        VMOVeS(d0, i, v0, (u8>>(i*2))&3);
                 }
                 // second two from Ex
                 if(MODREG) {
-                    for(int i=2; i<4; ++i) {
-                        VMOVeS(d0, i, v1, (u8>>(i*2))&3);
+                    if((u8&0xf0)==0x40)
+                        VMOVeD(d0, 1, v1, 0);
+                    else if((u8&0xf0)==0xe0)
+                        VMOVeD(d0, 1, v1, 1);
+                    else
+                        for(int i=2; i<4; ++i) {
+                            VMOVeS(d0, i, v1, (u8>>(i*2))&3);
                     }
                 } else {
                     SMREAD();

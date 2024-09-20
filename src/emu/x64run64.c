@@ -639,7 +639,15 @@ uintptr_t Run64(x64emu_t *emu, rex_t rex, int seg, uintptr_t addr)
                     R_RAX = *(uint32_t*)(tlsdata+tmp64u);
             }
             break;
-
+        case 0xA2:                      /* MOV Ob,AL */
+            if(rex.is32bits) {
+                tmp32s = F32S;
+                *(uint8_t*)(uintptr_t)(tlsdata+tmp32s) = R_AL;
+            } else {
+                tmp64u = F64;
+                *(uint8_t*)(tlsdata+tmp64u) = R_AL;
+            }
+            break;
         case 0xA3:                      /* MOV FS:Od,EAX */
             if(rex.is32bits) {
                 tmp32s = F32S;
@@ -745,9 +753,6 @@ uintptr_t Run64(x64emu_t *emu, rex_t rex, int seg, uintptr_t addr)
                         break;
                     case 7:                 /* IDIV Ed */
                         idiv64(emu, ED->q[0]);
-                        #ifdef TEST_INTERPRETER
-                        test->notest = 1;
-                        #endif
                         break;
                 }
             } else {

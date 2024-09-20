@@ -213,7 +213,7 @@
     } else {                                                                                   \
         SMREAD();                                                                              \
         addr = geted(dyn, addr, ninst, nextop, &wback, x2, S, &fixedaddress, rex, NULL, 1, D); \
-        ADD(S, wback, O);                                                                      \
+        ADDz(S, wback, O);                                                                     \
         LDxw(x1, S, fixedaddress);                                                             \
         ed = x1;                                                                               \
     }
@@ -225,15 +225,15 @@
     } else {                                                                                   \
         SMREAD();                                                                              \
         addr = geted(dyn, addr, ninst, nextop, &wback, x2, S, &fixedaddress, rex, NULL, 1, D); \
-        ADD(S, wback, O);                                                                      \
+        ADDz(S, wback, O);                                                                     \
         LDz(x1, S, fixedaddress);                                                              \
         ed = x1;                                                                               \
     }
-#define WBACKO(O)         \
-    if (wback) {          \
-        ADD(O, wback, O); \
-        SDxw(ed, O, 0);   \
-        SMWRITE2();       \
+#define WBACKO(O)          \
+    if (wback) {           \
+        ADDz(O, wback, O); \
+        SDxw(ed, O, 0);    \
+        SMWRITE2();        \
     }
 
 // FAKEED like GETED, but doesn't get anything
@@ -310,7 +310,7 @@
     } else {                                                                                    \
         SMREAD();                                                                               \
         addr = geted(dyn, addr, ninst, nextop, &wback, x3, x2, &fixedaddress, rex, NULL, 1, D); \
-        ADD(x3, wback, i);                                                                      \
+        ADDz(x3, wback, i);                                                                     \
         if (wback != x3) wback = x3;                                                            \
         LBU(i, wback, fixedaddress);                                                            \
         wb1 = 1;                                                                                \
@@ -504,10 +504,16 @@
         a = sse_get_reg_vector(dyn, ninst, x1, (nextop & 7) + (rex.b << 3), w, sew);         \
     } else {                                                                                 \
         SMREAD();                                                                            \
-        addr = geted(dyn, addr, ninst, nextop, &ed, x3, x2, &fixedaddress, rex, NULL, 1, D); \
+        addr = geted(dyn, addr, ninst, nextop, &ed, x3, x2, &fixedaddress, rex, NULL, 0, D); \
         a = fpu_get_scratch(dyn);                                                            \
-        ADDI(x2, ed, fixedaddress);                                                          \
-        VLE_V(a, x2, sew, VECTOR_UNMASKED, VECTOR_NFIELD1);                                  \
+        VLE_V(a, ed, sew, VECTOR_UNMASKED, VECTOR_NFIELD1);                                  \
+    }
+
+// Put Back EX if it was a memory and not an emm register
+#define PUTEX_vector(a, sew)                                \
+    if (!MODREG) {                                          \
+        VSE_V(a, ed, sew, VECTOR_UNMASKED, VECTOR_NFIELD1); \
+        SMWRITE2();                                         \
     }
 
 #define GETGM()                     \
@@ -1081,15 +1087,16 @@
 #define MODREG ((nextop & 0xC0) == 0xC0)
 
 #ifndef SET_ELEMENT_WIDTH
-#define SET_ELEMENT_WIDTH(s1, sew)                                            \
-    do {                                                                      \
-        if (sew == VECTOR_SEWNA) {                                            \
-        } else if (sew == VECTOR_SEWANY && dyn->vector_sew != VECTOR_SEWNA) { \
-        } else if (sew == dyn->vector_sew) {                                  \
-        } else {                                                              \
-            vector_vsetvl_emul1(dyn, ninst, s1, sew);                         \
-        }                                                                     \
-        dyn->vector_sew = sew;                                                \
+#define SET_ELEMENT_WIDTH(s1, sew, set)                                             \
+    do {                                                                            \
+        if (sew == VECTOR_SEWANY && dyn->vector_sew != VECTOR_SEWNA) {              \
+            dyn->vector_eew = dyn->vector_sew;                                      \
+        } else if (sew == dyn->vector_sew) {                                        \
+            dyn->vector_eew = dyn->vector_sew;                                      \
+        } else {                                                                    \
+            dyn->vector_eew = vector_vsetvli(dyn, ninst, s1, sew, VECTOR_LMUL1, 1); \
+        }                                                                           \
+        if (set) dyn->vector_sew = dyn->vector_eew;                                 \
     } while (0)
 #endif
 
@@ -1133,6 +1140,7 @@ void* rv64_next(x64emu_t* emu, uintptr_t addr);
 #define dynarec64_F20F   STEPNAME(dynarec64_F20F)
 #define dynarec64_F30F   STEPNAME(dynarec64_F30F)
 
+#define dynarec64_0F_vector   STEPNAME(dynarec64_0F_vector)
 #define dynarec64_660F_vector STEPNAME(dynarec64_660F_vector)
 
 #define geted               STEPNAME(geted)
@@ -1284,7 +1292,7 @@ void* rv64_next(x64emu_t* emu, uintptr_t addr);
 #define rv64_move64    STEPNAME(rv64_move64)
 #define rv64_move32    STEPNAME(rv64_move32)
 
-#define vector_vsetvl_emul1 STEPNAME(vector_vsetvl_emul1)
+#define vector_vsetvli STEPNAME(vector_vsetvli)
 
 /* setup r2 to address pointed by */
 uintptr_t geted(dynarec_rv64_t* dyn, uintptr_t addr, int ninst, uint8_t nextop, uint8_t* ed, uint8_t hint, uint8_t scratch, int64_t* fixaddress, rex_t rex, int* l, int i12, int delta);
@@ -1398,7 +1406,7 @@ void emit_shld16c(dynarec_rv64_t* dyn, int ninst, rex_t rex, int s1, int s2, uin
 void emit_pf(dynarec_rv64_t* dyn, int ninst, int s1, int s3, int s4);
 
 // x87 helper
-// cache of the local stack counter, to avoid upadte at every call
+// cache of the local stack counter, to avoid update at every call
 int x87_stackcount(dynarec_rv64_t* dyn, int ninst, int scratch);
 // restore local stack counter
 void x87_unstackcount(dynarec_rv64_t* dyn, int ninst, int scratch, int count);
@@ -1440,7 +1448,7 @@ void CacheTransform(dynarec_rv64_t* dyn, int ninst, int cacheupd, int s1, int s2
 void rv64_move64(dynarec_rv64_t* dyn, int ninst, int reg, int64_t val);
 void rv64_move32(dynarec_rv64_t* dyn, int ninst, int reg, int32_t val, int zeroup);
 
-void vector_vsetvl_emul1(dynarec_rv64_t* dyn, int ninst, int s1, int sew);
+int vector_vsetvli(dynarec_rv64_t* dyn, int ninst, int s1, int sew, int vlmul, float multiple);
 
 #if STEP < 2
 #define CHECK_CACHE() 0
@@ -1545,6 +1553,7 @@ uintptr_t dynarec64_66F0(dynarec_rv64_t* dyn, uintptr_t addr, uintptr_t ip, int 
 uintptr_t dynarec64_F20F(dynarec_rv64_t* dyn, uintptr_t addr, uintptr_t ip, int ninst, rex_t rex, int* ok, int* need_epilog);
 uintptr_t dynarec64_F30F(dynarec_rv64_t* dyn, uintptr_t addr, uintptr_t ip, int ninst, rex_t rex, int* ok, int* need_epilog);
 
+uintptr_t dynarec64_0F_vector(dynarec_rv64_t* dyn, uintptr_t addr, uintptr_t ip, int ninst, rex_t rex, int* ok, int* need_epilog);
 uintptr_t dynarec64_660F_vector(dynarec_rv64_t* dyn, uintptr_t addr, uintptr_t ip, int ninst, rex_t rex, int* ok, int* need_epilog);
 
 #if STEP < 2
@@ -1741,5 +1750,67 @@ uintptr_t dynarec64_660F_vector(dynarec_rv64_t* dyn, uintptr_t addr, uintptr_t i
     LUI(s, 8); /* 32768 */        \
     BLT(reg, s, 4 + 4);           \
     ADDIW(reg, s, -1);
+
+#define FAST_8BIT_OPERATION(dst, src, s1, OP)                                        \
+    if (MODREG && (rv64_zbb || rv64_xtheadbb) && !dyn->insts[ninst].x64.gen_flags) { \
+        if (rex.rex) {                                                               \
+            wb = xRAX + (nextop & 7) + (rex.b << 3);                                 \
+            wb2 = 0;                                                                 \
+            gb = xRAX + ((nextop & 0x38) >> 3) + (rex.r << 3);                       \
+            gb2 = 0;                                                                 \
+        } else {                                                                     \
+            wb = (nextop & 7);                                                       \
+            wb2 = (wb >> 2) * 8;                                                     \
+            wb = xRAX + (wb & 3);                                                    \
+            gd = (nextop & 0x38) >> 3;                                               \
+            gb2 = ((gd & 4) >> 2) * 8;                                               \
+            gb = xRAX + (gd & 3);                                                    \
+        }                                                                            \
+        if (src##2) { ANDI(s1, src, 0xf00); }                                        \
+        SLLI(s1, (src##2 ? s1 : src), 64 - src##2 - 8);                              \
+        if (rv64_zbb) {                                                              \
+            RORI(dst, dst, 8 + dst##2);                                              \
+        } else {                                                                     \
+            TH_SRRI(dst, dst, 8 + dst##2);                                           \
+        }                                                                            \
+        OP;                                                                          \
+        if (rv64_zbb) {                                                              \
+            RORI(dst, dst, 64 - 8 - dst##2);                                         \
+        } else {                                                                     \
+            TH_SRRI(dst, dst, 64 - 8 - dst##2);                                      \
+        }                                                                            \
+        break;                                                                       \
+    }
+
+#define FAST_16BIT_OPERATION(dst, src, s1, OP)                                       \
+    if (MODREG && (rv64_zbb || rv64_xtheadbb) && !dyn->insts[ninst].x64.gen_flags) { \
+        gd = xRAX + ((nextop & 0x38) >> 3) + (rex.r << 3);                           \
+        ed = xRAX + (nextop & 7) + (rex.b << 3);                                     \
+        SLLI(s1, src, 64 - 16);                                                      \
+        if (rv64_zbb) {                                                              \
+            RORI(dst, dst, 16);                                                      \
+        } else {                                                                     \
+            TH_SRRI(dst, dst, 16);                                                   \
+        }                                                                            \
+        OP;                                                                          \
+        if (rv64_zbb) {                                                              \
+            RORI(dst, dst, 64 - 16);                                                 \
+        } else {                                                                     \
+            TH_SRRI(dst, dst, 64 - 16);                                              \
+        }                                                                            \
+        break;                                                                       \
+    }
+
+#define VECTOR_SPLAT_IMM(vreg, imm, s1)                 \
+    do {                                                \
+        if (imm == 0) {                                 \
+            VXOR_VV(vreg, vreg, vreg, VECTOR_UNMASKED); \
+        } else if ((imm & 0xf) == imm) {                \
+            VMV_V_I(vreg, imm);                         \
+        } else {                                        \
+            MOV64x(s1, imm);                            \
+            VMV_V_X(vreg, s1);                          \
+        }                                               \
+    } while (0)
 
 #endif //__DYNAREC_RV64_HELPER_H__

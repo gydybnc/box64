@@ -194,14 +194,19 @@ typedef struct elfheader_s {
 #define STB_GNU_UNIQUE  10
 #endif
 
+#ifndef ELF32_ST_VISIBILITY
+#define ELF32_ST_VISIBILITY(o)  ((o) & 0x03)
+#endif
+
 #ifndef ELF64_ST_VISIBILITY
-#define ELF64_ST_VISIBILITY(o)   ((o) & 0x03)
+#define ELF64_ST_VISIBILITY(o)  ELF32_ST_VISIBILITY (o)
 #endif
 
 elfheader_t* ParseElfHeader32(FILE* f, const char* name, int exec);
 elfheader_t* ParseElfHeader64(FILE* f, const char* name, int exec);
 
 const char* BindSym(int bind);
+const char* BindSymFriendly(int bind);
 
 uint16_t GetSymbolVersionFlag(elfheader_t* h, int index);
 

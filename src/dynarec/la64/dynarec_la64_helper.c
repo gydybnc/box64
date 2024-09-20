@@ -201,13 +201,15 @@ static uintptr_t geted_32(dynarec_la64_t* dyn, uintptr_t addr, int ninst, uint8_
                 int64_t tmp = F32S;
                 if (sib_reg != 4) {
                     if (tmp && ((tmp < -2048) || (tmp > maxval) || !i12)) {
-                        MOV32w(scratch, tmp);
+                        // no need to zero up, as we did it below
+                        la64_move32(dyn, ninst, scratch, tmp, 0);
                         if ((sib >> 6)) {
                             SLLI_D(ret, TO_LA64(sib_reg), sib >> 6);
                             ADD_W(ret, ret, scratch);
                         } else {
                             ADD_W(ret, TO_LA64(sib_reg), scratch);
                         }
+                        ZEROUP(ret);
                     } else {
                         if (sib >> 6) {
                             SLLI_D(ret, TO_LA64(sib_reg), (sib >> 6));
@@ -233,6 +235,7 @@ static uintptr_t geted_32(dynarec_la64_t* dyn, uintptr_t addr, int ninst, uint8_
                     } else {
                         ADD_W(ret, TO_LA64(sib_reg2), TO_LA64(sib_reg));
                     }
+                    ZEROUP(ret);
                 } else {
                     ret = TO_LA64(sib_reg2);
                 }
@@ -275,6 +278,7 @@ static uintptr_t geted_32(dynarec_la64_t* dyn, uintptr_t addr, int ninst, uint8_
                     } else {
                         ADD_W(ret, TO_LA64(sib_reg2), TO_LA64(sib_reg));
                     }
+                    ZEROUP(ret);
                 } else {
                     ret = TO_LA64(sib_reg2);
                 }
@@ -298,8 +302,10 @@ static uintptr_t geted_32(dynarec_la64_t* dyn, uintptr_t addr, int ninst, uint8_
                     scratch = TO_LA64((nextop & 0x07));
                 }
                 ADDI_W(ret, scratch, i32);
+                ZEROUP(ret);
             } else {
-                MOV32w(scratch, i32);
+                // no need to zero up, as we did it below
+                la64_move32(dyn, ninst, scratch, i32, 0);
                 if ((nextop & 7) == 4) {
                     if (sib_reg != 4) {
                         ADD_W(scratch, scratch, TO_LA64(sib_reg2));
@@ -317,6 +323,7 @@ static uintptr_t geted_32(dynarec_la64_t* dyn, uintptr_t addr, int ninst, uint8_
                     PASS3(int tmp = TO_LA64((nextop & 0x07)));
                     ADD_W(ret, tmp, scratch);
                 }
+                ZEROUP(ret);
             }
         }
     }
@@ -354,8 +361,10 @@ uintptr_t geted32(dynarec_la64_t* dyn, uintptr_t addr, int ninst, uint8_t nextop
                         if ((sib >> 6)) {
                             SLLI_D(ret, TO_LA64(sib_reg), sib >> 6);
                             ADD_W(ret, ret, scratch);
-                        } else
+                        } else {
                             ADD_W(ret, TO_LA64(sib_reg), scratch);
+                        }
+                        ZEROUP(ret);
                     } else {
                         if (sib >> 6)
                             SLLI_D(ret, TO_LA64(sib_reg), (sib >> 6));
@@ -377,17 +386,21 @@ uintptr_t geted32(dynarec_la64_t* dyn, uintptr_t addr, int ninst, uint8_t nextop
                     if ((sib >> 6)) {
                         SLLI_D(ret, TO_LA64(sib_reg), (sib >> 6));
                         ADD_W(ret, ret, TO_LA64(sib_reg2));
-                    } else
+                    } else {
                         ADD_W(ret, TO_LA64(sib_reg2), TO_LA64(sib_reg));
+                    }
+                    ZEROUP(ret);
                 } else {
                     ret = TO_LA64(sib_reg2);
                 }
             }
         } else if ((nextop & 7) == 5) {
             uint32_t tmp = F32;
-            MOV32w(ret, tmp);
+            // no need to zero up, as we did it below
+            la64_move32(dyn, ninst, ret, tmp, 0);
             GETIP(addr + delta);
             ADD_W(ret, ret, xRIP);
+            ZEROUP(ret);
             switch (lock) {
                 case 1: addLockAddress(addr + delta + tmp); break;
                 case 2:
@@ -420,8 +433,10 @@ uintptr_t geted32(dynarec_la64_t* dyn, uintptr_t addr, int ninst, uint8_t nextop
                     if (sib >> 6) {
                         SLLI_D(ret, TO_LA64(sib_reg), (sib >> 6));
                         ADD_W(ret, ret, TO_LA64(sib_reg2));
-                    } else
+                    } else {
                         ADD_W(ret, TO_LA64(sib_reg2), TO_LA64(sib_reg));
+                    }
+                    ZEROUP(ret);
                 } else {
                     ret = TO_LA64(sib_reg2);
                 }
@@ -443,8 +458,10 @@ uintptr_t geted32(dynarec_la64_t* dyn, uintptr_t addr, int ninst, uint8_t nextop
                 } else
                     scratch = TO_LA64((nextop & 0x07) + (rex.b << 3));
                 ADDI_W(ret, scratch, i64);
+                ZEROUP(ret);
             } else {
-                MOV32w(scratch, i64);
+                // no need to zero up, as we did it below
+                la64_move32(dyn, ninst, scratch, i64, 0);
                 if ((nextop & 7) == 4) {
                     if (sib_reg != 4) {
                         ADD_W(scratch, scratch, TO_LA64(sib_reg2));
@@ -461,6 +478,7 @@ uintptr_t geted32(dynarec_la64_t* dyn, uintptr_t addr, int ninst, uint8_t nextop
                     PASS3(int tmp = TO_LA64((nextop & 0x07) + (rex.b << 3)));
                     ADD_W(ret, tmp, scratch);
                 }
+                ZEROUP(ret);
             }
         }
     }
@@ -511,6 +529,9 @@ void jump_to_next(dynarec_la64_t* dyn, uintptr_t ip, int reg, int ninst, int is3
     MAYUSE(dyn);
     MAYUSE(ninst);
     MESSAGE(LOG_DUMP, "Jump to next\n");
+
+    if(is32bits)
+        ip &= 0xffffffffLL;
 
     if (reg) {
         if (reg != xRIP) {
@@ -1146,7 +1167,6 @@ static void unloadCache(dynarec_la64_t* dyn, int ninst, int stack_cnt, int s1, i
 
 static void fpuCacheTransform(dynarec_la64_t* dyn, int ninst, int s1, int s2, int s3)
 {
-#if STEP > 1
     int i2 = dyn->insts[ninst].x64.jmp_insts;
     if (i2 < 0)
         return;
@@ -1259,12 +1279,10 @@ static void fpuCacheTransform(dynarec_la64_t* dyn, int ninst, int s1, int s2, in
         }
     }
     MESSAGE(LOG_DUMP, "\t---- Cache Transform\n");
-#endif
 }
 
 static void flagsCacheTransform(dynarec_la64_t* dyn, int ninst, int s1)
 {
-#if STEP > 1
     int j64;
     int jmp = dyn->insts[ninst].x64.jmp_insts;
     if(jmp<0)
@@ -1303,7 +1321,6 @@ static void flagsCacheTransform(dynarec_la64_t* dyn, int ninst, int s1)
         CALL_(UpdateFlags, -1, 0);
         MARKF2;
     }
-#endif
 }
 
 void CacheTransform(dynarec_la64_t* dyn, int ninst, int cacheupd, int s1, int s2, int s3) {

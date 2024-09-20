@@ -55,7 +55,7 @@ uintptr_t native_pass(dynarec_native_t* dyn, uintptr_t addr, int alternate, int 
     #endif
     fpu_reset(dyn);
     ARCH_INIT();
-    int reset_n = -1;
+    int reset_n = -1; // -1 no reset; -2 reset to 0; else reset to the state of reset_n
     dyn->last_ip = (alternate || (dyn->insts && dyn->insts[0].pred_sz))?0:ip;  // RIP is always set at start of block unless there is a predecessor!
     int stopblock = 2+(FindElfAddress(my_context, addr)?0:1); // if block is in elf_memory, it can be extended with box64_dynarec_bigblock==2, else it needs 3
     // ok, go now
@@ -66,12 +66,12 @@ uintptr_t native_pass(dynarec_native_t* dyn, uintptr_t addr, int alternate, int 
     }
 #endif
     #if STEP == 0
-    uintptr_t cur_page = (addr)&~box64_pagesize;
+    uintptr_t cur_page = (addr)&~(box64_pagesize-1);
     #endif
     while(ok) {
         #if STEP == 0
-        if(cur_page != ((addr)&~box64_pagesize)) {
-            cur_page = (addr)&~box64_pagesize;
+        if(cur_page != ((addr)&~(box64_pagesize-1))) {
+            cur_page = (addr)&~(box64_pagesize-1);
             if(!(getProtection(addr)&PROT_READ)) {
                 need_epilog = 1;
                 break;
@@ -116,7 +116,7 @@ uintptr_t native_pass(dynarec_native_t* dyn, uintptr_t addr, int alternate, int 
         #endif
         dyn->f.dfnone_here = 0;
         NEW_INST;
-        MESSAGE(LOG_DUMP, "New Instruction x64:%p, native:%p\n", (void*)addr, (void*)dyn->block);
+        MESSAGE(LOG_DUMP, "New Instruction %s:%p, native:%p\n", is32bits?"x86":"x64",(void*)addr, (void*)dyn->block);
         if(!ninst) {
             GOTEST(x1, x2);
         }

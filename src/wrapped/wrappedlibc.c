@@ -41,6 +41,7 @@
 #include <sys/resource.h>
 #include <sys/prctl.h>
 #include <sys/ptrace.h>
+#include <error.h>
 #undef LOG_INFO
 #undef LOG_DEBUG
 
@@ -100,20 +101,24 @@ typedef int32_t (*iFippi_t)(int32_t, void*, void*, int32_t);
 typedef int32_t (*iFpppp_t)(void*, void*, void*, void*);
 typedef int32_t (*iFpipp_t)(void*, int32_t, void*, void*);
 typedef int32_t (*iFppii_t)(void*, void*, int32_t, int32_t);
-typedef int32_t (*iFipuu_t)(int32_t, void*, uint32_t, uint32_t);
+typedef int32_t (*iFipiup_t)(int, void*, int, uint32_t, void*);
 typedef int32_t (*iFipiI_t)(int32_t, void*, int32_t, int64_t);
+typedef int32_t (*iFipuu_t)(int32_t, void*, uint32_t, uint32_t);
 typedef int32_t (*iFipuup_t)(int32_t, void*, uint32_t, uint32_t, void*);
 typedef int32_t (*iFiiV_t)(int32_t, int32_t, ...);
 typedef void* (*pFp_t)(void*);
 typedef void* (*pFpip_t)(void*, int, void*);
 
-#define SUPER() \
+#define ADDED_FUNCTIONS() \
     GO(_ITM_addUserCommitAction, iFpup_t)   \
     GO(_IO_file_stat, iFpp_t)               \
     GO(fts64_open, pFpip_t)                 \
     GO(register_printf_specifier, iFipp_t)  \
-    GO(register_printf_type, iFp_t)
+    GO(register_printf_type, iFp_t)         \
+    GO(statx, iFipiup_t)
 
+
+#include "generated/wrappedlibcupstypes.h"
 
 #include "wrappercallback.h"
 
@@ -690,9 +695,16 @@ EXPORT int my___printf_chk(x64emu_t *emu, int chk, void* fmt, void* b)
     PREPARE_VALIST;
     return vprintf((const char*)fmt, VARARGS);
 }
+extern int box64_stdout_no_w;
 EXPORT int my_wprintf(x64emu_t *emu, void* fmt, void* b) {
     myStackAlignW(emu, (const char*)fmt, b, emu->scratch, R_EAX, 1);
     PREPARE_VALIST;
+    if(box64_stdout_no_w) {
+        wchar_t buff[2048];
+        int ret = vswprintf(buff, 2047, fmt, VARARGS);
+        printf("%S", buff);
+        return ret;
+    }
     return vwprintf((const wchar_t*)fmt, VARARGS);
 }
 EXPORT int my___wprintf_chk(x64emu_t *emu, int chk, void* fmt, void* b)
@@ -898,6 +910,14 @@ EXPORT int my_vsprintf(x64emu_t* emu, void* buff,  void * fmt, x64_va_list_t b) 
 }
 EXPORT int my___vsprintf_chk(x64emu_t* emu, void* buff, void * fmt, x64_va_list_t b) __attribute__((alias("my_vsprintf")));
 
+EXPORT int my_scanf(x64emu_t* emu, void* fmt, uint64_t* b)
+{
+    myStackAlignScanf(emu, (const char*)fmt, b, emu->scratch, 1);
+    PREPARE_VALIST;
+
+    return vscanf(fmt, VARARGS);
+}
+
 EXPORT int my_vfscanf(x64emu_t* emu, void* stream, void* fmt, x64_va_list_t b)
 {
     (void)emu;
@@ -923,6 +943,38 @@ EXPORT int my_vsscanf(x64emu_t* emu, void* stream, void* fmt, x64_va_list_t b)
 }
 
 EXPORT int my___vsscanf(x64emu_t* emu, void* stream, void* fmt, void* b) __attribute__((alias("my_vsscanf")));
+
+EXPORT int my_vfwscanf(x64emu_t* emu, void* F, void* fmt, x64_va_list_t b)
+{
+    (void)emu;
+    #ifdef CONVERT_VALIST
+    CONVERT_VALIST(b);
+    #else
+    myStackAlignScanfWValist(emu, (const char*)fmt, emu->scratch, b);
+    PREPARE_VALIST;
+    #endif
+    return vfwscanf(F, fmt, VARARGS);
+}
+
+EXPORT int my_vwscanf(x64emu_t* emu, void* fmt, x64_va_list_t b)
+{
+    (void)emu;
+    #ifdef CONVERT_VALIST
+    CONVERT_VALIST(b);
+    #else
+    myStackAlignScanfWValist(emu, (const char*)fmt, emu->scratch, b);
+    PREPARE_VALIST;
+    #endif
+    return vwscanf(fmt, VARARGS);
+}
+
+EXPORT int my_wscanf(x64emu_t* emu, void* fmt, uint64_t* b)
+{
+    myStackAlignScanfW(emu, (const char*)fmt, b, emu->scratch, 1);
+    PREPARE_VALIST;
+
+    return vwscanf(fmt, VARARGS);
+}
 
 EXPORT int my_vswscanf(x64emu_t* emu, void* stream, void* fmt, x64_va_list_t b)
 {
@@ -1074,31 +1126,43 @@ EXPORT int my_swscanf(x64emu_t* emu, void* stream, void* fmt, uint64_t* b)
     return vswscanf(stream, fmt, VARARGS);
 }
 
-#if 0
-EXPORT void my_verr(x64emu_t* emu, int eval, void* fmt, void* b) {
-    #ifndef NOALIGN
-    myStackAlignW((const char*)fmt, (uint32_t*)b, emu->scratch);
+EXPORT void my_error(x64emu_t *emu, int status, int errnum, void* fmt, void* b) {
+    myStackAlign(emu, (const char*)fmt, b, emu->scratch, R_EAX, 3);
     PREPARE_VALIST;
-    void* f = verr;
-    ((vFipp_t)f)(eval, fmt, VARARGS);
-    #else
-    void* f = verr;
-    ((vFipp_t)f)(eval, fmt, (uint32_t*)b);
-    #endif
+    char buf[512];
+    vsnprintf(buf, 512, (const char*)fmt, VARARGS);
+    error(status, errnum, "%s", buf);
+}
+EXPORT void my_error_at_line(x64emu_t *emu, int status, int errnum, void* filename, uint32_t linenum, void* fmt, void* b) {
+    myStackAlign(emu, (const char*)fmt, b, emu->scratch, R_EAX, 5);
+    PREPARE_VALIST;
+    char buf[512];
+    vsnprintf(buf, 512, (const char*)fmt, VARARGS);
+    error_at_line(status, errnum, filename, linenum, "%s", buf);
 }
 
-EXPORT void my_vwarn(x64emu_t* emu, void* fmt, void* b) {
-    #ifndef NOALIGN
-    myStackAlignW((const char*)fmt, (uint32_t*)b, emu->scratch);
-    PREPARE_VALIST;
-    void* f = vwarn;
-    ((vFpp_t)f)(fmt, VARARGS);
+EXPORT void my_verr(x64emu_t* emu, int eval, void* fmt, x64_va_list_t b) {
+    if (!fmt)
+        return err(eval, NULL);
+    #ifdef CONVERT_VALIST
+    (void)emu;
+    CONVERT_VALIST(b);
     #else
-    void* f = vwarn;
-    ((vFpp_t)f)(fmt, (uint32_t*)b);
+    myStackAlignValist(emu, (const char*)fmt, emu->scratch, b);
+    PREPARE_VALIST;
     #endif
+    return verr(eval, fmt, VARARGS);
 }
-#endif
+EXPORT void my_verrx(x64emu_t* emu, int eval, void* fmt, x64_va_list_t b) {
+    #ifdef CONVERT_VALIST
+    (void)emu;
+    CONVERT_VALIST(b);
+    #else
+    myStackAlignValist(emu, (const char*)fmt, emu->scratch, b);
+    PREPARE_VALIST;
+    #endif
+    return verrx(eval, fmt, VARARGS);
+}
 EXPORT void my_err(x64emu_t *emu, int eval, void* fmt, void* b) {
     myStackAlign(emu, (const char*)fmt, b, emu->scratch, R_EAX, 2);
     PREPARE_VALIST;
@@ -1108,6 +1172,30 @@ EXPORT void my_errx(x64emu_t *emu, int eval, void* fmt, void* b) {
     myStackAlign(emu, (const char*)fmt, b, emu->scratch, R_EAX, 2);
     PREPARE_VALIST;
     verrx(eval, (const char*)fmt, VARARGS);
+}
+EXPORT void my_vwarn(x64emu_t* emu, void* fmt, x64_va_list_t b) {
+    if (!fmt)
+        return warn(NULL);
+    #ifdef CONVERT_VALIST
+    (void)emu;
+    CONVERT_VALIST(b);
+    #else
+    myStackAlignValist(emu, (const char*)fmt, emu->scratch, b);
+    PREPARE_VALIST;
+    #endif
+    return vwarn(fmt, VARARGS);
+}
+EXPORT void my_vwarnx(x64emu_t* emu, void* fmt, x64_va_list_t b) {
+    if (!fmt)
+        return warnx(NULL);
+    #ifdef CONVERT_VALIST
+    (void)emu;
+    CONVERT_VALIST(b);
+    #else
+    myStackAlignValist(emu, (const char*)fmt, emu->scratch, b);
+    PREPARE_VALIST;
+    #endif
+    return vwarnx(fmt, VARARGS);
 }
 EXPORT void my_warn(x64emu_t *emu, void* fmt, void* b) {
     myStackAlign(emu, (const char*)fmt, b, emu->scratch, R_EAX, 1);
@@ -1207,6 +1295,23 @@ EXPORT int my___fxstat64(x64emu_t *emu, int vers, int fd, void* buf)
     if(buf && !r)
         UnalignStat64(&st, buf);
     return r;
+}
+
+EXPORT int my_statx(x64emu_t* emu, int dirfd, void* path, int flags, uint32_t mask, void* buf)
+{
+    if(my->statx)
+        return my->statx(dirfd, path, flags, mask, buf);
+    #ifdef __NR_statx
+    int ret = syscall(__NR_statx, dirfd, path, flags, mask, buf);
+    if(ret<0) {
+        errno = -ret;
+        ret = -1;
+    }
+    return ret;
+    #else
+    errno = ENOSYS;
+    return -1;
+    #endif
 }
 
 EXPORT int my___xmknod(x64emu_t* emu, int v, char* path, uint32_t mode, dev_t* dev)
@@ -2337,7 +2442,7 @@ EXPORT int32_t my_execl(x64emu_t* emu, const char* path)
     int x64 = FileIsX64ELF(path);
     int x86 = my_context->box86path?FileIsX86ELF(path):0;
     int script = (my_context->bashpath && FileIsShell(path))?1:0;
-    printf_log(LOG_DEBUG, "execle(\"%s\", ...), IsX86=%d, self=%d\n", path, x64, self);
+    printf_log(LOG_DEBUG, "execl(\"%s\", ...), IsX86=%d, self=%d\n", path, x64, self);
     // count argv...
     int i=0;
     while(getVargN(emu, i+1)) ++i;
@@ -2350,7 +2455,7 @@ EXPORT int32_t my_execl(x64emu_t* emu, const char* path)
     for (int k=0; k<i; ++k)
         newargv[j++] = getVargN(emu, k+1);
     if(self) newargv[1] = emu->context->fullpath;
-    printf_log(LOG_DEBUG, " => execle(\"%s\", %p [\"%s\", \"%s\"...:%d])\n", newargv[0], newargv, newargv[1], i?newargv[2]:"", i);
+    printf_log(LOG_DEBUG, " => execl(\"%s\", %p [\"%s\", \"%s\"...:%d])\n", newargv[0], newargv, newargv[1], i?newargv[2]:"", i);
     int ret = 0;
     if (!(x64 || x86 || script || self)) {
         ret = execv(path, newargv);
@@ -2367,7 +2472,7 @@ EXPORT int32_t my_execle(x64emu_t* emu, const char* path)
     int x64 = FileIsX64ELF(path);
     int x86 = my_context->box86path?FileIsX86ELF(path):0;
     int script = (my_context->bashpath && FileIsShell(path))?1:0;
-    printf_log(LOG_DEBUG, "execl(\"%s\", ...), IsX86=%d, self=%d\n", path, x64, self);
+    printf_log(LOG_DEBUG, "execle(\"%s\", ...), IsX86=%d, self=%d\n", path, x64, self);
     // hack to update the environ var if needed
     // count argv...
     int i=0;
@@ -2816,45 +2921,45 @@ EXPORT void* my_mmap64(x64emu_t* emu, void *addr, unsigned long length, int prot
     (void)emu;
     if(prot&PROT_WRITE)
         prot|=PROT_READ;    // PROT_READ is implicit with PROT_WRITE on i386
-    if(emu && (box64_log>=LOG_DEBUG || box64_dynarec_log>=LOG_DEBUG)) {printf_log(LOG_NONE, "mmap64(%p, 0x%lx, 0x%x, 0x%x, %d, %ld) => ", addr, length, prot, flags, fd, offset);}
+    if((emu || box64_is32bits) && (box64_log>=LOG_DEBUG || box64_dynarec_log>=LOG_DEBUG)) {printf_log(LOG_NONE, "mmap64(%p, 0x%lx, 0x%x, 0x%x, %d, %ld) => ", addr, length, prot, flags, fd, offset);}
     int new_flags = flags;
     #ifndef NOALIGN
     void* old_addr = addr;
     new_flags&=~MAP_32BIT;   // remove MAP_32BIT
     if(flags&MAP_32BIT) {
         // MAP_32BIT only exist on x86_64!
-        addr = find31bitBlockNearHint(addr, length, 0);
+        addr = find31bitBlockNearHint(old_addr, length, 0);
     } else if (box64_wine || 1) {   // other mmap should be restricted to 47bits
         if(!addr)
             addr = find47bitBlock(length);
     }
     #endif
     void* ret = internal_mmap(addr, length, prot, new_flags, fd, offset);
-    #ifndef NOALIGN
+    #if !defined(NOALIGN)
     if((ret!=MAP_FAILED) && (flags&MAP_32BIT) &&
       (((uintptr_t)ret>0xffffffffLL) || ((box64_wine) && ((uintptr_t)ret&0xffff) && (ret!=addr)))) {
         int olderr = errno;
-        if(emu && (box64_log>=LOG_DEBUG || box64_dynarec_log>=LOG_DEBUG)) printf_log(LOG_NONE, "Warning, mmap on 32bits didn't worked, ask %p, got %p ", addr, ret);
-        munmap(ret, length);
+        if((emu || box64_is32bits) && (box64_log>=LOG_DEBUG || box64_dynarec_log>=LOG_DEBUG)) printf_log(LOG_NONE, "Warning, mmap on 32bits didn't worked, ask %p, got %p ", addr, ret);
+        internal_munmap(ret, length);
         loadProtectionFromMap();    // reload map, because something went wrong previously
         addr = find31bitBlockNearHint(old_addr, length, 0); // is this the best way?
         new_flags = (addr && isBlockFree(addr, length) )? (new_flags|MAP_FIXED) : new_flags;
         if((new_flags&(MAP_FIXED|MAP_FIXED_NOREPLACE))==(MAP_FIXED|MAP_FIXED_NOREPLACE)) new_flags&=~MAP_FIXED_NOREPLACE;
         ret = internal_mmap(addr, length, prot, new_flags, fd, offset);
-        if(emu && (box64_log>=LOG_DEBUG || box64_dynarec_log>=LOG_DEBUG)) printf_log(LOG_NONE, " tried again with %p, got %p\n", addr, ret);
+        if((emu || box64_is32bits) && (box64_log>=LOG_DEBUG || box64_dynarec_log>=LOG_DEBUG)) printf_log(LOG_NONE, " tried again with %p, got %p\n", addr, ret);
         if(old_addr && ret!=old_addr && ret!=MAP_FAILED)
             errno = olderr;
     } else if((ret!=MAP_FAILED) && !(flags&MAP_FIXED) && ((box64_wine)) && (addr && (addr!=ret)) &&
              (((uintptr_t)ret>0x7fffffffffffLL) || ((uintptr_t)ret&~0xffff))) {
         int olderr = errno;
-        if(emu && (box64_log>=LOG_DEBUG || box64_dynarec_log>=LOG_DEBUG)) printf_log(LOG_NONE, "Warning, mmap on 47bits didn't worked, ask %p, got %p ", addr, ret);
-        munmap(ret, length);
+        if((emu || box64_is32bits) && (box64_log>=LOG_DEBUG || box64_dynarec_log>=LOG_DEBUG)) printf_log(LOG_NONE, "Warning, mmap on 47bits didn't worked, ask %p, got %p ", addr, ret);
+        internal_munmap(ret, length);
         loadProtectionFromMap();    // reload map, because something went wrong previously
         addr = find47bitBlockNearHint(old_addr, length, 0); // is this the best way?
         new_flags = (addr && isBlockFree(addr, length)) ? (new_flags|MAP_FIXED) : new_flags;
         if((new_flags&(MAP_FIXED|MAP_FIXED_NOREPLACE))==(MAP_FIXED|MAP_FIXED_NOREPLACE)) new_flags&=~MAP_FIXED_NOREPLACE;
         ret = internal_mmap(addr, length, prot, new_flags, fd, offset);
-        if(emu && (box64_log>=LOG_DEBUG || box64_dynarec_log>=LOG_DEBUG)) printf_log(LOG_NONE, " tried again with %p, got %p\n", addr, ret);
+        if((emu || box64_is32bits) && (box64_log>=LOG_DEBUG || box64_dynarec_log>=LOG_DEBUG)) printf_log(LOG_NONE, " tried again with %p, got %p\n", addr, ret);
         if(old_addr && ret!=old_addr && ret!=MAP_FAILED) {
             errno = olderr;
             if(old_addr>(void*)0x7fffffffff && !have48bits)
@@ -2867,7 +2972,7 @@ EXPORT void* my_mmap64(x64emu_t* emu, void *addr, unsigned long length, int prot
         errno = EEXIST;
         return MAP_FAILED;
     }
-    if(emu && (box64_log>=LOG_DEBUG || box64_dynarec_log>=LOG_DEBUG)) {printf_log(LOG_NONE, "%p\n", ret);}
+    if((emu || box64_is32bits) && (box64_log>=LOG_DEBUG || box64_dynarec_log>=LOG_DEBUG)) {printf_log(LOG_NONE, "%p\n", ret);}
     #ifdef DYNAREC
     if(box64_dynarec && ret!=MAP_FAILED) {
         /*if(flags&0x100000 && addr!=ret)
@@ -2896,7 +3001,7 @@ EXPORT void* my_mmap64(x64emu_t* emu, void *addr, unsigned long length, int prot
             char buf[128];
             sprintf(buf, "/proc/self/fd/%d", fd);
             ssize_t r = readlink(buf, filename, sizeof(filename)-1);
-            if(r!=1) filename[r]=0;
+            if(r!=-1) filename[r]=0;
             if(r>0 && strlen(filename)>strlen("UnityPlayer.dll") && !strcasecmp(filename+strlen(filename)-strlen("UnityPlayer.dll"), "UnityPlayer.dll")) {
                 printf_log(LOG_INFO, "BOX64: Detected UnityPlayer.dll\n");
                 #ifdef DYNAREC
@@ -2918,9 +3023,9 @@ EXPORT void* my_mmap(x64emu_t* emu, void *addr, unsigned long length, int prot, 
 EXPORT void* my_mremap(x64emu_t* emu, void* old_addr, size_t old_size, size_t new_size, int flags, void* new_addr)
 {
     (void)emu;
-    if(emu && (box64_log>=LOG_DEBUG || box64_dynarec_log>=LOG_DEBUG)) {printf_log(LOG_NONE, "mremap(%p, %lu, %lu, %d, %p)=>", old_addr, old_size, new_size, flags, new_addr);}
+    if((emu || box64_is32bits) && (box64_log>=LOG_DEBUG || box64_dynarec_log>=LOG_DEBUG)) {printf_log(LOG_NONE, "mremap(%p, %lu, %lu, %d, %p)=>", old_addr, old_size, new_size, flags, new_addr);}
     void* ret = mremap(old_addr, old_size, new_size, flags, new_addr);
-    if(emu && (box64_log>=LOG_DEBUG || box64_dynarec_log>=LOG_DEBUG)) {printf_log(LOG_NONE, "%p\n", ret);}
+    if((emu || box64_is32bits) && (box64_log>=LOG_DEBUG || box64_dynarec_log>=LOG_DEBUG)) {printf_log(LOG_NONE, "%p\n", ret);}
     if(ret!=(void*)-1) {
         uint32_t prot = getProtection((uintptr_t)old_addr)&~PROT_CUSTOM;
         if(ret==old_addr) {
@@ -2968,7 +3073,7 @@ EXPORT void* my_mremap(x64emu_t* emu, void* old_addr, size_t old_size, size_t ne
 EXPORT int my_munmap(x64emu_t* emu, void* addr, unsigned long length)
 {
     (void)emu;
-    if(emu && (box64_log>=LOG_DEBUG || box64_dynarec_log>=LOG_DEBUG)) {printf_log(LOG_NONE, "munmap(%p, %lu)\n", addr, length);}
+    if((emu || box64_is32bits) && (box64_log>=LOG_DEBUG || box64_dynarec_log>=LOG_DEBUG)) {printf_log(LOG_NONE, "munmap(%p, %lu)\n", addr, length);}
     int ret = internal_munmap(addr, length);
     #ifdef DYNAREC
     if(!ret && box64_dynarec && length) {
@@ -3512,8 +3617,10 @@ typedef struct clone_arg_s {
  uintptr_t fnc;
  void* args;
  int stack_clone_used;
+ int flags;
  void* tls;
 } clone_arg_t;
+void init_mutexes(box64context_t* context);
 static int clone_fn(void* p)
 {
     clone_arg_t* arg = (clone_arg_t*)p;
@@ -3522,6 +3629,10 @@ static int clone_fn(void* p)
     R_RSP = arg->stack;
     emu->flags.quitonexit = 1;
     thread_set_emu(emu);
+    if(arg->flags&CLONE_NEWUSER) {
+        init_mutexes(my_context);
+        ResetSegmentsCache(emu);
+    }
     int ret = RunFunctionWithEmu(emu, 0, arg->fnc, 1, arg->args);
     int exited = (emu->flags.quitonexit==2);
     thread_set_emu(NULL);
@@ -3558,6 +3669,7 @@ EXPORT int my_clone(x64emu_t* emu, void* fn, void* stack, int flags, void* args,
     arg->fnc = (uintptr_t)fn;
     arg->tls = tls;
     arg->emu = newemu;
+    arg->flags = flags;
     if((flags|(CLONE_VM|CLONE_VFORK|CLONE_SETTLS))==flags)   // that's difficult to setup, so lets ignore all those flags :S
         flags&=~(CLONE_VM|CLONE_VFORK|CLONE_SETTLS);
     int64_t ret = clone(clone_fn, (void*)((uintptr_t)mystack+1024*1024), flags, arg, parent, NULL, child);

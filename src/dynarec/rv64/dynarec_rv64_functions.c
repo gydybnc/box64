@@ -37,6 +37,16 @@ int fpu_get_scratch(dynarec_rv64_t* dyn)
 {
     return SCRATCH0 + dyn->e.fpu_scratch++;  // return an Sx
 }
+
+// Get a FPU scratch reg aligned to LMUL
+int fpu_get_scratch_lmul(dynarec_rv64_t* dyn, int lmul)
+{
+    int reg = SCRATCH0 + dyn->e.fpu_scratch;
+    int skip = (1 << lmul) - (reg % (1 << lmul));
+    dyn->e.fpu_scratch += skip + 1;
+    return reg + skip;
+}
+
 // Reset scratch regs counter
 void fpu_reset_scratch(dynarec_rv64_t* dyn)
 {
@@ -379,11 +389,11 @@ int sewNeedsTransform(dynarec_rv64_t* dyn, int ninst)
 {
     int i2 = dyn->insts[ninst].x64.jmp_insts;
 
-    if (dyn->insts[i2].vector_sew == VECTOR_SEWNA)
+    if (dyn->insts[i2].vector_sew_entry == VECTOR_SEWNA)
         return 0;
-    else if (dyn->insts[i2].vector_sew == VECTOR_SEWANY && dyn->insts[ninst].vector_sew != VECTOR_SEWNA)
+    else if (dyn->insts[i2].vector_sew_entry == VECTOR_SEWANY && dyn->insts[ninst].vector_sew_exit != VECTOR_SEWNA)
         return 0;
-    else if (dyn->insts[i2].vector_sew == dyn->insts[ninst].vector_sew)
+    else if (dyn->insts[i2].vector_sew_entry == dyn->insts[ninst].vector_sew_exit)
         return 0;
 
     return 1;
@@ -415,17 +425,24 @@ void extcacheUnwind(extcache_t* cache)
     if(cache->news) {
         // remove the newly created extcache
         for(int i=0; i<24; ++i)
-            if(cache->news&(1<<i))
+            if((cache->news&(1<<i)) && !cache->olds[i].changed)
                 cache->extcache[i].v = 0;
         cache->news = 0;
     }
     // add/change bad regs
     for (int i = 0; i < 16; ++i) {
-        if (cache->olds[i].changed) {
-            cache->extcache[i].t = cache->olds[i].single ? EXT_CACHE_SS : EXT_CACHE_SD;
-        } else if (cache->olds[i].purged) {
-            cache->extcache[i].n = i;
-            cache->extcache[i].t = cache->olds[i].single ? EXT_CACHE_SS : EXT_CACHE_SD;
+        if (cache->olds[i].changed || cache->olds[i].purged) {
+            if (cache->olds[i].type == EXT_CACHE_OLD_XMMR)
+                cache->extcache[i].t = EXT_CACHE_XMMR;
+            else if (cache->olds[i].type == EXT_CACHE_OLD_XMMW)
+                cache->extcache[i].t = EXT_CACHE_XMMW;
+            else if (cache->olds[i].type == EXT_CACHE_OLD_SS)
+                cache->extcache[i].t = EXT_CACHE_SS;
+            else if (cache->olds[i].type == EXT_CACHE_OLD_SD)
+                cache->extcache[i].t = EXT_CACHE_SD;
+
+            if (cache->olds[i].purged)
+                cache->extcache[i].n = i;
         }
     }
 
@@ -609,7 +626,7 @@ void inst_name_pass3(dynarec_native_t* dyn, int ninst, const char* name, rex_t r
     };
     if(box64_dynarec_dump) {
         printf_x64_instruction(rex.is32bits?my_context->dec32:my_context->dec, &dyn->insts[ninst].x64, name);
-        dynarec_log(LOG_NONE, "%s%p: %d emitted opcodes, inst=%d, barrier=%d state=%d/%d(%d), %s=%X/%X, use=%X, need=%X/%X, sm=%d/%d, sew=%d",
+        dynarec_log(LOG_NONE, "%s%p: %d emitted opcodes, inst=%d, barrier=%d state=%d/%d(%d), %s=%X/%X, use=%X, need=%X/%X, sm=%d/%d, sew@entry=%d, sew@exit=%d",
             (box64_dynarec_dump > 1) ? "\e[32m" : "",
             (void*)(dyn->native_start + dyn->insts[ninst].address),
             dyn->insts[ninst].size / 4,
@@ -624,7 +641,7 @@ void inst_name_pass3(dynarec_native_t* dyn, int ninst, const char* name, rex_t r
             dyn->insts[ninst].x64.use_flags,
             dyn->insts[ninst].x64.need_before,
             dyn->insts[ninst].x64.need_after,
-            dyn->smread, dyn->smwrite, dyn->insts[ninst].vector_sew);
+            dyn->smread, dyn->smwrite, dyn->insts[ninst].vector_sew_entry, dyn->insts[ninst].vector_sew_exit);
         if(dyn->insts[ninst].pred_sz) {
             dynarec_log(LOG_NONE, ", pred=");
             for(int ii=0; ii<dyn->insts[ninst].pred_sz; ++ii)
@@ -715,6 +732,7 @@ void fpu_reset(dynarec_rv64_t* dyn)
     mmx_reset(&dyn->e);
     sse_reset(&dyn->e);
     fpu_reset_reg(dyn);
+    dyn->vector_sew = VECTOR_SEWNA;
 }
 
 void fpu_reset_ninst(dynarec_rv64_t* dyn, int ninst)
@@ -723,6 +741,7 @@ void fpu_reset_ninst(dynarec_rv64_t* dyn, int ninst)
     mmx_reset(&dyn->insts[ninst].e);
     sse_reset(&dyn->insts[ninst].e);
     fpu_reset_reg_extcache(&dyn->insts[ninst].e);
+    dyn->vector_sew = VECTOR_SEWNA;
 }
 
 int fpu_is_st_freed(dynarec_rv64_t* dyn, int ninst, int st)

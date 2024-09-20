@@ -69,6 +69,15 @@ BOX64_MAXCPU=4  # surprisingly, having too much cpu core slow down things.4 is m
 [chrome]
 BOX64_MALLOC_HACK=2
 
+[cursor]
+BOX64_MALLOC_HACK=2
+#BOX64_DYNAREC_BIGBLOCK=3
+#BOX64_DYNAREC_CALLRET=1
+#BOX64_DYNAREC_SAFEFLAGS=0
+
+[chrome_crashpad_handler]
+BOX64_MALLOC_HACK=2
+
 [deadcells]
 BOX64_PREFER_EMULATED=1
 BOX64_DYNAREC_ALIGNED_ATOMICS=1
@@ -136,6 +145,9 @@ BOX64_EMULATED_LIBS=libmpg123.so.0:libvorbisfile.so.3:libvorbis.so.0:libogg.so.0
 
 [Kingdom.x86_64]
 BOX64_MAXCPU=4
+
+[legendary]
+BOX64_DYNAREC_STRONGMEM=1
 
 [LotCG.x86_64]
 BOX64_DYNAREC_FASTROUND=0
@@ -404,7 +416,7 @@ BOX64_DYNAREC_STRONGMEM=1
 BOX64_DYNAREC_BIGBLOCK=3
 BOX64_DYNAREC_CALLRET=1
 BOX64_DYNAREC_SAFEFLAGS=0
-BOX64_ARGS=-cef-disable-breakpad -cef-disable-d3d11 -cef-disable-delaypageload -cef-force-occlusion -cef-disable-sandbox -cef-disable--seccomp-sandbox -no-cef-sandbox -disable-winh264 -cef-disable-gpu -vgui -oldtraymenu -cef-single-process
+BOX64_ARGS=-cef-disable-breakpad -cef-disable-d3d11 -cef-disable-delaypageload -cef-force-occlusion -cef-disable-sandbox -cef-disable-seccomp-sandbox -no-cef-sandbox -disable-winh264 -cef-disable-gpu -vgui -oldtraymenu -cef-single-process
 
 [steamwebhelper.exe]
 BOX64_DYNAREC_STRONGMEM=1

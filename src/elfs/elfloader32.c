@@ -42,6 +42,12 @@
 #include "x64tls.h"
 #include "box32.h"
 
+ptr_t pltResolver32 = ~(ptr_t)0;
+
+extern void* my__IO_2_1_stderr_;
+extern void* my__IO_2_1_stdin_ ;
+extern void* my__IO_2_1_stdout_;
+
 // return the index of header (-1 if it doesn't exist)
 static int getElfIndex(box64context_t* ctx, elfheader_t* head) {
     for (int i=0; i<ctx->elfsize; ++i)
@@ -58,6 +64,68 @@ static elfheader_t* checkElfLib(elfheader_t* h, library_t* lib)
         add1libref_neededlib(h->needed, lib);
     }
     return h;
+}
+
+static Elf32_Sym* ElfLocateSymbol(elfheader_t* head, uintptr_t *offs, uintptr_t *end, const char* symname, int* ver, const char** vername, int local, int* veropt)
+{
+    Elf32_Sym* sym = ElfLookup32(head, symname, *ver, *vername, local, *veropt);
+    if(!sym) return NULL;
+    if(head->VerSym && !*veropt) {
+        int idx = ((uintptr_t)sym - (uintptr_t)head->DynSym._32)/sizeof(Elf32_Sym);
+        int version = ((Elf32_Half*)((uintptr_t)head->VerSym+head->delta))[idx];
+        if(version!=-1) version &=0x7fff;
+        const char* symvername = GetSymbolVersion(head, version);
+        Elf32_Half flags = GetSymbolVersionFlag(head, version);
+        if(version>1 && *ver<2 && (flags==0)) {
+            *ver = version;
+            *vername = symvername;
+            *veropt = 1;
+        } else if(flags==0 && !*veropt && version>1 && *ver>1 && !strcmp(symvername, *vername)) {
+            *veropt = 1;
+        }
+    }
+    if(!sym->st_shndx) return NULL;
+    int vis = ELF32_ST_VISIBILITY(sym->st_other);
+    if(vis==STV_HIDDEN && !local)
+        return NULL;
+    return sym;
+}
+
+
+static void GrabX32CopyMainElfReloc(elfheader_t* head)
+{
+    if(head->rel) {
+        int cnt = head->relsz / head->relent;
+        Elf32_Rel* rel = (Elf32_Rel *)(head->rel + head->delta);
+        printf_dump(LOG_DEBUG, "Grabbing R_386_COPY Relocation(s) in advance for %s\n", head->name);
+        for (int i=0; i<cnt; ++i) {
+            int t = ELF32_R_TYPE(rel[i].r_info);
+            if(t == R_386_COPY) {
+                Elf32_Sym *sym = &head->DynSym._32[ELF32_R_SYM(rel[i].r_info)];
+                const char* symname = SymName32(head, sym);
+                int version = head->VerSym?((Elf32_Half*)((uintptr_t)head->VerSym+head->delta))[ELF32_R_SYM(rel[i].r_info)]:-1;
+                if(version!=-1) version &=0x7fff;
+                const char* vername = GetSymbolVersion(head, version);
+                Elf32_Half flags = GetSymbolVersionFlag(head, version);
+                int veropt = flags?0:1;
+                uintptr_t offs = sym->st_value + head->delta;
+                AddUniqueSymbol(my_context->globdata, symname, offs, sym->st_size, version, vername, veropt);
+            }
+        }
+    }
+}
+
+void checkHookedSymbols(elfheader_t* h);
+void AddSymbols32(lib_t *maplib, elfheader_t* h)
+{
+    //if(box64_dump && h->hash)   old_elf_hash_dump(h);
+    //if(box64_dump && h->gnu_hash)   new_elf_hash_dump(h);
+    if(box64_dump && h->DynSym._32) DumpDynSym32(h);
+    if(h==my_context->elfs[0]) 
+        GrabX32CopyMainElfReloc(h);
+    #ifndef STATICBUILD
+    checkHookedSymbols(h);
+    #endif
 }
 
 int AllocLoadElfMemory32(box64context_t* context, elfheader_t* head, int mainbin)
@@ -290,9 +358,9 @@ static elfheader_t* FindElfSymbol(box64context_t *context, Elf32_Sym* sym)
 
 void GrabR386CopyMainElfReloc(elfheader_t* head)
 {
-    if(head->rela) {
-        int cnt = head->relasz / head->relaent;
-        Elf32_Rel* rel = (Elf32_Rel *)(head->rela + head->delta);
+    if(head->rel) {
+        int cnt = head->relsz / head->relent;
+        Elf32_Rel* rel = (Elf32_Rel *)(head->rel + head->delta);
         printf_dump(LOG_DEBUG, "Grabbing R_386_COPY Relocation(s) in advance for %s\n", head->name);
         for (int i=0; i<cnt; ++i) {
             int t = ELF32_R_TYPE(rel[i].r_info);
@@ -438,7 +506,7 @@ static int RelocateElfREL(lib_t *maplib, lib_t *local_maplib, int bindnow, int d
                 if(!offs) {offs = globoffs; end = globend;}
                 if(offs) {
                     // add r_addend to p?
-                    printf_dump(LOG_NEVER, "Apply R_386_COPY @%p with sym=%s (%sver=%d/%s), @%p size=%ld\n", p, symname, veropt?"opt":"", version, vername?vername:"(none)", from_ptrv(offs), sym->st_size);
+                    printf_dump(LOG_NEVER, "Apply R_386_COPY @%p with sym=%s (%sver=%d/%s), @%p size=%d\n", p, symname, veropt?"opt":"", version, vername?vername:"(none)", from_ptrv(offs), sym->st_size);
                     if(p!=from_ptrv(offs))
                         memmove(p, from_ptrv(offs), sym->st_size);
                     sym_elf = FindElfAddress(my_context, offs);
@@ -450,17 +518,17 @@ static int RelocateElfREL(lib_t *maplib, lib_t *local_maplib, int bindnow, int d
             case R_386_GLOB_DAT:
                 if(GetSymbolStartEnd(my_context->globdata, symname, &globoffs, &globend, version, vername, 1, veropt)) {
                     globp = (uint32_t*)globoffs;
-                    printf_dump(LOG_NEVER, "Apply %s R_X86_64_GLOB_DAT with R_X86_64_COPY @%p/%p (%p/%p -> %p/%p) size=%zd on sym=%s (%sver=%d/%s) \n", 
-                        BindSym(bind), p, globp, from_ptrv(p?(*p):0), 
+                    printf_dump(LOG_NEVER, "Apply %s R_386_GLOB_DAT with R_386_COPY @%p/%p (%p/%p -> %p/%p) size=%d on sym=%s (%sver=%d/%s) \n", 
+                        BindSymFriendly(bind), p, globp, from_ptrv(p?(*p):0), 
                         from_ptrv(globp?(*globp):0), (void*)offs, (void*)globoffs, sym->st_size, symname, veropt?"opt":"", version, vername?vername:"(none)");
                     sym_elf = my_context->elfs[0];
                     *p = globoffs;
                 } else {
                     if (!offs) {
                         if(strcmp(symname, "__gmon_start__") && strcmp(symname, "data_start") && strcmp(symname, "__data_start") && strcmp(symname, "collector_func_load"))
-                            printf_log((bind==STB_WEAK)?LOG_DEBUG:LOG_NONE, "%s: Global Symbol %s not found, cannot apply R_X86_64_GLOB_DAT @%p (%p) in %s\n", (bind==STB_WEAK)?"Warning":"Error", symname, p, *(void**)p, head->name);
+                            printf_log((bind==STB_WEAK)?LOG_DEBUG:LOG_NONE, "%s: Global Symbol %s not found, cannot apply R_386_GLOB_DAT @%p (%p) in %s\n", (bind==STB_WEAK)?"Warning":"Error", symname, p, *(void**)p, head->name);
                     } else {
-                        printf_dump(LOG_NEVER, "Apply %s R_X86_64_GLOB_DAT @%p (%p -> %p) on sym=%s (%sver=%d/%s, elf=%s)\n", BindSym(bind), p, from_ptrv(p?(*p):0), from_ptrv(offs), symname, veropt?"opt":"", version, vername?vername:"(none)", sym_elf?sym_elf->name:"(native)");
+                        printf_dump(LOG_NEVER, "Apply %s R_386_GLOB_DAT @%p (%p -> %p) on sym=%s (%sver=%d/%s, elf=%s)\n", BindSymFriendly(bind), p, from_ptrv(p?(*p):0), from_ptrv(offs), symname, veropt?"opt":"", version, vername?vername:"(none)", sym_elf?sym_elf->name:"(native)");
                         *p = offs;
                         if(sym_elf && sym_elf!=last_elf && sym_elf!=head) last_elf = checkElfLib(head, sym_elf->lib);
                     }
@@ -499,6 +567,13 @@ static int RelocateElfREL(lib_t *maplib, lib_t *local_maplib, int bindnow, int d
                 }
                 break;
             case R_386_32:
+                if(GetSymbolStartEnd(my_context->globdata, symname, &globoffs, &globend, version, vername, 1, veropt)) {
+                    if(offs!=globoffs) {
+                        offs = globoffs;
+                        sym_elf = my_context->elfs[0];
+                        elfsym = ElfDynSymLookup32(sym_elf, symname);
+                    }
+                }
                 if (!offs) {
                         if(strcmp(symname, "__gmon_start__") && strcmp(symname, "data_start") && strcmp(symname, "__data_start")) {
                             printf_log(LOG_NONE, "Error: Symbol sym=%s(%s%s%s/version %d) not found, cannot apply R_386_32 %p (%p) in %s\n", symname, symname, vername?"@":"", vername?vername:"", version, p, from_ptrv(*p), head->name);
@@ -623,4 +698,244 @@ int RelocateElf32(lib_t *maplib, lib_t *local_maplib, int bindnow, int deepbind,
             return -1;
     }
     return 0;
+}
+
+int RelocateElfPlt32(lib_t *maplib, lib_t *local_maplib, int bindnow, int deepbind, elfheader_t* head)
+{
+    int need_resolver = 0;
+    if(0 && (head->flags&DF_BIND_NOW) && !bindnow) { // disable for now, needs more symbol in a fow libs like gtk and nss3
+        bindnow = 1;
+        printf_log(LOG_DEBUG, "Forcing %s to Bind Now\n", head->name);
+    }
+    if(head->pltrel) {
+        int cnt = head->pltsz / head->pltent;
+        if(head->pltrel==DT_REL) {
+            DumpRelTable32(head, cnt, (Elf32_Rel *)(head->jmprel + head->delta), "PLT");
+            printf_log(LOG_DEBUG, "Applying %d PLT Relocation(s) for %s\n", cnt, head->name);
+            if(RelocateElfREL(maplib, local_maplib, bindnow, deepbind, head, cnt, (Elf32_Rel *)(head->jmprel + head->delta), &need_resolver))
+                return -1;
+        } else if(head->pltrel==DT_RELA) {
+            DumpRelATable32(head, cnt, (Elf32_Rela *)(head->jmprel + head->delta), "PLT");
+            printf_log(LOG_DEBUG, "Applying %d PLT Relocation(s) with Addend for %s\n", cnt, head->name);
+            if(RelocateElfRELA(maplib, local_maplib, bindnow, deepbind, head, cnt, (Elf32_Rela *)(head->jmprel + head->delta), &need_resolver))
+                return -1;
+        }
+        if(need_resolver) {
+            if(pltResolver32==~(ptr_t)0) {
+                pltResolver32 = AddBridge(my_context->system, vFEv, PltResolver32, 0, "(PltResolver)");
+            }
+            if(head->pltgot) {
+                *(ptr_t*)from_ptrv(head->pltgot+head->delta+8) = pltResolver32;
+                *(ptr_t*)from_ptrv(head->pltgot+head->delta+4) = to_ptrv(head);
+                printf_log(LOG_DEBUG, "PLT Resolver injected in plt.got at %p\n", from_ptrv(head->pltgot+head->delta+8));
+            } else if(head->got) {
+                *(ptr_t*)from_ptrv(head->got+head->delta+8) = pltResolver32;
+                *(ptr_t*)from_ptrv(head->got+head->delta+4) = to_ptrv(head);
+                printf_log(LOG_DEBUG, "PLT Resolver injected in got at %p\n", from_ptrv(head->got+head->delta+8));
+            }
+        }
+    }
+    return 0;
+}
+
+void ResetSpecialCaseMainElf32(elfheader_t* h)
+{
+    Elf32_Sym *sym = NULL;
+     for (uint32_t i=0; i<h->numDynSym; ++i) {
+        if(h->DynSym._32[i].st_info == 17) {
+            sym = h->DynSym._32+i;
+            const char * symname = h->DynStr+sym->st_name;
+            if(strcmp(symname, "_IO_2_1_stderr_")==0 && (from_ptrv(sym->st_value+h->delta))) {
+                memcpy(from_ptrv(sym->st_value+h->delta), stderr, sym->st_size);
+                my__IO_2_1_stderr_ = from_ptrv(sym->st_value+h->delta);
+                printf_log(LOG_DEBUG, "BOX32: Set @_IO_2_1_stderr_ to %p\n", my__IO_2_1_stderr_);
+            } else
+            if(strcmp(symname, "_IO_2_1_stdin_")==0 && (from_ptrv(sym->st_value+h->delta))) {
+                memcpy(from_ptrv(sym->st_value+h->delta), stdin, sym->st_size);
+                my__IO_2_1_stdin_ = from_ptrv(sym->st_value+h->delta);
+                printf_log(LOG_DEBUG, "BOX32: Set @_IO_2_1_stdin_ to %p\n", my__IO_2_1_stdin_);
+            } else
+            if(strcmp(symname, "_IO_2_1_stdout_")==0 && (from_ptrv(sym->st_value+h->delta))) {
+                memcpy(from_ptrv(sym->st_value+h->delta), stdout, sym->st_size);
+                my__IO_2_1_stdout_ = from_ptrv(sym->st_value+h->delta);
+                printf_log(LOG_DEBUG, "BOX32: Set @_IO_2_1_stdout_ to %p\n", my__IO_2_1_stdout_);
+            } else
+            if(strcmp(symname, "_IO_stderr_")==0 && (from_ptrv(sym->st_value+h->delta))) {
+                memcpy(from_ptrv(sym->st_value+h->delta), stderr, sym->st_size);
+                my__IO_2_1_stderr_ = from_ptrv(sym->st_value+h->delta);
+                printf_log(LOG_DEBUG, "BOX32: Set @_IO_stderr_ to %p\n", my__IO_2_1_stderr_);
+            } else
+            if(strcmp(symname, "_IO_stdin_")==0 && (from_ptrv(sym->st_value+h->delta))) {
+                memcpy(from_ptrv(sym->st_value+h->delta), stdin, sym->st_size);
+                my__IO_2_1_stdin_ = from_ptrv(sym->st_value+h->delta);
+                printf_log(LOG_DEBUG, "BOX32: Set @_IO_stdin_ to %p\n", my__IO_2_1_stdin_);
+            } else
+            if(strcmp(symname, "_IO_stdout_")==0 && (from_ptrv(sym->st_value+h->delta))) {
+                memcpy(from_ptrv(sym->st_value+h->delta), stdout, sym->st_size);
+                my__IO_2_1_stdout_ = from_ptrv(sym->st_value+h->delta);
+                printf_log(LOG_DEBUG, "BOX32: Set @_IO_stdout_ to %p\n", my__IO_2_1_stdout_);
+            }
+        }
+    }
+}
+
+void* ElfGetLocalSymbolStartEnd32(elfheader_t* head, uintptr_t *offs, uintptr_t *end, const char* symname, int* ver, const char** vername, int local, int* veropt)
+{
+    Elf32_Sym* sym = ElfLocateSymbol(head, offs, end, symname, ver, vername, local, veropt);
+    if(!sym) return NULL;
+    int bind = ELF32_ST_BIND(sym->st_info);
+    if(bind!=STB_LOCAL) return 0;
+    if(offs) *offs = sym->st_value + head->delta;
+    if(end) *end = sym->st_value + head->delta + sym->st_size;
+    return sym;
+}
+
+void* ElfGetGlobalSymbolStartEnd32(elfheader_t* head, uintptr_t *offs, uintptr_t *end, const char* symname, int* ver, const char** vername, int local, int* veropt)
+{
+    Elf32_Sym* sym = ElfLocateSymbol(head, offs, end, symname, ver, vername, local, veropt);
+    if(!sym) return NULL;
+    int bind = ELF32_ST_BIND(sym->st_info);
+    if(bind!=STB_GLOBAL && bind!=STB_GNU_UNIQUE) return 0;
+    if(offs) *offs = sym->st_value + head->delta;
+    if(end) *end = sym->st_value + head->delta + sym->st_size;
+    return sym;
+}
+
+void* ElfGetWeakSymbolStartEnd32(elfheader_t* head, uintptr_t *offs, uintptr_t *end, const char* symname, int* ver, const char** vername, int local, int* veropt)
+{
+    Elf32_Sym* sym = ElfLocateSymbol(head, offs, end, symname, ver, vername, local, veropt);
+    if(!sym) return NULL;
+    int bind = ELF32_ST_BIND(sym->st_info);
+    if(bind!=STB_WEAK) return 0;
+    if(offs) *offs = sym->st_value + head->delta;
+    if(end) *end = sym->st_value + head->delta + sym->st_size;
+    return sym;
+}
+
+void* ElfGetSymbolStartEnd32(elfheader_t* head, uintptr_t *offs, uintptr_t *end, const char* symname, int* ver, const char** vername, int local, int* veropt)
+{
+    Elf32_Sym* sym = ElfLocateSymbol(head, offs, end, symname, ver, vername, local, veropt);
+    if(!sym) return NULL;
+    if(offs) *offs = sym->st_value + head->delta;
+    if(end) *end = sym->st_value + head->delta + sym->st_size;
+    return sym;
+}
+
+int ElfGetSymTabStartEnd32(elfheader_t* head, uintptr_t *offs, uintptr_t *end, const char* symname)
+{
+    Elf32_Sym* sym = ElfSymTabLookup32(head, symname);
+    if(!sym) return 0;
+    if(!sym->st_shndx) return 0;
+    if(!sym->st_size) return 0; //needed?
+    if(offs) *offs = sym->st_value + head->delta;
+    if(end) *end = sym->st_value + head->delta + sym->st_size;
+    return 1;
+}
+
+EXPORT void PltResolver32(x64emu_t* emu)
+{
+    ptr_t addr = Pop32(emu);
+    int slot = (int)Pop32(emu);
+    elfheader_t *h = (elfheader_t*)from_ptrv(addr);
+    library_t* lib = h->lib;
+    lib_t* local_maplib = GetMaplib(lib);
+    int deepbind = GetDeepBind(lib);
+    printf_dump(LOG_DEBUG, "PltResolver32: Addr=%p, Slot=%d Return=%p: elf is %s (VerSym=%p)\n", from_ptrv(addr), slot, *(ptr_t*)from_ptrv(R_ESP), h->name, h->VerSym);
+
+    Elf32_Rel * rel = (Elf32_Rel *)(from_ptrv(h->jmprel + h->delta + slot));
+
+    Elf32_Sym *sym = &h->DynSym._32[ELF32_R_SYM(rel->r_info)];
+    int bind = ELF32_ST_BIND(sym->st_info);
+    const char* symname = SymName32(h, sym);
+    int version = h->VerSym?((Elf32_Half*)((uintptr_t)h->VerSym+h->delta))[ELF32_R_SYM(rel->r_info)]:-1;
+    if(version!=-1) version &= 0x7fff;
+    const char* vername = GetSymbolVersion(h, version);
+    Elf32_Half flags = GetSymbolVersionFlag(h, version);
+    int veropt = flags?0:1;
+    ptr_t *p = (uint32_t*)from_ptrv(rel->r_offset + h->delta);
+    uintptr_t offs = 0;
+    uintptr_t end = 0;
+
+    Elf32_Sym *elfsym = NULL;
+    if(bind==STB_LOCAL) {
+        elfsym = ElfDynSymLookup32(h, symname);
+        if(elfsym && elfsym->st_shndx) {
+            offs = elfsym->st_value + h->delta;
+            end = offs + elfsym->st_size;
+        }
+        if(!offs && !end && local_maplib && deepbind)
+            GetLocalSymbolStartEnd(local_maplib, symname, &offs, &end, h, version, vername, veropt, (void**)&elfsym);
+        if(!offs && !end)
+            GetLocalSymbolStartEnd(my_context->maplib, symname, &offs, &end, h, version, vername, veropt, (void**)&elfsym);
+        if(!offs && !end && local_maplib && !deepbind)
+            GetLocalSymbolStartEnd(local_maplib, symname, &offs, &end, h, version, vername, veropt, (void**)&elfsym);
+    } else if(bind==STB_WEAK) {
+        if(local_maplib && deepbind)
+            GetGlobalWeakSymbolStartEnd(local_maplib, symname, &offs, &end, h, version, vername, veropt, (void**)&elfsym);
+        else
+            GetGlobalWeakSymbolStartEnd(my_context->maplib, symname, &offs, &end, h, version, vername, veropt, (void**)&elfsym);
+        if(!offs && !end && local_maplib && !deepbind)
+            GetGlobalWeakSymbolStartEnd(local_maplib, symname, &offs, &end, h, version, vername, veropt, (void**)&elfsym);
+    } else {
+        if(!offs && !end && local_maplib && deepbind)
+            GetGlobalSymbolStartEnd(local_maplib, symname, &offs, &end, h, version, vername, veropt, (void**)&elfsym);
+        if(!offs && !end)
+            GetGlobalSymbolStartEnd(my_context->maplib, symname, &offs, &end, h, version, vername, veropt, (void**)&elfsym);
+        if(!offs && !end && local_maplib && !deepbind)
+            GetGlobalSymbolStartEnd(local_maplib, symname, &offs, &end, h, version, vername, veropt, (void**)&elfsym);
+    }
+
+    if (!offs) {
+        printf_log(LOG_NONE, "Error: PltResolver32: Symbol %s(ver %d: %s%s%s) not found, cannot apply R_386_JMP_SLOT %p (%p) in %s\n", symname, version, symname, vername?"@":"", vername?vername:"", p, from_ptrv(*p), h->name);
+        emu->quit = 1;
+        return;
+    } else {
+        elfheader_t* sym_elf = FindElfSymbol(my_context, elfsym);
+        offs = (uintptr_t)getAlternate(from_ptrv(offs));
+
+        if(p) {
+            printf_dump(LOG_DEBUG, "            Apply %s R_386_JMP_SLOT %p with sym=%s(ver %d: %s%s%s) (%p -> %p / %s)\n", (bind==STB_LOCAL)?"Local":((bind==STB_WEAK)?"Weak":"Global"), p, symname, version, symname, vername?"@":"", vername?vername:"",from_ptrv(*p), from_ptrv(offs), ElfName(FindElfAddress(my_context, offs)));
+            *p = offs;
+        } else {
+            printf_log(LOG_NONE, "PltResolver32: Warning, Symbol %s(ver %d: %s%s%s) found, but Jump Slot Offset is NULL \n", symname, version, symname, vername?"@":"", vername?vername:"");
+        }
+    }
+
+    // jmp to function
+    R_EIP = offs;
+}
+
+
+typedef struct my_dl_phdr_info_32_s {
+    ptr_t           dlpi_addr;  //void*
+    ptr_t           dlpi_name;  //const char*
+    ptr_t           dlpi_phdr;  //Elf32_Phdr*
+    Elf32_Half      dlpi_phnum;
+} my_dl_phdr_info_32_t;
+
+static int dl_iterate_phdr_callback(x64emu_t *emu, void* F, my_dl_phdr_info_32_t *info, size_t size, void* data)
+{
+    int ret = RunFunctionWithEmu(emu, 0, (uintptr_t)F, 3, to_ptrv(info), to_ulong(size), to_ptrv(data));
+    return ret;
+}
+
+EXPORT int my32_dl_iterate_phdr(x64emu_t *emu, void* F, void *data) {
+    printf_log(LOG_DEBUG, "Call to partially implemented 32bits dl_iterate_phdr(%p, %p)\n", F, data);
+    box64context_t *context = GetEmuContext(emu);
+    const char* empty = "";
+    int ret = 0;
+    for (int idx=0; idx<context->elfsize; ++idx) {
+        if(context->elfs[idx]) {
+            static my_dl_phdr_info_32_t info;
+            info.dlpi_addr = to_ptrv(GetElfDelta(context->elfs[idx]));
+            info.dlpi_name = to_ptrv((void*)(idx?context->elfs[idx]->name:empty));    //1st elf is program, and this one doesn't get a name
+            info.dlpi_phdr = to_ptrv(context->elfs[idx]->PHEntries._32);
+            info.dlpi_phnum = context->elfs[idx]->numPHEntries;
+            if((ret = dl_iterate_phdr_callback(emu, F, &info, sizeof(info), data))) {
+                return ret;
+            }
+        }
+    }
+    // not iterationg on native libs
+    return ret;
 }

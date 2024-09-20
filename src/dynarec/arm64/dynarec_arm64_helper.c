@@ -569,6 +569,9 @@ void jump_to_next(dynarec_arm_t* dyn, uintptr_t ip, int reg, int ninst, int is32
     MAYUSE(dyn); MAYUSE(ninst);
     MESSAGE(LOG_DUMP, "Jump to next\n");
 
+    if(is32bits)
+        ip &= 0xffffffffLL;
+
     SMEND();
     if(reg) {
         if(reg!=xRIP) {
@@ -832,18 +835,18 @@ void grab_segdata(dynarec_arm_t* dyn, uintptr_t addr, int ninst, int reg, int se
     int64_t j64;
     MAYUSE(j64);
     MESSAGE(LOG_DUMP, "Get %s Offset\n", (segment==_FS)?"FS":"GS");
-    int t1 = x1, t2 = x4;
-    if(reg==t1) ++t1;
+    int t2 = x4;
     if(reg==t2) ++t2;
     LDRw_U12(t2, xEmu, offsetof(x64emu_t, segs_serial[segment]));
-    LDRx_U12(reg, xEmu, offsetof(x64emu_t, segs_offs[segment]));
     if(segment==_GS) {
+        LDRx_U12(reg, xEmu, offsetof(x64emu_t, segs_offs[segment]));
         CBNZw_MARKSEG(t2);   // fast check
     } else {
-        LDRx_U12(t1, xEmu, offsetof(x64emu_t, context));
-        LDRw_U12(t1, t1, offsetof(box64context_t, sel_serial));
-        SUBw_REG(t1, t1, t2);
-        CBZw_MARKSEG(t1);
+        LDRx_U12(reg, xEmu, offsetof(x64emu_t, context));
+        LDRw_U12(reg, reg, offsetof(box64context_t, sel_serial));
+        SUBw_REG(t2, reg, t2);
+        LDRx_U12(reg, xEmu, offsetof(x64emu_t, segs_offs[segment]));
+        CBZw_MARKSEG(t2);
     }
     MOVZw(x1, segment);
     call_c(dyn, ninst, GetSegmentBaseEmu, t2, reg, 1, 0);
@@ -2332,8 +2335,17 @@ static void flagsCacheTransform(dynarec_arm_t* dyn, int ninst, int s1)
         case SF_SET_PENDING:
             if(dyn->f.pending!=SF_SET
             && dyn->f.pending!=SF_SET_PENDING
-            && dyn->f.pending!=SF_PENDING)
-                go = 1;
+            && dyn->f.pending!=SF_PENDING
+            ) {
+                // only sync if some previous flags are used or if all flags are not regenerated at the instuction
+                if(dyn->insts[jmp].x64.use_flags || (dyn->insts[jmp].x64.set_flags!=X_ALL))
+                    go = 1;
+                else if(go) {
+                    // just clear df flags
+                    go = 0;
+                    STRw_U12(xZR, xEmu, offsetof(x64emu_t, df));
+                }
+            }
             break;
         case SF_PENDING:
             if(dyn->f.pending!=SF_SET

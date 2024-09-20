@@ -124,6 +124,7 @@ ENTRYSTRING_(BOX64_ENV2, new_env2)                      \
 ENTRYSTRING_(BOX64_ENV3, new_env3)                      \
 ENTRYSTRING_(BOX64_ENV4, new_env4)                      \
 ENTRYSTRING_(BOX64_ARGS, new_args)                      \
+ENTRYSTRING_(BOX64_INSERT_ARGS, insert_args)            \
 ENTRYBOOL(BOX64_RESERVE_HIGH, new_reserve_high)         \
 
 #ifdef HAVE_TRACE
@@ -291,9 +292,9 @@ static void clearParam(my_params_t* param)
     #define CENTRYBOOL(NAME, name) 
     #define ENTRYINT(NAME, name, minval, maxval, bits) 
     #define ENTRYINTPOS(NAME, name) 
-    #define ENTRYSTRING(NAME, name) free(param->name); 
-    #define ENTRYSTRING_(NAME, name) free(param->name); 
-    #define ENTRYDSTRING(NAME, name) free(param->name); 
+    #define ENTRYSTRING(NAME, name) box_free(param->name); 
+    #define ENTRYSTRING_(NAME, name) box_free(param->name); 
+    #define ENTRYDSTRING(NAME, name) box_free(param->name); 
     #define ENTRYADDR(NAME, name) 
     #define ENTRYULONG(NAME, name) 
     SUPER()
@@ -396,7 +397,7 @@ void LoadRCFile(const char* filename)
                 decor = 1;
             // prepare a new entry
             memset(&current_param, 0, sizeof(current_param));
-            free(current_name);
+            box_free(current_name);
             current_name = LowerCase(line+decor);
             *(strchr(current_name, ']')+1-decor) = '\0';
             trimString(current_name);
@@ -430,7 +431,7 @@ void LoadRCFile(const char* filename)
             #define ENTRYSTRING(NAME, name)                             \
                 else if(!strcmp(key, #NAME)) {                          \
                     current_param.is_##name##_present = 1;              \
-                    if(current_param.name) free(current_param.name);    \
+                    if(current_param.name) box_free(current_param.name);\
                     current_param.name = box_strdup(val);               \
                 }
             #define ENTRYSTRING_(NAME, name) ENTRYSTRING(NAME, name)
@@ -474,9 +475,9 @@ void LoadRCFile(const char* filename)
     // last entry to be pushed too
     if(current_name) {
         addParam(current_name, &current_param, (decor==2));
-        free(current_name);
+        box_free(current_name);
     }
-    free(line);
+    box_free(line);
     fclose(f);
     printf_log(LOG_INFO, "Params database has %d entries\n", kh_size(params));
 }
@@ -491,7 +492,7 @@ void DeleteParams()
     // need to free duplicated strings
     kh_foreach_value_ref(params, p, clearParam(p));
     const char* key;
-    kh_foreach_key(params, key, free((void*)key));
+    kh_foreach_key(params, key, box_free((void*)key));
     // free the hash itself
     kh_destroy(params, params);
     params = NULL;
@@ -501,6 +502,7 @@ extern int ftrace_has_pid;
 extern FILE* ftrace;
 extern char* ftrace_name;
 extern char* box64_new_args;
+extern char* box64_insert_args;
 void openFTrace(const char* newtrace);
 void addNewEnvVar(const char* s);
 void AddNewLibs(const char* libs);
@@ -537,7 +539,7 @@ void ApplyParams(const char* name)
             if(strstr(lname, k2))
                 internal_ApplyParams(name, param);
         )
-        free(lname);
+        box_free(lname);
     }
     if(k1 == kh_end(params))
         return;
@@ -562,7 +564,7 @@ void internal_ApplyParams(const char* name, const my_params_t* param) {
     #define ENTRYINTPOS(NAME, name) if(param->is_##name##_present) {name = param->name; printf_log(LOG_INFO, "Applying %s=%d\n", #NAME, param->name);}
     #define ENTRYSTRING(NAME, name) if(param->is_##name##_present) {name = param->name; printf_log(LOG_INFO, "Applying %s=%s\n", #NAME, param->name);}
     #define ENTRYSTRING_(NAME, name)  
-    #define ENTRYDSTRING(NAME, name) if(param->is_##name##_present) {if(name) free(name); name = box_strdup(param->name); printf_log(LOG_INFO, "Applying %s=%s\n", #NAME, param->name);}
+    #define ENTRYDSTRING(NAME, name) if(param->is_##name##_present) {if(name) box_free(name); name = box_strdup(param->name); printf_log(LOG_INFO, "Applying %s=%s\n", #NAME, param->name);}
     #define ENTRYADDR(NAME, name) if(param->is_##name##_present) {name = param->name; printf_log(LOG_INFO, "Applying %s=%zd\n", #NAME, param->name);}
     #define ENTRYULONG(NAME, name) if(param->is_##name##_present) {name = param->name; printf_log(LOG_INFO, "Applying %s=%lld\n", #NAME, param->name);}
     SUPER()
@@ -655,9 +657,15 @@ void internal_ApplyParams(const char* name, const my_params_t* param) {
             box_free(box64_new_args);
         box64_new_args = box_strdup(param->new_args);
     }
+    if(param->is_insert_args_present) {
+        printf_log(LOG_INFO, "Adding \"%s\" arguments to command line\n", param->insert_args);
+        if(box64_insert_args)
+            box_free(box64_insert_args);
+        box64_insert_args = box_strdup(param->insert_args);
+    }
     if(param->is_bash_present && FileIsX64ELF(param->bash)) {
         if(my_context->bashpath)
-            free(my_context->bashpath);
+            box_free(my_context->bashpath);
         my_context->bashpath = box_strdup(param->bash);
         printf_log(LOG_INFO, "Applying %s=%s\n", "BOX64_BASH", param->bash);
     }

@@ -996,7 +996,6 @@ uintptr_t dynarec64_00(dynarec_arm_t* dyn, uintptr_t addr, uintptr_t ip, int nin
             break;
 
         #define GO(GETFLAGS, NO, YES, F)                                \
-            if (box64_dynarec_test == 2) { NOTEST(x1); }                \
             READFLAGS(F);                                               \
             i8 = F8S;                                                   \
             BARRIER(BARRIER_MAYBE);                                     \
@@ -2332,7 +2331,7 @@ uintptr_t dynarec64_00(dynarec_arm_t* dyn, uintptr_t addr, uintptr_t ip, int nin
                 addr+=2;
                 //BARRIER(BARRIER_FLOAT);
                 INST_NAME("Special Box64 instruction");
-                if((PK64(0)==0))
+                if(PK64(0)==0)
                 {
                     addr+=8;
                     MESSAGE(LOG_DEBUG, "Exit x64 Emu\n");
@@ -2343,7 +2342,7 @@ uintptr_t dynarec64_00(dynarec_arm_t* dyn, uintptr_t addr, uintptr_t ip, int nin
                     *ok = 0;
                     *need_epilog = 1;
                 } else {
-                    MESSAGE(LOG_DUMP, "Native Call to %s\n", GetNativeName(GetNativeFnc(ip)));
+                    MESSAGE(LOG_DUMP, "Native Call to %s\n", getBridgeName((void*)ip)?:GetNativeName(GetNativeFnc(ip)));
                     x87_stackcount(dyn, ninst, x1);
                     x87_forget(dyn, ninst, x3, x4, 0);
                     sse_purge07cache(dyn, ninst, x3);
@@ -2352,7 +2351,7 @@ uintptr_t dynarec64_00(dynarec_arm_t* dyn, uintptr_t addr, uintptr_t ip, int nin
                     if(isRetX87Wrapper(*(wrapper_t*)(addr)))
                         // return value will be on the stack, so the stack depth needs to be updated
                         x87_purgecache(dyn, ninst, 0, x3, x1, x4);
-                    if((box64_log<2 && !cycle_log) && tmp) {
+                    if((box64_log<2 && !cycle_log && !box64_dynarec_test) && tmp) {
                         //GETIP(ip+3+8+8); // read the 0xCC
                         call_n(dyn, ninst, *(void**)(addr+8), tmp);
                         addr+=8+8;
@@ -2439,6 +2438,7 @@ uintptr_t dynarec64_00(dynarec_arm_t* dyn, uintptr_t addr, uintptr_t ip, int nin
                 SETFLAGS(X_ALL, SF_SET_NODF);    // Hack to set flags in "don't care" state
                 GETIP(ip);  // priviledged instruction, IP not updated
                 STORE_XEMU_CALL(xRIP);
+                MOV32w(x1,u8);
                 CALL(native_int, -1);
                 LOAD_XEMU_CALL(xRIP);
                 jump_to_epilog(dyn, 0, xRIP, ninst);
@@ -3050,7 +3050,7 @@ uintptr_t dynarec64_00(dynarec_arm_t* dyn, uintptr_t addr, uintptr_t ip, int nin
                 #endif
             }
             #if STEP < 2
-            if(!rex.is32bits && isNativeCall(dyn, addr+i32, &dyn->insts[ninst].natcall, &dyn->insts[ninst].retn))
+            if(!rex.is32bits && isNativeCall(dyn, addr+i32, rex.is32bits, &dyn->insts[ninst].natcall, &dyn->insts[ninst].retn))
                 tmp = dyn->insts[ninst].pass2choice = 3;
             else
                 tmp = dyn->insts[ninst].pass2choice = 0;
@@ -3067,12 +3067,12 @@ uintptr_t dynarec64_00(dynarec_arm_t* dyn, uintptr_t addr, uintptr_t ip, int nin
                     }
                     WILLWRITE2();
                     PUSH1(x2);
-                    MESSAGE(LOG_DUMP, "Native Call to %s (retn=%d)\n", GetNativeName(GetNativeFnc(dyn->insts[ninst].natcall-1)), dyn->insts[ninst].retn);
+                    MESSAGE(LOG_DUMP, "Native Call to %s (retn=%d)\n", getBridgeName((void*)(dyn->insts[ninst].natcall-1))?:GetNativeName(GetNativeFnc(dyn->insts[ninst].natcall-1)), dyn->insts[ninst].retn);
                     SKIPTEST(x1);    // disable test as this hack dos 2 instructions for 1
                     // calling a native function
                     SMEND();
                     sse_purge07cache(dyn, ninst, x3);
-                    if((box64_log<2 && !cycle_log) && dyn->insts[ninst].natcall) {
+                    if((box64_log<2 && !cycle_log && !box64_dynarec_test) && dyn->insts[ninst].natcall) {
                         tmp=isSimpleWrapper(*(wrapper_t*)(dyn->insts[ninst].natcall+2));
                     } else
                         tmp=0;
@@ -3144,14 +3144,17 @@ uintptr_t dynarec64_00(dynarec_arm_t* dyn, uintptr_t addr, uintptr_t ip, int nin
                         *ok = 0;
                         *need_epilog = 0;
                     }
-                    jump_to_next(dyn, addr+i32, 0, ninst, rex.is32bits);
+                    if(rex.is32bits)
+                        j64 = (uint32_t)(addr+i32);
+                    else
+                        j64 = addr+i32;
+                    jump_to_next(dyn, j64, 0, ninst, rex.is32bits);
                     break;
             }
             break;
         case 0xE9:
         case 0xEB:
             BARRIER(BARRIER_MAYBE);
-            if (box64_dynarec_test == 2) { NOTEST(x1); }
             if(opcode==0xEB && PK(0)==0xFF) {
                 INST_NAME("JMP ib");
                 MESSAGE(LOG_DEBUG, "Hack for EB FF opcode");

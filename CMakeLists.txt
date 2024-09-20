@@ -19,6 +19,7 @@ option(PHYTIUM "Set to ON if targeting an Phytium (D2000 or FT2000/4) based devi
 option(SD845 "Set to ON if targeting a Snapragon 845 based device" ${SD845})
 option(SD888 "Set to ON if targeting a Snapragon 888 based device" ${SD888})
 option(SD8G2 "Set to ON if targeting a Snapragon 8 Gen 2 based device" ${SD8G2})
+option(SDORYON1 "Set to ON if targeting a Snapdragon Oryon 1 (X1E80100/X1E78100) based device" ${SDORYON1})
 option(ADLINK "Set to ON if targeting an ADLink AmpereAltra based device" ${ADLINK})
 option(M1 "Set to ON if targeting a AppleM1 running on Asahi computer" ${M1})
 option(LARCH64 "Set to ON if targeting an Loongarch64 based device" ${LARCH64})
@@ -37,7 +38,7 @@ option(BAD_SIGNAL "Set to ON to activate the workaround for incoherent si_info o
 option(SW64 "Set ON if targeting an SW64 based device" ${SW64})
 option(CI "Set to ON if running in CI" ${CI})
 option(WITH_MOLD "Set to ON to use with mold" ${WITH_MOLD})
-option(BOX32 "Set to ON to add Linux 32bits support (experimental, do not use)" ${BOX32})
+option(BOX32 "Set to ON to add Linux 32bits support (experimental, do not use)" ${BO64})
 
 if(TERMUX)
     set(TERMUX_PATH "/data/data/com.termux/files")
@@ -64,7 +65,7 @@ if(PPC64LE)
     set(RV64_DYNAREC OFF CACHE BOOL "")
     set(LARCH64_DYNAREC OFF CACHE BOOL "")
 endif()
-if(RK3399 OR RK3588 OR ODROIDN2 OR RPI3ARM64 OR RPI4ARM64 OR RPI5ARM64 OR RK3326 OR TEGRAX1 OR TEGRA_T194 OR TEGRA_T234 OR PHYTIUM OR SD845 OR SD888 OR SD8G2 OR LX2160A OR M1 OR ARM64 OR ADLINK)
+if(RK3399 OR RK3588 OR ODROIDN2 OR RPI3ARM64 OR RPI4ARM64 OR RPI5ARM64 OR RK3326 OR TEGRAX1 OR TEGRA_T194 OR TEGRA_T234 OR PHYTIUM OR SD845 OR SD888 OR SD8G2 OR SDORYON1 OR LX2160A OR M1 OR ARM64 OR ADLINK)
     set(LD80BITS OFF CACHE BOOL "")
     set(NOALIGN OFF CACHE BOOL "")
     set(ARM_DYNAREC ON CACHE BOOL "")
@@ -182,6 +183,24 @@ elseif(SD8G2)
     add_definitions(-DSD8G2)
     add_definitions(-pipe -march=armv9-a+i8mm+sm4+sha3+rcpc+crypto+nosve+nosve2)
     set(CMAKE_ASM_FLAGS  "-pipe -march=armv9-a+i8mm+sm4+sha3+rcpc+crypto+nosve+nosve2")
+elseif(SDORYON1)
+    add_definitions(-DSDORYON1)
+    # NOTE
+    #
+    # 1.
+    # GCC 14 and Clang 19 support oryon-1 as a -mcpu/-mtune argument,
+    # however it seems like fedora (the system I tested this on) does not work.
+    # see https://gcc.gnu.org/onlinedocs/gcc-14.2.0/gcc/AArch64-Options.html if you're interested
+    #
+    # 2.
+    # gcc/gcc/config/aarch64/aarch64-cores.def:157 defines oryon1 as
+    # AARCH64_CORE("oryon-1", oryon1, cortexa57, V8_6A, (CRYPTO, SM4, SHA3, F16), cortexa72,   0x51, 0x001, -1)
+    # where
+    #  * the 3rd positional argument is represented as the "scheduler"
+    #  * the 6th positional argument is represented as the "cost"
+    #  I've chosen the a57 because I don't know if I should choose the a72
+    add_definitions(-pipe -march=armv8.6-a+crypto+sm4+sha3+fp16 -mtune=cortex-a57)
+    set(CMAKE_ASM_FLAGS  "-pipe -march=armv8.6-a+crypto+sm4+sha3+fp16 -mtune=cortex-a57")
 elseif(ADLINK)
     add_definitions(-DADLINK)
     add_definitions(-pipe -mcpu=neoverse-n1 -fuse-ld=gold -fuse-linker-plugin)
@@ -302,6 +321,11 @@ include_directories(
     "${BOX64_ROOT}/src"
     "${BOX64_ROOT}/src/wrapped/generated"
 )
+if(BOX32)
+    include_directories(
+        "${BOX64_ROOT}/src/wrapped32/generated"
+    )
+endif()
 
 # git_head.h is a generated file
 set_source_files_properties(
@@ -330,7 +354,6 @@ set(ELFLOADER_SRC
     "${BOX64_ROOT}/src/emu/x64run_private.c"
     "${BOX64_ROOT}/src/emu/x64shaext.c"
     "${BOX64_ROOT}/src/emu/x64syscall.c"
-    "${BOX64_ROOT}/src/emu/x86syscall.c"
     "${BOX64_ROOT}/src/emu/x64tls.c"
     "${BOX64_ROOT}/src/emu/x64trace.c"
     "${BOX64_ROOT}/src/librarian/librarian.c"
@@ -365,10 +388,26 @@ if(NOT STATICBUILD)
 endif()
 if(BOX32)
     list(APPEND ELFLOADER_SRC
+        "${BOX64_ROOT}/src/box32.c"
         "${BOX64_ROOT}/src/elfs/elfhash32.c"
         "${BOX64_ROOT}/src/elfs/elfloader32.c"
         "${BOX64_ROOT}/src/elfs/elfparser32.c"
         "${BOX64_ROOT}/src/elfs/elfload_dump32.c"
+        "${BOX64_ROOT}/src/tools/box32stack.c"
+        "${BOX64_ROOT}/src/emu/x86int3.c"
+        "${BOX64_ROOT}/src/libtools/myalign32.c"
+        "${BOX64_ROOT}/src/libtools/myalign64_32.c"
+        "${BOX64_ROOT}/src/libtools/signal32.c"
+        "${BOX64_ROOT}/src/libtools/threads32.c"
+        "${BOX64_ROOT}/src/libtools/libc_net32.c"
+        "${BOX64_ROOT}/src/libtools/sdl1align32.c"
+        "${BOX64_ROOT}/src/emu/x86syscall_32.c"
+        "${BOX64_ROOT}/src/wrapped32/generated/wrapper32.c"
+        "${BOX64_ROOT}/src/wrapped32/generated/converter32.c"
+    )
+else()
+    list(APPEND ELFLOADER_SRC
+        "${BOX64_ROOT}/src/emu/x86syscall.c"
     )
 endif()
 if(NOT ANDROID)
@@ -725,6 +764,60 @@ endif ()
 add_custom_target(WRAPPERS DEPENDS "${BOX64_ROOT}/src/wrapped/generated/functions_list.txt")
 #add_custom_target(PRINTER DEPENDS "${BOX64_ROOT}/src/dynarec/last_run.txt")
 
+if(BOX32)
+    if(STATICBUILD)
+    set(WRAPPEDS32
+        "${BOX64_ROOT}/src/wrapped32/wrappedldlinux.c"
+        "${BOX64_ROOT}/src/wrapped32/wrappedlibc.c"
+        "${BOX64_ROOT}/src/wrapped32/wrappedlibdl.c"
+        "${BOX64_ROOT}/src/wrapped32/wrappedlibm.c"
+        "${BOX64_ROOT}/src/wrapped32/wrappedlibpthread.c"
+        "${BOX64_ROOT}/src/wrapped32/wrappedlibrt.c"
+    )
+    else()
+    set(WRAPPEDS32
+        "${BOX64_ROOT}/src/wrapped32/wrappedldlinux.c"
+        "${BOX64_ROOT}/src/wrapped32/wrappedlibc.c"
+        "${BOX64_ROOT}/src/wrapped32/wrappedlibdl.c"
+        "${BOX64_ROOT}/src/wrapped32/wrappedlibm.c"
+        "${BOX64_ROOT}/src/wrapped32/wrappedlibpthread.c"
+        "${BOX64_ROOT}/src/wrapped32/wrappedlibrt.c"
+        "${BOX64_ROOT}/src/wrapped32/wrappedcrashhandler.c"
+        "${BOX64_ROOT}/src/wrapped32/wrappedlibgl.c"
+        "${BOX64_ROOT}/src/wrapped32/wrappedsdl1.c"
+        "${BOX64_ROOT}/src/wrapped32/wrappedlibasound.c"
+    )
+    endif()
+    string(REPLACE ".c" "_private.h" MODROOT ${BOX64_ROOT})
+    #set(WRAPPEDS32_HEAD "${BOX64_ROOT}/src/wrapped/wrappedd3dadapter9_genvate.h")
+    foreach(A ${WRAPPEDS32})
+        string(REPLACE ".c" "_private.h" C ${A})
+        string(REPLACE "${MODROOT}" "${BOX64_ROOT}" B ${C})
+        set(WRAPPEDS32_HEAD ${WRAPPEDS32_HEAD} ${B})
+        set_source_files_properties(${A} PROPERTIES OBJECT_DEPENDS ${B})
+    endforeach()
+    
+    set(WRAPPER32 "${BOX64_ROOT}/src/wrapped32/generated/wrapper32.c" "${BOX64_ROOT}/src/wrapped32/generated/wrapper32.h")
+
+    if(NOT CI)
+        add_custom_command(
+            OUTPUT "${BOX64_ROOT}/src/wrapped32/generated/functions_list.txt"
+            COMMAND "${PYTHON_EXECUTABLE}" "${BOX64_ROOT}/rebuild_wrappers_32.py"
+            "${BOX64_ROOT}"
+            "PANDORA" "HAVE_LD80BITS" "NOALIGN" "HAVE_TRACE" "ANDROID" "TERMUX" "STATICBUILD" "--"
+            ${WRAPPEDS32_HEAD}
+            MAIN_DEPENDENCY "${BOX64_ROOT}/rebuild_wrappers_32.py"
+            DEPENDS ${WRAPPEDS32} ${WRAPPEDS32_HEAD}
+            BYPRODUCTS ${WRAPPER32}
+        )
+    endif()
+
+    add_custom_target(WRAPPERS32 DEPENDS "${BOX64_ROOT}/src/wrapped32/generated/functions_list.txt")
+else()
+    set(WRAPPEDS32)
+endif()
+
+
 if(DYNAREC)
     set(DYNAREC_SRC
         "${BOX64_ROOT}/src/dynarec/dynablock.c"
@@ -820,8 +913,8 @@ if(RV64_DYNAREC)
     "${BOX64_ROOT}/src/dynarec/rv64/dynarec_rv64_00_2.c"
     "${BOX64_ROOT}/src/dynarec/rv64/dynarec_rv64_00_3.c"
     "${BOX64_ROOT}/src/dynarec/rv64/dynarec_rv64_0f.c"
+    "${BOX64_ROOT}/src/dynarec/rv64/dynarec_rv64_0f_vector.c"
     "${BOX64_ROOT}/src/dynarec/rv64/dynarec_rv64_64.c"
-    #"${BOX64_ROOT}/src/dynarec/rv64/dynarec_rv64_65.c"
     "${BOX64_ROOT}/src/dynarec/rv64/dynarec_rv64_66.c"
     "${BOX64_ROOT}/src/dynarec/rv64/dynarec_rv64_67.c"
     "${BOX64_ROOT}/src/dynarec/rv64/dynarec_rv64_67_32.c"
@@ -885,6 +978,11 @@ if(DYNAREC)
         ${DYNAREC_PASS}
         "${BOX64_ROOT}/src/dynarec/dynarec_native_pass.c"
     )
+    if(BOX32)
+        list(APPEND DYNAREC_PASS
+            "${BOX64_ROOT}/src/wrapped32/generated/wrapper32.h"
+        )
+    endif()
 
     add_library(dynarec_native OBJECT ${DYNAREC_SRC})
 
@@ -902,6 +1000,12 @@ if(DYNAREC)
     add_dependencies(native_pass1 WRAPPERS)
     add_dependencies(native_pass2 WRAPPERS)
     add_dependencies(native_pass3 WRAPPERS)
+    if(BOX32)
+        add_dependencies(native_pass0 WRAPPERS32)
+        add_dependencies(native_pass1 WRAPPERS32)
+        add_dependencies(native_pass2 WRAPPERS32)
+        add_dependencies(native_pass3 WRAPPERS32)
+    endif()
 
     add_library(dynarec STATIC
         $<TARGET_OBJECTS:dynarec_native>
@@ -918,21 +1022,24 @@ if(DYNAREC)
     add_custom_command(
         OUTPUT "${BOX64_ROOT}/src/git_head.h"
         COMMAND sh -c "echo \\\#define GITREV \\\"$(git rev-parse --short HEAD)\\\">\"${BOX64_ROOT}/src/git_head.h\""
-        DEPENDS dynarec ${ELFLOADER_SRC} ${INTERPRETER} ${WRAPPEDS}
+        DEPENDS dynarec ${ELFLOADER_SRC} ${INTERPRETER} ${WRAPPEDS} ${WRAPPEDS32}
         VERBATIM)
 else()
     add_custom_command(
         OUTPUT "${BOX64_ROOT}/src/git_head.h"
         COMMAND sh -c "echo \\\#define GITREV \\\"$(git rev-parse --short HEAD)\\\">\"${BOX64_ROOT}/src/git_head.h\""
-        DEPENDS ${ELFLOADER_SRC} ${INTERPRETER} ${WRAPPEDS}
+        DEPENDS ${ELFLOADER_SRC} ${INTERPRETER} ${WRAPPEDS} ${WRAPPEDS32}
         VERBATIM)
 endif()
 
 add_library(interpreter OBJECT ${INTERPRETER})
 
-add_executable(${BOX64} ${ELFLOADER_SRC} ${WRAPPEDS} "${BOX64_ROOT}/src/git_head.h")
+add_executable(${BOX64} ${ELFLOADER_SRC} ${WRAPPEDS} ${WRAPPEDS32} "${BOX64_ROOT}/src/git_head.h")
 set_target_properties(${BOX64} PROPERTIES ENABLE_EXPORTS ON)
 add_dependencies(${BOX64} WRAPPERS)
+if(BOX32)
+    add_dependencies(${BOX64} WRAPPERS32)
+endif()
 #add_dependencies(${BOX64} PRINTER)
 #target_link_libraries(${BOX64} c m dl rt pthread resolv)
 if(STATICBUILD)
@@ -957,7 +1064,7 @@ target_link_libraries(${BOX64} interpreter)
 if(${CMAKE_VERSION} VERSION_LESS "3.13")
     if(NOT NOLOADADDR)
         if(CMAKE_C_COMPILER_ID STREQUAL "Clang" OR WITH_MOLD)
-            set_target_properties(${BOX64} PROPERTIES LINK_FLAGS "-Wl,--image-base=${BOX64_ELF_ADDRESS}")
+            set_target_properties(${BOX64} PROPERTIES LINK_FLAGS "-no-pie -Wl,--image-base=${BOX64_ELF_ADDRESS}")
         else()
             set_target_properties(${BOX64} PROPERTIES LINK_FLAGS "-Wl,-Ttext-segment,${BOX64_ELF_ADDRESS}")
         endif()
@@ -966,6 +1073,9 @@ else()
     # If symbols are missing, try this: target_link_options(${BOX64} PUBLIC -rdynamic)
     if(NOT NOLOADADDR)
         if(CMAKE_C_COMPILER_ID STREQUAL "Clang" OR WITH_MOLD)
+            if(WITH_MOLD) # --image-base requires -no-pie in mold!
+                set_target_properties(${BOX64} PROPERTIES LINK_FLAGS "-no-pie -lm")
+            endif()
             target_link_options(${BOX64} PUBLIC LINKER:--image-base=${BOX64_ELF_ADDRESS})
         else()
             target_link_options(${BOX64} PUBLIC LINKER:-Ttext-segment,${BOX64_ELF_ADDRESS})
@@ -1001,7 +1111,7 @@ if(NOT _x86 AND NOT _x86_64)
 	  endif()
 
   endif()
-  set(INSTALL_PATH "/usr/lib/x86_64-linux-gnu/")
+  set(INSTALL_PATH "/usr/lib/box64-x86_64-linux-gnu/")
   if(NOT NO_LIB_INSTALL)
 	if(NOT TERMUX)
     		install(FILES ${CMAKE_SOURCE_DIR}/x64lib/libstdc++.so.5 DESTINATION ${INSTALL_PATH})
@@ -1037,6 +1147,24 @@ if(NOT _x86 AND NOT _x86_64)
         install(FILES ${CMAKE_SOURCE_DIR}/x64lib/libmbedcrypto.so.3 DESTINATION ${TERMUX_PATH}${INSTALL_PATH})
 	endif()
    endif()
+   if(BOX32)
+    set(INSTALL_PATH "/usr/lib/box64-i386-linux-gnu/")
+    if(NOT NO_LIB_INSTALL)
+    	if(NOT TERMUX)
+    		install(FILES ${CMAKE_SOURCE_DIR}/x86lib/libstdc++.so.5 DESTINATION ${INSTALL_PATH})
+    		install(FILES ${CMAKE_SOURCE_DIR}/x86lib/libstdc++.so.6 DESTINATION ${INSTALL_PATH})
+    		install(FILES ${CMAKE_SOURCE_DIR}/x86lib/libgcc_s.so.1 DESTINATION ${INSTALL_PATH})
+    		install(FILES ${CMAKE_SOURCE_DIR}/x86lib/libpng12.so.0 DESTINATION ${INSTALL_PATH})
+            install(FILES ${CMAKE_SOURCE_DIR}/x86lib/libunwind.so.8 DESTINATION ${INSTALL_PATH})
+        else()
+            install(FILES ${CMAKE_SOURCE_DIR}/x86lib/libstdc++.so.5 DESTINATION ${TERMUX_PATH}${INSTALL_PATH})
+            install(FILES ${CMAKE_SOURCE_DIR}/x86lib/libstdc++.so.6 DESTINATION ${TERMUX_PATH}${INSTALL_PATH})
+            install(FILES ${CMAKE_SOURCE_DIR}/x86lib/libgcc_s.so.1 DESTINATION ${TERMUX_PATH}${INSTALL_PATH})
+            install(FILES ${CMAKE_SOURCE_DIR}/x86lib/libpng12.so.0 DESTINATION ${TERMUX_PATH}${INSTALL_PATH})
+            install(FILES ${CMAKE_SOURCE_DIR}/x86lib/libunwind.so.8 DESTINATION ${TERMUX_PATH}${INSTALL_PATH})
+       endif()
+    endif()
+  endif()
 endif()
 
 if(NOT TARGET uninstall)
@@ -1144,10 +1272,12 @@ add_test(fork ${CMAKE_COMMAND} -D TEST_PROGRAM=${CMAKE_BINARY_DIR}/${BOX64}
     -D TEST_REFERENCE=${CMAKE_SOURCE_DIR}/tests/ref09.txt
     -P ${CMAKE_SOURCE_DIR}/runTest.cmake )
 
-add_test(cppThreads ${CMAKE_COMMAND} -D TEST_PROGRAM=${CMAKE_BINARY_DIR}/${BOX64}
+add_test(cppThreads_nocosim ${CMAKE_COMMAND} -D TEST_PROGRAM=${CMAKE_BINARY_DIR}/${BOX64}
     -D TEST_ARGS=${CMAKE_SOURCE_DIR}/tests/test10 -D TEST_OUTPUT=tmpfile10.txt
     -D TEST_REFERENCE=${CMAKE_SOURCE_DIR}/tests/ref10.txt
     -P ${CMAKE_SOURCE_DIR}/runTest.cmake )
+
+set_tests_properties(cppThreads_nocosim PROPERTIES ENVIRONMENT "BOX64_LD_LIBRARY_PATH=${CMAKE_SOURCE_DIR}/x64lib")
 
 add_test(tlsData ${CMAKE_COMMAND} -D TEST_PROGRAM=${CMAKE_BINARY_DIR}/${BOX64}
     -D TEST_ARGS=${CMAKE_SOURCE_DIR}/tests/test11 -D TEST_OUTPUT=tmpfile11.txt
@@ -1424,4 +1554,142 @@ foreach(file ${extension_tests})
         -D TEST_REFERENCE=${CMAKE_SOURCE_DIR}/tests/extensions/${testname}.txt
         -P ${CMAKE_SOURCE_DIR}/runTest.cmake)
 endforeach()
+endif()
+
+if(BOX32)
+    add_test(NAME bootSyscall_32bits COMMAND ${CMAKE_COMMAND} -D TEST_PROGRAM=${CMAKE_BINARY_DIR}/${BOX64}
+        -D TEST_ARGS=${CMAKE_SOURCE_DIR}/tests32/test01 -D TEST_OUTPUT=tmpfile32_01.txt
+        -D TEST_REFERENCE=${CMAKE_SOURCE_DIR}/tests32/ref01.txt
+        -P ${CMAKE_SOURCE_DIR}/runTest.cmake )
+
+    add_test(NAME bootSyscallC_32bits COMMAND ${CMAKE_COMMAND} -D TEST_PROGRAM=${CMAKE_BINARY_DIR}/${BOX64}
+        -D TEST_ARGS=${CMAKE_SOURCE_DIR}/tests32/test02 -D TEST_OUTPUT=tmpfile32_02.txt
+        -D TEST_REFERENCE=${CMAKE_SOURCE_DIR}/tests32/ref02.txt
+        -P ${CMAKE_SOURCE_DIR}/runTest.cmake )
+
+    add_test(NAME printf_32bits COMMAND ${CMAKE_COMMAND} -D TEST_PROGRAM=${CMAKE_BINARY_DIR}/${BOX64}
+        -D TEST_ARGS=${CMAKE_SOURCE_DIR}/tests32/test03 -D TEST_OUTPUT=tmpfile32_03.txt
+        -D TEST_REFERENCE=${CMAKE_SOURCE_DIR}/tests32/ref03.txt
+        -P ${CMAKE_SOURCE_DIR}/runTest.cmake )
+
+    add_test(NAME args_32bits COMMAND ${CMAKE_COMMAND} -D TEST_PROGRAM=${CMAKE_BINARY_DIR}/${BOX64}
+        -D TEST_ARGS=${CMAKE_SOURCE_DIR}/tests32/test04 -D TEST_ARGS2=yeah -D TEST_OUTPUT=tmpfile32_04.txt
+        -D TEST_REFERENCE=${CMAKE_SOURCE_DIR}/tests32/ref04.txt
+        -P ${CMAKE_SOURCE_DIR}/runTest.cmake )
+
+    add_test(NAME maths1_32bits COMMAND ${CMAKE_COMMAND} -D TEST_PROGRAM=${CMAKE_BINARY_DIR}/${BOX64}
+        -D TEST_ARGS=${CMAKE_SOURCE_DIR}/tests32/test05 -D TEST_ARGS2=7 -D TEST_OUTPUT=tmpfile32_05.txt
+        -D TEST_REFERENCE=${CMAKE_SOURCE_DIR}/tests32/ref05.txt
+        -P ${CMAKE_SOURCE_DIR}/runTest.cmake )
+
+    add_test(NAME threadsStart_32bits COMMAND ${CMAKE_COMMAND} -D TEST_PROGRAM=${CMAKE_BINARY_DIR}/${BOX64}
+        -D TEST_ARGS=${CMAKE_SOURCE_DIR}/tests32/test06 -D TEST_OUTPUT=tmpfile32_06.txt
+        -D TEST_REFERENCE=${CMAKE_SOURCE_DIR}/tests32/ref06.txt
+        -P ${CMAKE_SOURCE_DIR}/runTest.cmake )
+
+    add_test(NAME trig_32bits COMMAND ${CMAKE_COMMAND} -D TEST_PROGRAM=${CMAKE_BINARY_DIR}/${BOX64}
+        -D TEST_ARGS=${CMAKE_SOURCE_DIR}/tests32/test07 -D TEST_OUTPUT=tmpfile32_07.txt
+        -D TEST_REFERENCE=${CMAKE_SOURCE_DIR}/tests32/ref07.txt
+        -P ${CMAKE_SOURCE_DIR}/runTest.cmake )
+
+    add_test(NAME pi_32bits COMMAND ${CMAKE_COMMAND} -D TEST_PROGRAM=${CMAKE_BINARY_DIR}/${BOX64}
+        -D TEST_ARGS=${CMAKE_SOURCE_DIR}/tests32/test08 -D TEST_OUTPUT=tmpfile32_08.txt
+        -D TEST_REFERENCE=${CMAKE_SOURCE_DIR}/tests32/ref08.txt
+        -P ${CMAKE_SOURCE_DIR}/runTest.cmake )
+
+    add_test(NAME fork_32bits COMMAND ${CMAKE_COMMAND} -D TEST_PROGRAM=${CMAKE_BINARY_DIR}/${BOX64}
+        -D TEST_ARGS=${CMAKE_SOURCE_DIR}/tests32/test09 -D TEST_OUTPUT=tmpfile32_09.txt
+        -D TEST_REFERENCE=${CMAKE_SOURCE_DIR}/tests32/ref09.txt
+        -P ${CMAKE_SOURCE_DIR}/runTest.cmake )
+
+    if(NOT CI)
+    add_test(NAME cppThreads_32bits COMMAND ${CMAKE_COMMAND} -D TEST_PROGRAM=${CMAKE_BINARY_DIR}/${BOX64}
+        -D TEST_ARGS=${CMAKE_SOURCE_DIR}/tests32/test10 -D TEST_OUTPUT=tmpfile32_10.txt
+        -D TEST_REFERENCE=${CMAKE_SOURCE_DIR}/tests32/ref10.txt
+        -P ${CMAKE_SOURCE_DIR}/runTest.cmake )
+    
+    set_tests_properties(cppThreads_32bits PROPERTIES ENVIRONMENT "BOX64_LD_LIBRARY_PATH=${CMAKE_SOURCE_DIR}/x86lib")
+    endif()
+
+    add_test(NAME tlsData_32bits COMMAND ${CMAKE_COMMAND} -D TEST_PROGRAM=${CMAKE_BINARY_DIR}/${BOX64}
+        -D TEST_ARGS=${CMAKE_SOURCE_DIR}/tests32/test11 -D TEST_OUTPUT=tmpfile32_11.txt
+        -D TEST_REFERENCE=${CMAKE_SOURCE_DIR}/tests32/ref11.txt
+        -P ${CMAKE_SOURCE_DIR}/runTest.cmake )
+
+    add_test(NAME fpu_32bits COMMAND ${CMAKE_COMMAND} -D TEST_PROGRAM=${CMAKE_BINARY_DIR}/${BOX64}
+        -D TEST_ARGS=${CMAKE_SOURCE_DIR}/tests32/test12 -D TEST_OUTPUT=tmpfile32_12.txt
+        -D TEST_REFERENCE=${CMAKE_SOURCE_DIR}/tests32/ref12.txt
+        -P ${CMAKE_SOURCE_DIR}/runTest.cmake )
+
+    add_test(NAME contexts_32bits COMMAND ${CMAKE_COMMAND} -D TEST_PROGRAM=${CMAKE_BINARY_DIR}/${BOX64}
+        -D TEST_ARGS=${CMAKE_SOURCE_DIR}/tests32/test13 -D TEST_OUTPUT=tmpfile32_13.txt
+        -D TEST_REFERENCE=${CMAKE_SOURCE_DIR}/tests32/ref13.txt
+        -P ${CMAKE_SOURCE_DIR}/runTest.cmake )
+
+    if(NOT LD80BITS)
+        add_test(NAME conditionalThreads_32bits_nocosim COMMAND ${CMAKE_COMMAND} -D TEST_PROGRAM=${CMAKE_BINARY_DIR}/${BOX64}
+            -D TEST_ARGS=${CMAKE_SOURCE_DIR}/tests32/test14 -D TEST_OUTPUT=tmpfile32_14.txt
+            -D TEST_REFERENCE=${CMAKE_SOURCE_DIR}/tests32/ref14.txt
+            -P ${CMAKE_SOURCE_DIR}/runTest.cmake )
+    endif()
+
+    add_test(NAME linkingIndirectNoversion_32bits COMMAND ${CMAKE_COMMAND} -D TEST_PROGRAM=${CMAKE_BINARY_DIR}/${BOX64}
+        -D TEST_ARGS=${CMAKE_SOURCE_DIR}/tests32/test15 -D TEST_OUTPUT=tmpfile32_15.txt
+        -D TEST_REFERENCE=${CMAKE_SOURCE_DIR}/tests32/ref15.txt
+        -P ${CMAKE_SOURCE_DIR}/runTest.cmake )
+
+    add_test(NAME linkingIndirectVersion_32bits COMMAND ${CMAKE_COMMAND} -D TEST_PROGRAM=${CMAKE_BINARY_DIR}/${BOX64}
+        -D TEST_ARGS=${CMAKE_SOURCE_DIR}/tests32/test16 -D TEST_OUTPUT=tmpfile32_16.txt
+        -D TEST_REFERENCE=${CMAKE_SOURCE_DIR}/tests32/ref16.txt
+        -P ${CMAKE_SOURCE_DIR}/runTest.cmake )
+
+    add_test(NAME sse_32bits COMMAND ${CMAKE_COMMAND} -D TEST_PROGRAM=${CMAKE_BINARY_DIR}/${BOX64}
+        -D TEST_ARGS=${CMAKE_SOURCE_DIR}/tests32/test17 -D TEST_OUTPUT=tmpfile32_17.txt
+        -D TEST_REFERENCE=${CMAKE_SOURCE_DIR}/tests32/ref17.txt
+        -P ${CMAKE_SOURCE_DIR}/runTest.cmake )
+
+    set_tests_properties(sse_32bits PROPERTIES ENVIRONMENT "BOX64_DYNAREC_FASTNAN=0;BOX64_DYNAREC_FASTROUND=0")
+
+    add_test(NAME longjumpInSignals_32bits COMMAND ${CMAKE_COMMAND} -D TEST_PROGRAM=${CMAKE_BINARY_DIR}/${BOX64}
+        -D TEST_ARGS=${CMAKE_SOURCE_DIR}/tests32/test18 -D TEST_OUTPUT=tmpfile32_18.txt
+        -D TEST_REFERENCE=${CMAKE_SOURCE_DIR}/tests32/ref18.txt
+        -P ${CMAKE_SOURCE_DIR}/runTest.cmake )
+
+    add_test(NAME x87_32bits COMMAND ${CMAKE_COMMAND} -D TEST_PROGRAM=${CMAKE_BINARY_DIR}/${BOX64}
+        -D TEST_ARGS=${CMAKE_SOURCE_DIR}/tests32/test19 -D TEST_OUTPUT=tmpfile32_19.txt
+        -D TEST_REFERENCE=${CMAKE_SOURCE_DIR}/tests32/ref19.txt
+        -P ${CMAKE_SOURCE_DIR}/runTest.cmake )
+
+    set_tests_properties(x87_32bits PROPERTIES ENVIRONMENT "BOX64_DYNAREC_FASTROUND=0")
+
+    add_test(NAME idiv_32bits COMMAND ${CMAKE_COMMAND} -D TEST_PROGRAM=${CMAKE_BINARY_DIR}/${BOX64}
+        -D TEST_ARGS=${CMAKE_SOURCE_DIR}/tests32/test20 -D TEST_OUTPUT=tmpfile32_20.txt
+        -D TEST_REFERENCE=${CMAKE_SOURCE_DIR}/tests32/ref20.txt
+        -P ${CMAKE_SOURCE_DIR}/runTest.cmake )
+
+    add_test(NAME multiple_dlopen_32bits COMMAND ${CMAKE_COMMAND} -D TEST_PROGRAM=${CMAKE_BINARY_DIR}/${BOX64} 
+        -D TEST_ARGS=${CMAKE_SOURCE_DIR}/tests32/test21 -D TEST_OUTPUT=tmpfile32_21.txt 
+        -D TEST_REFERENCE=${CMAKE_SOURCE_DIR}/tests32/ref21.txt
+        -P ${CMAKE_SOURCE_DIR}/runTest.cmake )
+
+    file(GLOB extension_tests "${CMAKE_SOURCE_DIR}/tests32/extensions/*.c")
+    foreach(file ${extension_tests})
+        get_filename_component(testname "${file}" NAME_WE)
+        add_test(NAME "${testname}_32bits" COMMAND ${CMAKE_COMMAND} -D TEST_PROGRAM=${CMAKE_BINARY_DIR}/${BOX64}
+            -D TEST_ARGS=${CMAKE_SOURCE_DIR}/tests32/extensions/${testname} -D TEST_OUTPUT=tmpfile32_-${testname}.txt
+            -D TEST_REFERENCE=${CMAKE_SOURCE_DIR}/tests32/extensions/${testname}.txt
+            -P ${CMAKE_SOURCE_DIR}/runTest.cmake)
+    endforeach()
+
+    #add_test(NAME sse_optimized_32bits COMMAND ${CMAKE_COMMAND} -D TEST_PROGRAM=${CMAKE_BINARY_DIR}/${BOX64} 
+    #    -D TEST_ARGS=${CMAKE_SOURCE_DIR}/tests32/test17_o2 -D TEST_OUTPUT=tmpfile32_17_o2.txt 
+    #    -D TEST_REFERENCE=${CMAKE_SOURCE_DIR}/tests32/ref17_o2.txt
+    #    -P ${CMAKE_SOURCE_DIR}/runTest.cmake )
+
+    #set_tests_properties(sse_optimized_32bits PROPERTIES ENVIRONMENT "BOX64_DYNAREC_FASTNAN=0;BOX64_DYNAREC_FASTROUND=0")    
+        
+    add_test(bswap_32bits ${CMAKE_COMMAND} -D TEST_PROGRAM=${CMAKE_BINARY_DIR}/${BOX64}
+            -D TEST_ARGS=${CMAKE_SOURCE_DIR}/tests32/test23 -D TEST_OUTPUT=tmpfile32_23.txt
+            -D TEST_REFERENCE=${CMAKE_SOURCE_DIR}/tests32/ref23.txt
+            -P ${CMAKE_SOURCE_DIR}/runTest.cmake )
 endif()
