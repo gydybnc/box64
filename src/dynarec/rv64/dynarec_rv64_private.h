@@ -116,6 +116,7 @@ typedef struct instruction_rv64_s {
     flagcache_t         f_entry;    // flags status before the instruction begin
     uint8_t             vector_sew_entry; // sew status before the instruction begin
     uint8_t             vector_sew_exit;  // sew status at the end of instruction
+    int                 pattern_code;
 } instruction_rv64_t;
 
 typedef struct dynarec_rv64_s {
