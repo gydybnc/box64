@@ -784,8 +784,14 @@ if(BOX32)
         "${BOX64_ROOT}/src/wrapped32/wrappedlibrt.c"
         "${BOX64_ROOT}/src/wrapped32/wrappedcrashhandler.c"
         "${BOX64_ROOT}/src/wrapped32/wrappedlibgl.c"
+        "${BOX64_ROOT}/src/wrapped32/wrappedlibglu.c"
         "${BOX64_ROOT}/src/wrapped32/wrappedsdl1.c"
         "${BOX64_ROOT}/src/wrapped32/wrappedlibasound.c"
+        "${BOX64_ROOT}/src/wrapped32/wrappedlibx11.c"
+        "${BOX64_ROOT}/src/wrapped32/wrappedlibxfixes.c"
+        "${BOX64_ROOT}/src/wrapped32/wrappedlibxrender.c"
+        "${BOX64_ROOT}/src/wrapped32/wrappedlibxcursor.c"
+        "${BOX64_ROOT}/src/wrapped32/wrappedlibxrandr.c"
     )
     endif()
     string(REPLACE ".c" "_private.h" MODROOT ${BOX64_ROOT})

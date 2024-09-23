@@ -23,6 +23,7 @@ typedef uint32_t (*uFu_t)(uint32_t);
 typedef uint32_t (*uFp_t)(void*);
 typedef uint32_t (*uFV_t)(...);
 typedef uint64_t (*UFp_t)(void*);
+typedef intptr_t (*lFS_t)(void*);
 typedef uintptr_t (*LFL_t)(uintptr_t);
 typedef void* (*pFv_t)(void);
 typedef void* (*pFu_t)(uint32_t);
@@ -95,6 +96,7 @@ typedef void* (*pFiiiiiiiiilt_t)(int32_t, int32_t, int32_t, int32_t, int32_t, in
 	GO(__close_nocancel, iFi_t) \
 	GO(getifaddrs, iFp_t) \
 	GO(getwc, iFh_t) \
+	GO(ftell, lFS_t) \
 	GO(__ctype_b_loc, pFv_t) \
 	GO(__ctype_tolower_loc, pFv_t) \
 	GO(__ctype_toupper_loc, pFv_t) \
@@ -103,6 +105,7 @@ typedef void* (*pFiiiiiiiiilt_t)(int32_t, int32_t, int32_t, int32_t, int32_t, in
 	GO(localeconv, pFv_t) \
 	GO(getpwuid, pFu_t) \
 	GO(gethostbyname, pFp_t) \
+	GO(getpwnam, pFp_t) \
 	GO(gmtime, pFp_t) \
 	GO(localtime, pFp_t) \
 	GO(getmntent, pFS_t) \
@@ -131,6 +134,7 @@ typedef void* (*pFiiiiiiiiilt_t)(int32_t, int32_t, int32_t, int32_t, int32_t, in
 	GO(strtold_l, KFppa_t) \
 	GO(recvmsg, lFipi_t) \
 	GO(sendmsg, lFipi_t) \
+	GO(writev, lFipi_t) \
 	GO(__realpath_chk, pFppv_t) \
 	GO(__libc_init, vFpppp_t) \
 	GO(getaddrinfo, iFpppp_t) \

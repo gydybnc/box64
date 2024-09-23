@@ -99,8 +99,14 @@ void x86Int3(x64emu_t* emu, uintptr_t* addr)
                         snprintf(buff, 256, "%s", " ... ");
                     }
                 } else
-                if(strstr(s, "SDL_RWFromFile")==s || strstr(s, "SDL_RWFromFile")==s) {
+                if(strstr(s, "SDL_PollEvent")==s) {
+                    snprintf(buff, 255, "%04d|%p: Calling %s(%p)", tid, from_ptrv(*(ptr_t*)from_ptr(R_ESP)), s, from_ptrv(*(ptr_t*)from_ptr(R_ESP+4)));
+                    pu8 = from_ptrv(*(ptr_t*)from_ptr(R_ESP+4));
+                    post = 10;
+                } else if(strstr(s, "SDL_RWFromFile")==s || strstr(s, "SDL_RWFromFile")==s) {
                     snprintf(buff, 255, "%04d|%p: Calling %s(%s, %s)", tid, from_ptrv(*(ptr_t*)from_ptr(R_ESP)), s, from_ptrv(*(ptr_t*)from_ptr(R_ESP+4)), from_ptrv(*(ptr_t*)from_ptr(R_ESP+8)));
+                } else if(strstr(s, "SDL_WarpMouse")==s) {
+                    snprintf(buff, 255, "%04d|%p: Calling %s(%hd, %hd)", tid, from_ptrv(*(ptr_t*)from_ptr(R_ESP)), s, *(uint16_t*)from_ptr(R_ESP+4), *(uint16_t*)from_ptr(R_ESP+8));
                 } else  if(strstr(s, "glColor4f")==s) {
                     snprintf(buff, 255, "%04d|%p: Calling %s(%f, %f, %f, %f)", tid, from_ptrv(*(ptr_t*)from_ptr(R_ESP)), s, *(float*)from_ptr(R_ESP+4), *(float*)from_ptr(R_ESP+8), *(float*)from_ptr(R_ESP+12), *(float*)from_ptr(R_ESP+16));
                 } else  if(strstr(s, "glTexCoord2f")==s) {
@@ -222,9 +228,11 @@ void x86Int3(x64emu_t* emu, uintptr_t* addr)
                     snprintf(buff, 255, "%04d|%p: Calling %s(%p, %p, %u)", tid, from_ptrv(*(ptr_t*)from_ptr(R_ESP)), s, from_ptrv(*(ptr_t*)from_ptr(R_ESP+4)), from_ptrv(*(ptr_t*)from_ptr(R_ESP+8)), *(ulong*)from_ptr(R_ESP+12));
                     ret_fmt = 1;
                 } else  if(strstr(s, "strstr")==s) {
-                    snprintf(buff, 255, "%04d|%p: Calling %s(\"%.127s\", \"%.127s\")", tid, from_ptrv(*(ptr_t*)from_ptr(R_ESP)), s, from_ptrv(*(ptr_t*)from_ptr(R_ESP+4)), from_ptrv(*(ptr_t*)from_ptr(R_ESP+8)));
+                    snprintf(buff, 255, "%04d|%p: Calling %s(%p\"%.127s\", \"%.127s\")", tid, from_ptrv(*(ptr_t*)from_ptr(R_ESP)), s, from_ptrv(*(ptr_t*)from_ptr(R_ESP+4)), from_ptrv(*(ptr_t*)from_ptr(R_ESP+4)), from_ptrv(*(ptr_t*)from_ptr(R_ESP+8)));
                 } else  if(strstr(s, "strlen")==s) {
                     snprintf(buff, 255, "%04d|%p: Calling %s(%p(\"%s\"))", tid, from_ptrv(*(ptr_t*)from_ptr(R_ESP)), s, from_ptrv(*(ptr_t*)from_ptr(R_ESP+4)), ((R_ESP+4))?((char*)from_ptrv(*(ptr_t*)from_ptr(R_ESP+4))):"nil");
+                } else  if(strstr(s, "strchr")==s || strstr(s, "strrchr")==s) {
+                    snprintf(buff, 255, "%04d|%p: Calling %s(%p\"%.127s\", 0x%x'%c')", tid, from_ptrv(*(ptr_t*)from_ptr(R_ESP)), s, from_ptrv(*(ptr_t*)from_ptr(R_ESP+4)), from_ptrv(*(ptr_t*)from_ptr(R_ESP+4)), *(char*)from_ptr(R_ESP+8), *(char*)from_ptr(R_ESP+8));
                 } else  if(strstr(s, "vsnprintf")==s) {
                     snprintf(buff, 255, "%04d|%p: Calling %s(%08X, %u, %08X...)", tid, from_ptrv(*(ptr_t*)from_ptr(R_ESP)), s, *(uint32_t*)from_ptr(R_ESP+4), *(uint32_t*)from_ptr(R_ESP+8), *(uint32_t*)from_ptr(R_ESP+12));
                     pu32 = (uint32_t*)from_ptr(*(ptr_t*)from_ptr(R_ESP+4));
@@ -302,7 +310,7 @@ void x86Int3(x64emu_t* emu, uintptr_t* addr)
                 } else  if(!strcmp(s, "vsscanf")) {
                     snprintf(buff, 255, "%04d|%p: Calling %s(\"%s\", \"%s\", ...)", tid, from_ptrv(*(ptr_t*)from_ptr(R_ESP)), s, from_ptrv(*(ptr_t*)from_ptr(R_ESP+4)), from_ptrv(*(ptr_t*)from_ptr(R_ESP+8)));
                 } else if(strstr(s, "XCreateWindow")==s) {
-                    snprintf(buff, 255, "%04d|%p: Calling %s(%p, %p, %d, %d, %u, %u, %u, %d, %u, %p, %u, %p)", tid, from_ptrv(*(ptr_t*)from_ptr(R_ESP)), s, from_ptrv(*(ptr_t*)from_ptr(R_ESP+4)), from_ptrv(*(ptr_t*)from_ptr(R_ESP+8)), *(int*)from_ptr(R_ESP+12), *(int*)from_ptr(R_ESP+16), *(uint32_t*)from_ptr(R_ESP+20), *(uint32_t*)from_ptr(R_ESP+24), *(uint32_t*)from_ptr(R_ESP+28), *(int32_t*)from_ptr(R_ESP+32), *(uint32_t*)from_ptr(R_ESP+36), *(void**)from_ptr(R_ESP+40), *(uint32_t*)from_ptr(R_ESP+44), *(void**)from_ptr(R_ESP+48));
+                    snprintf(buff, 255, "%04d|%p: Calling %s(%p, %p, %d, %d, %u, %u, %u, %d, %u, %p, 0x%x, %p)", tid, from_ptrv(*(ptr_t*)from_ptr(R_ESP)), s, from_ptrv(*(ptr_t*)from_ptr(R_ESP+4)), from_ptrv(*(ptr_t*)from_ptr(R_ESP+8)), *(int*)from_ptr(R_ESP+12), *(int*)from_ptr(R_ESP+16), *(uint32_t*)from_ptr(R_ESP+20), *(uint32_t*)from_ptr(R_ESP+24), *(uint32_t*)from_ptr(R_ESP+28), *(int32_t*)from_ptr(R_ESP+32), *(uint32_t*)from_ptr(R_ESP+36), from_ptrv(*(ptr_t*)from_ptr(R_ESP+40)), *(uint32_t*)from_ptr(R_ESP+44), from_ptrv(*(ptr_t*)from_ptr(R_ESP+48)));
                 } else if(strstr(s, "XLoadQueryFont")==s) {
                     snprintf(buff, 255, "%04d|%p: Calling %s(%p, \"%s\")", tid, from_ptrv(*(ptr_t*)from_ptr(R_ESP)), s, from_ptrv(*(ptr_t*)from_ptr(R_ESP+4)), from_ptrv(*(ptr_t*)from_ptr(R_ESP+8)));
                 } else if(strstr(s, "pthread_mutex_lock")==s || strstr(s, "pthread_mutex_unlock")==s) {
@@ -370,6 +378,15 @@ void x86Int3(x64emu_t* emu, uintptr_t* addr)
                     case 7: if(R_EAX) snprintf(buff2, 63, " (error=\"%s\")", strerror(R_EAX)); break;
                     case 8: if(!R_EAX) snprintf(buff2, 63, " [%p]", from_ptrv(*pu32)); break;
                     case 9: if(errno) snprintf(buff2, 63, " (errno=%d/\"%s\")", errno, strerror(errno)); else snprintf(buff2, 63, " (errno=0)"); break;
+                            break;
+                    case 10: if(R_EAX)
+                            switch(*pu8) {
+                                case 4:
+                                    snprintf(buff2, 63, " [type=%hhd, x=%hd, y=%hd, relx=%+hd, rely=%+hd]", *pu8, *(uint16_t*)(pu8+4), *(uint16_t*)(pu8+6), *(int16_t*)(pu8+8), *(int16_t*)(pu8+10)); 
+                                    break;
+                                default:
+                                    snprintf(buff2, 63, " [type=%hhd]", *pu8); 
+                            }
                             break;
 
                 }

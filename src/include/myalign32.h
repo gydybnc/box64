@@ -481,7 +481,7 @@ struct i386_hostent {
 struct i386_iovec
 {
   ptr_t     iov_base; // void *
-  uint32_t  iov_len;
+  ulong_t   iov_len;
 };
 
 struct i386_msghdr
@@ -500,5 +500,14 @@ void UnalignIOV_32(void* dest, void* source); // Native -> x86
 void AlignMsgHdr_32(void* dest, void* dest_iov, void* source);   // x86 -> Native
 //void UnalignMsgHdr_32(void* dest, void* source, void* source_iov); // Native -> x86
 
-
+struct i386_passwd
+{
+  ptr_t pw_name; // char*
+  ptr_t pw_passwd; // char*
+  __uid_t pw_uid;
+  __gid_t pw_gid;
+  ptr_t pw_gecos; // char*
+  ptr_t pw_dir; // char*
+  ptr_t pw_shell; // char*
+};
 #endif//__MY_ALIGN32__H_

@@ -110,8 +110,8 @@ GOW(bind_textdomain_codeset, pFpp)
 // bsd_signal   // Weak
 //GOM(bsearch, pFEppLLp) //%%
 GOW(btowc, iFi)
-//GOW(bzero, vFpL)
-//GO(__bzero, vFpL)
+GOW(bzero, vFpL)
+GO(__bzero, vFpL)
 GOW(calloc, pFLL)
 // callrpc
 //GOW(canonicalize_file_name, pFp)
@@ -172,12 +172,12 @@ GOW(__connect, iFipu)
 //GO(ctermid, pFp)
 GO(ctime, pFrL_)
 GO(ctime_r, pFrL_p)
-//DATAM(__ctype_b, 4)
+DATAM(__ctype_b, 4)
 GOM(__ctype_b_loc, pFEv)
 GOW(__ctype_get_mb_cur_max, LFv)
-//DATAM(__ctype_tolower, 4)
+DATAM(__ctype_tolower, 4)
 GOM(__ctype_tolower_loc, pFEv)
-//DATAM(__ctype_toupper, 4)
+DATAM(__ctype_toupper, 4)
 GOM(__ctype_toupper_loc, pFEv)
 // __curbrk // type B
 //GO(cuserid, pFp)
@@ -248,9 +248,9 @@ GO(endspent, vFv)
 // endusershell
 GOW(endutent, vFv)
 // endutxent
-//DATAM(environ, 4)
-//DATAM(_environ, 4)
-//DATAM(__environ, 4)    // type B
+DATAM(environ, 4)
+DATAM(_environ, 4)
+DATAM(__environ, 4)    // type B
 // envz_add
 // envz_entry
 // envz_get
@@ -312,7 +312,7 @@ GOM(fcntl64, iFEiiN) //%%
 //GO(fcvt_r, iFdipppL)
 GO(fdatasync, iFi)
 // fdetach
-//GO(fdopen, pFip)
+GO(fdopen, SFip)
 GOW(fdopendir, pFi)
 GOW(feof, iFS)
 //GO(feof_unlocked, iFp)
@@ -413,7 +413,7 @@ GOWM(fstatfs64, iFip)    //%%,noE
 //GO(fstatvfs, iFip)
 //GOW(fstatvfs64, iFip)   // alignment?
 GOW(fsync, iFi)
-GOW(ftell, lFS)
+GOWM(ftell, lFES)
 GO(ftello, lFS)
 GO(ftello64, IFS)
 //GO(ftime, iFp)
@@ -555,7 +555,7 @@ GOW(getpt, iFv)
 // getpw    // Weak
 //GO(getpwent, pFv)
 // getpwent_r
-//GO(getpwnam, pFp)
+GOM(getpwnam, pFEp)
 //GO(getpwnam_r, iFpppup)
 GOM(getpwuid, pFEu)
 //GO(getpwuid_r, iFuppup)
@@ -1001,7 +1001,7 @@ GO(__libc_current_sigrtmin, iFv)
 //GO(__libc_free, vFp)
 // __libc_freeres
 GOM(__libc_init_first, vFEipV)  //%%
-// _libc_intl_domainname    // type R
+DATAM(_libc_intl_domainname, 4)    // type R
 //GO2(__libc_open, iFEpOu, my_open)
 // __libc_longjmp
 // __libc_mallinfo
@@ -1082,7 +1082,7 @@ GO(mbstowcs, LFppL)
 // _mcleanup
 //GOWM(mcount, vFpp)   //%%,noE
 // _mcount
-//GOW(memalign, pFLL)
+GOW(memalign, pFLL)
 //DATAV(__memalign_hook, 4)
 //GOW(memccpy, pFppiL)
 GO(memchr, pFpiL)
@@ -1223,7 +1223,7 @@ GOW(opendir, pFp)
 GOW(pathconf, iFpi)
 GOW(pause, iFv)
 GO(pclose, iFS)
-//GO(perror, vFp)
+GO(perror, vFp)
 // personality  // Weak
 GOW(pipe, iFp)
 // __pipe
@@ -1623,7 +1623,7 @@ GO(__strcat_chk, pFppL)
 GO(strchr, pFpi)
 //GOW(strchrnul, pFpi)
 GO(strcmp, iFpp)
-//GO(strcoll, iFpp)
+GO(strcoll, iFpp)
 GO(__strcoll_l, iFppa)
 //GOW(strcoll_l, iFppp)
 GO(strcpy, pFpp)
@@ -1893,13 +1893,13 @@ GOM(__vfprintf_chk, iFESvpp) //%%
 // vhangup
 // vlimit
 // vmsplice
-//GOM(vprintf, iFEpp)               //%%
+GOM(vprintf, iFEpp)               //%%
 //GOM(__vprintf_chk, iFEvpp)        //%%
 // vscanf   // Weak
 GOWM(vsnprintf, iFEpLpp)         //%%
 GOWM(__vsnprintf, iFEpLpp)       //%%
 GOM(__vsnprintf_chk, iFEpLvvpp)  //%%
-//GOWM(vsprintf, iFEppp)            //%%
+GOWM(vsprintf, iFEppp)            //%%
 //GOM(__vsprintf_chk, iFEpiLpp)     //%% 
 //GOM(vsscanf, iFEppp) //%%
 // __vsscanf    // Weak
@@ -2033,7 +2033,7 @@ GOM(wprintf, iFEpV) //%%
 //GOM(__wprintf_chk, iFEipV) //%%
 GOW(write, lFipL)
 //GOW(__write, lFipL)
-//GOW(writev, lFipi)
+GOWM(writev, lFEipi)
 // wscanf
 // __wuflow
 // __wunderflow
@@ -2043,7 +2043,7 @@ GOW(write, lFipL)
 // xdr_authdes_cred
 // xdr_authdes_verf
 // xdr_authunix_parms
-// xdr_bool
+GO(xdr_bool, iFpp)
 // xdr_bytes
 // xdr_callhdr
 // xdr_callmsg
@@ -2071,7 +2071,7 @@ GOW(write, lFipL)
 // xdr_longlong_t
 // xdrmem_create
 // xdr_netnamestr
-// xdr_netobj
+GO(xdr_netobj, iFpbup_)
 // xdr_opaque
 // xdr_opaque_auth
 // xdr_pmap
@@ -2093,7 +2093,7 @@ GOW(write, lFipL)
 // xdr_string
 // xdr_u_char
 // xdr_u_hyper
-//GO(xdr_u_int, iFpp)
+GO(xdr_u_int, iFpp)
 // xdr_uint16_t
 // xdr_uint32_t
 // xdr_uint64_t
@@ -2105,7 +2105,7 @@ GOW(write, lFipL)
 // xdr_u_quad_t
 // xdr_u_short
 // xdr_vector
-// xdr_void
+GO(xdr_void, iFv)
 // xdr_wrapstring
 // xencrypt
 GO(__xmknod, iFipup)

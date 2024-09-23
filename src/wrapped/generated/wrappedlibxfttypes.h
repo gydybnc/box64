@@ -11,7 +11,9 @@
 #define ADDED_FUNCTIONS() 
 #endif
 
+typedef void* (*pFpiV_t)(void*, int32_t, ...);
 
-#define SUPER() ADDED_FUNCTIONS()
+#define SUPER() ADDED_FUNCTIONS() \
+	GO(XftFontOpen, pFpiV_t)
 
 #endif // __wrappedlibxftTYPES_H_

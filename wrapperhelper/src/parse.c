@@ -47,15 +47,26 @@ void dump_preproc(machine_t *target, const char *filename, FILE *file) {
 }
 
 enum decl_storage {
-	STORAGE_NONE,
-	STORAGE_TYPEDEF,
-	STORAGE_EXTERN,
-	STORAGE_STATIC,
-	STORAGE_TLS,
-	STORAGE_TLS_EXTERN,
-	STORAGE_TLS_STATIC,
-	STORAGE_AUTO,
-	STORAGE_REG,
+	TMPSTO_NONE,
+	TMPSTO_TYPEDEF,
+	TMPSTO_EXTERN,
+	TMPSTO_STATIC,
+	TMPSTO_TLS,
+	TMPSTO_TLS_EXTERN,
+	TMPSTO_TLS_STATIC,
+	TMPSTO_AUTO,
+	TMPSTO_REG,
+};
+const enum decl_storage_e tmpsto2sto[] = {
+	[TMPSTO_NONE] = STORAGE_NONE,
+	[TMPSTO_TYPEDEF] = STORAGE_NONE,
+	[TMPSTO_EXTERN] = STORAGE_EXTERN,
+	[TMPSTO_STATIC] = STORAGE_STATIC,
+	[TMPSTO_TLS] = STORAGE_TLS,
+	[TMPSTO_TLS_EXTERN] = STORAGE_TLS_EXTERN,
+	[TMPSTO_TLS_STATIC] = STORAGE_TLS_STATIC,
+	[TMPSTO_AUTO] = STORAGE_AUTO,
+	[TMPSTO_REG] = STORAGE_REG,
 };
 enum decl_spec {
 	SPEC_NONE,
@@ -84,7 +95,7 @@ static int validate_storage_type(machine_t *target, enum decl_storage storage,
 	// We may still do adjustments here
 	if (!validate_type(target, typ)) return 0;
 	if (typ->typ == TYPE_FUNCTION) {
-		if ((storage == STORAGE_TLS) || (storage == STORAGE_TLS_EXTERN) || (storage == STORAGE_TLS_STATIC)) {
+		if ((storage == TMPSTO_TLS) || (storage == TMPSTO_TLS_EXTERN) || (storage == TMPSTO_TLS_STATIC)) {
 			printf("Error: functions cannot be thread local\n");
 			return 0;
 		}
@@ -94,7 +105,7 @@ static int validate_storage_type(machine_t *target, enum decl_storage storage,
 			return VALIDATION_FUN;
 		}
 	} else {
-		if ((sym == SYM_COMMA) || (sym == SYM_RPAREN) || (sym == SYM_SEMICOLON) || ((storage != STORAGE_TYPEDEF) && (sym == SYM_EQ))) {
+		if ((sym == SYM_COMMA) || (sym == SYM_RPAREN) || (sym == SYM_SEMICOLON) || ((storage != TMPSTO_TYPEDEF) && (sym == SYM_EQ))) {
 			return (sym == SYM_SEMICOLON) ? VALIDATION_LAST_DECL : VALIDATION_DECL;
 		}
 	}
@@ -436,7 +447,7 @@ static int parse_type_name(machine_t *target, khash_t(struct_map) *struct_map, k
 	dest2.argt.type_set = type_set;
 	dest2.argt.builtins = builtins;
 	dest2.argt.const_map = const_map;
-	if (!parse_declarator(target, &dest2, prep, tok, STORAGE_NONE, FSPEC_NONE, *typ, 0, 0, 0, 1)) {
+	if (!parse_declarator(target, &dest2, prep, tok, TMPSTO_NONE, FSPEC_NONE, *typ, 0, 0, 0, 1)) {
 		// Token is deleted
 		type_del(*typ);
 		goto failed;
@@ -724,7 +735,7 @@ expr_new_token:
 	// expr2 ::= sizeof expr2
 	// which includes expr2 ::= sizeof ( expr16 )
 	// expr2 ::= sizeof ( type-name )
-	if ((has_level == -1) && (expr_level >= 2) && (tok->tokt == PTOK_KEYWORD) && (tok->tokv.kw = KW_SIZEOF)) {
+	if ((has_level == -1) && (expr_level >= 2) && (tok->tokt == PTOK_KEYWORD) && (tok->tokv.kw == KW_SIZEOF)) {
 		*tok = proc_next_token(prep);
 		if ((tok->tokt != PTOK_SYM) || (tok->tokv.sym != SYM_LPAREN)) {
 			struct expr_partial_op pop = {
@@ -754,8 +765,8 @@ expr_new_token:
 			if (!parse_type_name(target, struct_map, type_map, enum_map, builtins, const_map, type_set, prep, tok, SYM_RPAREN, &typ)) {
 				goto failed;
 			}
-			if (!typ->is_validated || typ->is_incomplete) {
-				printf("Error: cannot get the size of an incomplete type\n");
+			if (!typ->is_validated || typ->is_incomplete || (typ->typ == TYPE_FUNCTION)) {
+				printf("Error: cannot get the size of a function or incomplete type\n");
 				type_del(typ);
 				proc_token_del(tok);
 				goto failed;
@@ -805,6 +816,51 @@ expr_new_token:
 			expr_level = 16;
 			goto pushed_expr;
 		}
+	}
+	// expr2 ::= _Alignof ( type-name )
+	if ((has_level == -1) && (expr_level >= 2) && (tok->tokt == PTOK_KEYWORD) && (tok->tokv.kw == KW_ALIGNOF)) {
+		*tok = proc_next_token(prep);
+		if ((tok->tokt != PTOK_SYM) || (tok->tokv.sym != SYM_LPAREN)) {
+			printf("Error: invalid _Alignof expression\n");
+			proc_token_del(tok);
+			goto failed;
+		}
+		// Empty destructor
+		*tok = proc_next_token(prep);
+		type_t *typ = type_new();
+		if (!typ) {
+			printf("Error: failed to create new type info structure\n");
+			proc_token_del(tok);
+			goto failed;
+		}
+		if (!parse_type_name(target, struct_map, type_map, enum_map, builtins, const_map, type_set, prep, tok, SYM_RPAREN, &typ)) {
+			goto failed;
+		}
+		if (!typ->is_validated || typ->is_incomplete || (typ->typ == TYPE_FUNCTION)) {
+			printf("Error: cannot get the alignment of a function or incomplete type\n");
+			type_del(typ);
+			proc_token_del(tok);
+			goto failed;
+		}
+		e = malloc(sizeof *e);
+		if (!e) {
+			printf("Error: failed to create new expression atom\n");
+			type_del(typ);
+			proc_token_del(tok);
+			goto failed;
+		}
+		e->typ = ETY_CONST;
+		e->val.cst.typ = NCT_UINT64;
+		e->val.cst.val.u64 = typ->szinfo.align;
+		has_level = 2;
+		type_del(typ);
+		if (!e->val.cst.val.u64) {
+			proc_token_del(tok);
+			goto failed;
+		}
+		// Empty destructor
+		*tok = proc_next_token(prep);
+		goto expr_new_token;
 	}
 	
 	// expr0 ::= ( expr16 )
@@ -1260,6 +1316,7 @@ static int eval_expression(expr_t *e, khash_t(const_map) *const_map, num_constan
 		if (e->val.cast.typ->typ == TYPE_BUILTIN) {
 			switch (e->val.cast.typ->val.builtin) {
 			case BTT_UCHAR:
+			case BTT_U8:
 				switch (dest->typ) {
 				case NCT_FLOAT:   dest->val.u32 = (uint8_t)dest->val.f; break;
 				case NCT_DOUBLE:  dest->val.u32 = (uint8_t)dest->val.d; break;
@@ -1272,6 +1329,8 @@ static int eval_expression(expr_t *e, khash_t(const_map) *const_map, num_constan
 				dest->typ = NCT_UINT32;
 				return 1;
 			case BTT_INT:
+			case BTT_SINT:
+			case BTT_S32:
 				switch (dest->typ) {
 				case NCT_FLOAT:   dest->val.i32 = (int32_t)dest->val.f; break;
 				case NCT_DOUBLE:  dest->val.i32 = (int32_t)dest->val.d; break;
@@ -1283,19 +1342,7 @@ static int eval_expression(expr_t *e, khash_t(const_map) *const_map, num_constan
 				}
 				dest->typ = NCT_INT32;
 				return 1;
-			case BTT_ULONG:
-				// Warning: assuming sizeof(long) == 8 on the current target
-				switch (dest->typ) {
-				case NCT_FLOAT:   dest->val.u64 = (uint64_t)dest->val.f; break;
-				case NCT_DOUBLE:  dest->val.u64 = (uint64_t)dest->val.d; break;
-				case NCT_LDOUBLE: dest->val.u64 = (uint64_t)dest->val.l; break;
-				case NCT_INT32:   dest->val.u64 = (uint64_t)dest->val.i32; break;
-				case NCT_UINT32:  dest->val.u64 = (uint64_t)dest->val.u32; break;
-				case NCT_INT64:   dest->val.u64 = (uint64_t)dest->val.i64; break;
-				case NCT_UINT64: break;
-				}
-				dest->typ = NCT_UINT64;
-				return 1;
+			case BTT_UINT:
 			case BTT_U32:
 				switch (dest->typ) {
 				case NCT_FLOAT:   dest->val.u32 = (uint32_t)dest->val.f; break;
@@ -1308,15 +1355,28 @@ static int eval_expression(expr_t *e, khash_t(const_map) *const_map, num_constan
 				}
 				dest->typ = NCT_UINT32;
 				return 1;
+			case BTT_ULONG:
+				// Warning: assuming sizeof(long) == 8 on the current target
+				// TODO: use machine to select between U32 and U64
+			case BTT_U64:
+				switch (dest->typ) {
+				case NCT_FLOAT:   dest->val.u64 = (uint64_t)dest->val.f; break;
+				case NCT_DOUBLE:  dest->val.u64 = (uint64_t)dest->val.d; break;
+				case NCT_LDOUBLE: dest->val.u64 = (uint64_t)dest->val.l; break;
+				case NCT_INT32:   dest->val.u64 = (uint64_t)dest->val.i32; break;
+				case NCT_UINT32:  dest->val.u64 = (uint64_t)dest->val.u32; break;
+				case NCT_INT64:   dest->val.u64 = (uint64_t)dest->val.i64; break;
+				case NCT_UINT64: break;
+				}
+				dest->typ = NCT_UINT64;
+				return 1;
 			case BTT_VOID:
 			case BTT_BOOL:
-			case BTT_CHAR:
+			case BTT_CHAR: // May be signed or unsigned depending on the machine
 			case BTT_SCHAR:
 			case BTT_SHORT:
 			case BTT_SSHORT:
 			case BTT_USHORT:
-			case BTT_SINT:
-			case BTT_UINT:
 			case BTT_LONG:
 			case BTT_SLONG:
 			case BTT_LONGLONG:
@@ -1326,12 +1386,9 @@ static int eval_expression(expr_t *e, khash_t(const_map) *const_map, num_constan
 			case BTT_SINT128:
 			case BTT_UINT128:
 			case BTT_S8:
-			case BTT_U8:
 			case BTT_S16:
 			case BTT_U16:
-			case BTT_S32:
 			case BTT_S64:
-			case BTT_U64:
 			case BTT_FLOAT:
 			case BTT_CFLOAT:
 			case BTT_IFLOAT:
@@ -1442,7 +1499,7 @@ parse_cur_token_decl:
 	}
 	// Storage
 	if (storage && (tok->tokt == PTOK_KEYWORD) && (tok->tokv.kw == KW_AUTO)) {
-		if (*storage == STORAGE_NONE) *storage = STORAGE_AUTO;
+		if (*storage == TMPSTO_NONE) *storage = TMPSTO_AUTO;
 		else {
 			printf("Error: unexpected storage class specifier '%s' in declaration\n", kw2str[tok->tokv.kw]);
 			goto failed;
@@ -1450,8 +1507,8 @@ parse_cur_token_decl:
 		*tok = proc_next_token(prep);
 		goto parse_cur_token_decl;
 	} else if (storage && (tok->tokt == PTOK_KEYWORD) && (tok->tokv.kw == KW_EXTERN)) {
-		if (*storage == STORAGE_NONE) *storage = STORAGE_EXTERN;
-		else if (*storage == STORAGE_TLS) *storage = STORAGE_TLS_EXTERN;
+		if (*storage == TMPSTO_NONE) *storage = TMPSTO_EXTERN;
+		else if (*storage == TMPSTO_TLS) *storage = TMPSTO_TLS_EXTERN;
 		else {
 			printf("Error: unexpected storage class specifier '%s' in declaration\n", kw2str[tok->tokv.kw]);
 			goto failed;
@@ -1459,7 +1516,7 @@ parse_cur_token_decl:
 		*tok = proc_next_token(prep);
 		goto parse_cur_token_decl;
 	} else if (storage && (tok->tokt == PTOK_KEYWORD) && (tok->tokv.kw == KW_REGISTER)) {
-		if (*storage == STORAGE_NONE) *storage = STORAGE_REG;
+		if (*storage == TMPSTO_NONE) *storage = TMPSTO_REG;
 		else {
 			printf("Error: unexpected storage class specifier '%s' in declaration\n", kw2str[tok->tokv.kw]);
 			goto failed;
@@ -1467,8 +1524,8 @@ parse_cur_token_decl:
 		*tok = proc_next_token(prep);
 		goto parse_cur_token_decl;
 	} else if (storage && (tok->tokt == PTOK_KEYWORD) && (tok->tokv.kw == KW_STATIC)) {
-		if (*storage == STORAGE_NONE) *storage = STORAGE_STATIC;
-		else if (*storage == STORAGE_TLS) *storage = STORAGE_TLS_STATIC;
+		if (*storage == TMPSTO_NONE) *storage = TMPSTO_STATIC;
+		else if (*storage == TMPSTO_TLS) *storage = TMPSTO_TLS_STATIC;
 		else {
 			printf("Error: unexpected storage class specifier '%s' in declaration\n", kw2str[tok->tokv.kw]);
 			goto failed;
@@ -1476,9 +1533,9 @@ parse_cur_token_decl:
 		*tok = proc_next_token(prep);
 		goto parse_cur_token_decl;
 	} else if (storage && (tok->tokt == PTOK_KEYWORD) && (tok->tokv.kw == KW_THREAD_LOCAL)) {
-		if (*storage == STORAGE_NONE) *storage = STORAGE_TLS;
-		else if (*storage == STORAGE_EXTERN) *storage = STORAGE_TLS_EXTERN;
-		else if (*storage == STORAGE_STATIC) *storage = STORAGE_TLS_STATIC;
+		if (*storage == TMPSTO_NONE) *storage = TMPSTO_TLS;
+		else if (*storage == TMPSTO_EXTERN) *storage = TMPSTO_TLS_EXTERN;
+		else if (*storage == TMPSTO_STATIC) *storage = TMPSTO_TLS_STATIC;
 		else {
 			printf("Error: unexpected storage class specifier '%s' in declaration\n", kw2str[tok->tokv.kw]);
 			goto failed;
@@ -1486,7 +1543,7 @@ parse_cur_token_decl:
 		*tok = proc_next_token(prep);
 		goto parse_cur_token_decl;
 	} else if (storage && (tok->tokt == PTOK_KEYWORD) && (tok->tokv.kw == KW_TYPEDEF)) {
-		if (*storage == STORAGE_NONE) *storage = STORAGE_TYPEDEF;
+		if (*storage == TMPSTO_NONE) *storage = TMPSTO_TYPEDEF;
 		else {
 			printf("Error: unexpected storage class specifier '%s' in declaration\n", kw2str[tok->tokv.kw]);
 			goto failed;
@@ -1775,7 +1832,7 @@ parse_cur_token_decl:
 					"Current state:\n"
 					"  storage: %p/%u\n"
 					"  spec: %u\n"
-					"  type: ", string_content(tok->tokv.str), storage, storage ? *storage : STORAGE_NONE, *spec);
+					"  type: ", string_content(tok->tokv.str), storage, storage ? *storage : TMPSTO_NONE, *spec);
 			type_print(typ);
 			printf("\n");
 			string_del(tok->tokv.str);
@@ -1848,7 +1905,7 @@ parse_cur_token_decl:
 						"Current state:\n"
 						"  storage: %p/%u\n"
 						"  spec: %u\n"
-						"  type: ", storage, storage ? *storage : STORAGE_NONE, *spec);
+						"  type: ", storage, storage ? *storage : TMPSTO_NONE, *spec);
 				type_print(typ);
 				printf("\n");
 				goto failed;
@@ -1916,7 +1973,7 @@ parse_cur_token_decl:
 				dest2.structms.builtins = builtins;
 				dest2.structms.const_map = const_map;
 				dest2.structms.dest = members;
-				if (!parse_declarator(target, &dest2, prep, tok, STORAGE_NONE, FSPEC_NONE, typ2, 0, 1, 1, 1)) {
+				if (!parse_declarator(target, &dest2, prep, tok, TMPSTO_NONE, FSPEC_NONE, typ2, 0, 1, 1, 1)) {
 					printf("Error parsing struct-declarator-list\n");
 					vector_del(st_members, members);
 					type_del(typ2);
@@ -1948,6 +2005,7 @@ parse_cur_token_decl:
 			}
 			
 			typ->is_incomplete = 0;
+			typ->is_validated = 0;
 			typ->val.st->has_incomplete = 0; // Filled by the validate_type step
 			typ->val.st->nmembers = vector_size(st_members, members);
 			typ->val.st->members = vector_steal(st_members, members);
@@ -2215,7 +2273,7 @@ invalid_token:
 			"Current state:\n"
 			"  storage: %p/%u\n"
 			"  spec: %u\n"
-			"  type: ", storage, storage ? *storage : STORAGE_NONE, *spec);
+			"  type: ", storage, storage ? *storage : TMPSTO_NONE, *spec);
 	type_print(typ);
 	printf("\n");
 	proc_token_print(tok);
@@ -2334,7 +2392,7 @@ static int parse_declarator(machine_t *target, struct parse_declarator_dest_s *d
 								vector_del(types, args);
 								goto failed;
 							}
-							enum decl_storage storage2 = STORAGE_NONE;
+							enum decl_storage storage2 = TMPSTO_NONE;
 							enum decl_spec spec2 = SPEC_NONE;
 							if (!parse_declaration_specifier(target, PDECL_STRUCT_MAP, PDECL_TYPE_MAP, PDECL_ENUM_MAP, PDECL_BUILTINS,
 							                                 PDECL_CONST_MAP, PDECL_TYPE_SET, prep, tok, &storage2, NULL, &spec2, typ2)) {
@@ -2383,6 +2441,27 @@ static int parse_declarator(machine_t *target, struct parse_declarator_dest_s *d
 								break;
 							} else if ((tok->tokt == PTOK_SYM) && (tok->tokv.sym == SYM_COMMA)) {
 								// Unnamed argument
+								if (typ2->typ == TYPE_ARRAY) {
+									// Need to convert type to a pointer
+									type_t *typ3 = type_new();
+									if (!typ3) {
+										printf("Error: failed to allocate new type\n");
+										type_del(typ2);
+										// Empty destructor
+										goto failed;
+									}
+									if (!type_copy_into(typ3, typ2)) {
+										printf("Error: failed to duplicate array type to temporary type\n");
+										type_del(typ3);
+										type_del(typ2);
+										// Empty destructor
+										goto failed;
+									}
+									type_del(typ2);
+									typ3->typ = TYPE_PTR;
+									typ3->val.typ = typ3->val.array.typ;
+									typ2 = type_try_merge(typ3, PDECL_TYPE_SET);
+								}
 								if (!vector_push(types, args, typ2)) {
 									printf("Error: failed to add argument to argument vector\n");
 									vector_del(types, args);
@@ -2403,7 +2482,7 @@ static int parse_declarator(machine_t *target, struct parse_declarator_dest_s *d
 							dest2.argt.type_set = PDECL_TYPE_SET;
 							dest2.argt.builtins = PDECL_BUILTINS;
 							dest2.argt.const_map = PDECL_CONST_MAP;
-							if (!parse_declarator(target, &dest2, prep, tok, STORAGE_NONE, FSPEC_NONE, typ2, 0, 0, 1, 1)) {
+							if (!parse_declarator(target, &dest2, prep, tok, TMPSTO_NONE, FSPEC_NONE, typ2, 0, 0, 1, 1)) {
 								// Token is deleted
 								vector_del(types, args);
 								type_del(typ2);
@@ -2726,22 +2805,39 @@ static int parse_declarator(machine_t *target, struct parse_declarator_dest_s *d
 					//  whereas no argument in function declaration means the function takes an unspecified number of arguments
 					if (typ->val.fun.nargs == (size_t)-1) typ->val.fun.nargs = 0;
 					
-					int iret;
-					char *cident = string_steal(cur_ident); cur_ident = NULL;
-					khiter_t it = kh_put(type_map, dest->f->decl_map, cident, &iret);
-					if (iret < 0) {
-						printf("Failed to add function '%s' to the declaration map\n", cident);
-						free(cident);
-						// Empty destructor
-						goto failed;
-					} else if (iret == 0) {
-						printf("Error: function '%s' is already in the declaration map\n", cident);
-						free(cident);
+					declaration_t *decl = malloc(sizeof *decl);
+					if (!decl) {
+						printf("Failed to create new declaration\n");
 						// Empty destructor
 						goto failed;
 					}
+					decl->storage = tmpsto2sto[storage];
+					decl->defined = 1;
+					decl->typ = typ;
 					
-					kh_val(dest->f->decl_map, it) = typ;
+					int iret;
+					char *cident = string_steal(cur_ident); cur_ident = NULL;
+					khiter_t it = kh_put(decl_map, dest->f->decl_map, cident, &iret);
+					if (iret < 0) {
+						printf("Failed to add function '%s' to the declaration map\n", cident);
+						free(cident);
+						free(decl);
+						// Empty destructor
+						goto failed;
+					} else if (iret == 0) {
+						free(decl);
+						if (kh_val(dest->f->decl_map, it)->defined) {
+							printf("Error: function '%s' is already in the declaration map\n", cident);
+							free(cident);
+							// Empty destructor
+							goto failed;
+						} else {
+							free(cident);
+							decl = kh_val(dest->f->decl_map, it);
+						}
+					}
+					
+					kh_val(dest->f->decl_map, it) = decl;
 					
 					// Skip the function body
 					int nlbraces = 0;
@@ -2757,13 +2853,14 @@ static int parse_declarator(machine_t *target, struct parse_declarator_dest_s *d
 					printf("Error: unexpected token in function body\n");
 					goto failed;
 				}
-				if (fspec != FSPEC_NONE) {
+				if ((fspec != FSPEC_NONE) && (typ->typ != TYPE_FUNCTION)) {
 					printf("Error: unexpected function specifier\n");
 					// Empty destructor
 					goto failed;
 				}
 				
-				if (storage == STORAGE_TYPEDEF) {
+				declaration_t *decl = NULL;
+				if (storage == TMPSTO_TYPEDEF) {
 					if (!is_init || !is_list) {
 						// We are not at the top-level (note that storage is set to NONE in function arguments)
 						printf("Error: invalid function definition\n");
@@ -2793,31 +2890,46 @@ static int parse_declarator(machine_t *target, struct parse_declarator_dest_s *d
 					} else {
 						kh_val(dest->f->type_map, it) = typ;
 					}
-				} else if ((storage != STORAGE_STATIC) && (storage != STORAGE_TLS_STATIC)) {
+				} else {
 					if (is_init && is_list) {
-						// static variables/functions are not exposed
+						decl = malloc(sizeof *decl);
+						if (!decl) {
+							printf("Failed to create new declaration\n");
+							// Empty destructor
+							goto failed;
+						}
+						if ((typ->typ == TYPE_FUNCTION) && (storage == TMPSTO_NONE))
+							storage = TMPSTO_EXTERN;
+						decl->storage = tmpsto2sto[storage];
+						decl->defined = 0;
+						decl->typ = typ;
+						
 						int iret;
 						char *cident = string_steal(cur_ident); cur_ident = NULL;
-						khiter_t it = kh_put(type_map, dest->f->decl_map, cident, &iret);
+						khiter_t it = kh_put(decl_map, dest->f->decl_map, cident, &iret);
 						if (iret < 0) {
 							printf("Failed to add '%s' to the declaration map\n", cident);
 							free(cident);
+							free(decl);
 							// Empty destructor
 							goto failed;
 						} else if (iret == 0) {
-							/* if ((storage == STORAGE_NONE) || !type_t_equal(typ, kh_val(dest->f->decl_map, it))) {
+							if (!type_t_equal(typ, kh_val(dest->f->decl_map, it)->typ)
+							 || ((storage == TMPSTO_NONE) && (kh_val(dest->f->decl_map, it)->storage == STORAGE_NONE))) {
 								printf("Error: '%s' is already in the declaration map (storage=%u)\n", cident, storage);
 								free(cident);
+								free(decl);
 								type_del(typ);
 								// Empty destructor
 								goto failed;
-							} else */ {
-								printf("Warning: '%s' is already in the declaration map with the same type\n", cident);
+							} else {
+								// OK, this is allowed
 								free(cident);
+								free(decl);
 								type_del(typ);
 							}
 						} else {
-							kh_val(dest->f->decl_map, it) = typ;
+							kh_val(dest->f->decl_map, it) = decl;
 						}
 					} else if (!is_init && !is_list) {
 						if (allow_decl) {
@@ -2867,6 +2979,13 @@ static int parse_declarator(machine_t *target, struct parse_declarator_dest_s *d
 					if (!is_init) {
 						printf("Error: unexpected initializer\n");
 						goto failed;
+					}
+					if (decl) {
+						if (decl->defined) {
+							printf("Error: invalid declaration initializer: variable was already declared\n");
+							goto failed;
+						}
+						decl->defined = 1;
 					}
 					*tok = proc_next_token(prep);
 					if ((tok->tokt == PTOK_SYM) && (tok->tokv.sym == SYM_LBRACKET)) {
@@ -2920,7 +3039,7 @@ static int parse_declarator(machine_t *target, struct parse_declarator_dest_s *d
 				// Try to free some redundant types
 				typ = type_try_merge(typ, PDECL_TYPE_SET);
 				
-				// storage == STORAGE_NONE
+				// storage == TMPSTO_NONE
 				*tok = proc_next_token(prep);
 				expr_t *e = parse_expression(target, dest->structms.struct_map, dest->structms.type_map, dest->structms.enum_map,
 				                             dest->structms.builtins, dest->structms.const_map, dest->structms.type_set,
@@ -2955,7 +3074,7 @@ static int parse_declarator(machine_t *target, struct parse_declarator_dest_s *d
 					// Empty destructor
 					goto failed;
 				}
-				if (fspec != FSPEC_NONE) {
+				if ((fspec != FSPEC_NONE) && (typ->typ != TYPE_FUNCTION)) {
 					printf("Error: unexpected function specifier\n");
 					// Empty destructor
 					goto failed;
@@ -3105,6 +3224,65 @@ failed0:
 	return 0;
 }
 
+static int finalize_file(machine_t *target, file_t *file) {
+#define MARK_SIMPLE(sname) \
+	it = kh_get(struct_map, file->struct_map, #sname);                          \
+	if (it != kh_end(file->struct_map)) {                                       \
+		kh_val(file->struct_map, it)->is_simple = 1;                            \
+	} else {                                                                    \
+		it = kh_get(type_map, file->type_map, #sname);                          \
+		if (it != kh_end(file->type_map)) {                                     \
+			type_t *typ2 = kh_val(file->type_map, it);                          \
+			if (typ2->typ != TYPE_STRUCT_UNION) {                               \
+				printf("Error: invalid typedef " #sname ": not a structure\n"); \
+				return 0;                                                       \
+			}                                                                   \
+			typ2->val.st->is_simple = 1;                                        \
+		}                                                                       \
+	}
+#define SET_WEAK(converted) \
+	validate_type(target, typ);                                              \
+	typ = type_try_merge(typ, file->type_set);                               \
+	it = kh_put(conv_map, file->relaxed_type_conversion, typ, &iret);        \
+	if (iret < 0) {                                                          \
+		printf("Error: failed to add relaxed conversion to type map\n");     \
+		type_del(typ);                                                       \
+		return 0;                                                            \
+	} else if (iret == 0) {                                                  \
+		printf("Error: type already has a relaxed conversion\n");            \
+		type_del(typ);                                                       \
+		return 0;                                                            \
+	}                                                                        \
+	kh_val(file->relaxed_type_conversion, it) = string_new_cstr(#converted);
+#define SET_WEAK_PTR_TO(to_typ, converted) \
+	it = kh_get(type_map, file->type_map, #to_typ);         \
+	if (it != kh_end(file->type_map)) {                     \
+		typ = type_new_ptr(kh_val(file->type_map, it));     \
+		if (!typ) {                                         \
+			printf("Failed to create type " #to_typ "*\n"); \
+			return 0;                                       \
+		}                                                   \
+		++kh_val(file->type_map, it)->nrefs;                \
+		SET_WEAK(converted)                                 \
+	}
+	
+	type_t *typ;
+	int iret;
+	khiter_t it;
+	// #pragma type_letters S FILE*
+	SET_WEAK_PTR_TO(FILE, S)
+	// #pragma type_letters b xcb_connection_t*
+	SET_WEAK_PTR_TO(xcb_connection_t, S)
+	// #pragma mark_simple ...
+	MARK_SIMPLE(FTS)
+	MARK_SIMPLE(FTS64)
+	MARK_SIMPLE(glob_t)
+	MARK_SIMPLE(glob64_t)
+#undef MARK_SIMPLE
+#undef SET_WEAK
+	return 1;
+}
+
 file_t *parse_file(machine_t *target, const char *filename, FILE *file) {
 	char *dirname = strchr(filename, '/') ? strndup(filename, (size_t)(strrchr(filename, '/') - filename)) : NULL;
 	preproc_t *prep = preproc_new_file(target, file, dirname, filename);
@@ -3158,7 +3336,67 @@ file_t *parse_file(machine_t *target, const char *filename, FILE *file) {
 					}
 				}
 				break; }
+			case PRAGMA_SIMPLE_SU: {
+				string_t *sutag = tok.tokv.pragma.val;
+				struct_t *su;
+				khiter_t it = kh_get(struct_map, ret->struct_map, string_content(sutag));
+				if (it != kh_end(ret->struct_map)) {
+					su = kh_val(ret->struct_map, it);
+				} else {
+					it = kh_get(type_map, ret->type_map, string_content(sutag));
+					if (it != kh_end(ret->struct_map)) {
+						type_t *typ2 = kh_val(ret->type_map, it);
+						if (typ2->typ != TYPE_STRUCT_UNION) {
+							printf("Error: failed to find struct/union named %s\n", string_content(sutag));
+							string_del(sutag);
+							goto failed;
+						}
+						su = typ2->val.st;
+					} else {
+						printf("Error: failed to find struct/union named %s\n", string_content(sutag));
+						string_del(sutag);
+						goto failed;
+					}
+				}
+				string_del(sutag);
+				su->is_simple = 1;
+				// Empty destructor
+				break; }
 			case PRAGMA_EXPLICIT_CONV: {
+				string_t *converted = tok.tokv.pragma.val;
+				type_t *typ2 = type_new();
+				if (!typ2) {
+					printf("Error: failed to create new type info structure\n");
+					string_del(converted);
+					type_del(typ2);
+					goto failed;
+				}
+				tok = proc_next_token(prep);
+				if (!parse_type_name(target, ret->struct_map, ret->type_map, ret->enum_map, &ret->builtins, ret->const_map, ret->type_set,
+				                     prep, &tok, SYM_SEMICOLON, &typ2)) {
+					string_del(converted);
+					goto failed;
+				}
+				int iret;
+				khiter_t it = kh_put(conv_map, ret->relaxed_type_conversion, typ2, &iret);
+				if (iret < 0) {
+					printf("Error: failed to add relaxed conversion to type map\n");
+					string_del(converted);
+					type_del(typ2);
+					// Empty destructor
+					goto failed;
+				} else if (iret == 0) {
+					printf("Error: type already has a relaxed conversion\n");
+					string_del(converted);
+					type_del(typ2);
+					// Empty destructor
+					goto failed;
+				}
+				string_trim(converted);
+				kh_val(ret->relaxed_type_conversion, it) = converted;
+				// Empty destructor
+				break; }
+			case PRAGMA_EXPLICIT_CONV_STRICT: {
 				string_t *converted = tok.tokv.pragma.val;
 				type_t *typ2 = type_new();
 				if (!typ2) {
@@ -3175,7 +3413,7 @@ file_t *parse_file(machine_t *target, const char *filename, FILE *file) {
 				}
 				type_del(typ2); // typ2 is in the type set, so it is already used
 				if (typ2->converted) {
-					printf("Error: type already has a conversion\n");
+					printf("Error: type already has a strict conversion\n");
 					string_del(converted);
 					// Empty destructor
 					goto failed;
@@ -3190,7 +3428,7 @@ file_t *parse_file(machine_t *target, const char *filename, FILE *file) {
 			proc_token_del(&tok);
 			goto failed;
 		} else {
-			enum decl_storage storage = STORAGE_NONE;
+			enum decl_storage storage = TMPSTO_NONE;
 			enum fun_spec fspec = FSPEC_NONE;
 			enum decl_spec spec = SPEC_NONE;
 			if (!parse_declaration_specifier(target, ret->struct_map, ret->type_map, ret->enum_map, &ret->builtins, ret->const_map,
@@ -3226,6 +3464,11 @@ file_t *parse_file(machine_t *target, const char *filename, FILE *file) {
 success:
 	preproc_del(prep);
 	type_del(typ);
+	if (!finalize_file(target, ret)) {
+		printf("Error: failed to add builtin aliases\n");
+		file_del(ret);
+		return NULL;
+	}
 	return ret;
 failed:
 	preproc_del(prep);

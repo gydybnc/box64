@@ -128,16 +128,3 @@
 #include <wchar.h>
 #include <wctype.h>
 #include <wordexp.h>
-
-#pragma wrappers type_letters S FILE*
-#pragma wrappers type_letters S const FILE*
-#pragma wrappers type_letters S FILE* restrict
-#pragma wrappers type_letters S const FILE* restrict
-#pragma wrappers type_letters p FTS*
-#pragma wrappers type_letters p const FTS*
-#pragma wrappers type_letters p FTS64*
-#pragma wrappers type_letters p const FTS64*
-#pragma wrappers type_letters p glob_t*
-#pragma wrappers type_letters p const glob_t*
-#pragma wrappers type_letters p glob64_t*
-#pragma wrappers type_letters p const glob64_t*
