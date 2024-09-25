@@ -325,8 +325,95 @@ uintptr_t dynarec64_00_1(dynarec_rv64_t* dyn, uintptr_t addr, uintptr_t ip, int 
                 B##YES##_safe(x1, i32);                                 \
             }
 
-        GOCOND(0x70, "J", "ib");
-
+        // GOCOND(0x70, "J", "ib");
+        case 0x70 + 0x0:
+            INST_NAME("JO ib");
+            GO(ANDI(x1, xFlags, 1 << F_OF2), EQZ, NEZ, X_OF)
+            break;
+        case 0x70 + 0x1:
+            INST_NAME("JNO ib");
+            GO(ANDI(x1, xFlags, 1 << F_OF2), NEZ, EQZ, X_OF)
+            break;
+        case 0x70 + 0x2:
+            INST_NAME("JC ib");
+            GO(ANDI(x1, xFlags, 1 << F_
+            CF), EQZ, NEZ, X_CF)
+            break;
+        case 0x70 + 0x3:
+            INST_NAME("JNC ib");
+            GO(ANDI(x1, xFlags, 1 << F_CF), NEZ, EQZ, X_CF)
+            break;
+        case 0x70 + 0x4:
+            INST_NAME("JZ ib");
+            GO(ANDI(x1, xFlags, 1 << F_ZF), EQZ, NEZ, X_ZF)
+            break;
+        case 0x70 + 0x5:
+            INST_NAME("JNZ ib");
+            GO(ANDI(x1, xFlags, 1 << F_ZF), NEZ, EQZ, X_ZF)
+            break;
+        case 0x70 + 0x6:
+            INST_NAME("JBE ib");
+            GO(ANDI(x1, xFlags, (1 << F_CF) | (1 << F_ZF)), EQZ, NEZ, X_CF | X_ZF)
+            break;
+        case 0x70 + 0x7:
+            INST_NAME("JNBE ib");
+            GO(ANDI(x1, xFlags, (1 << F_CF) | (1 << F_ZF)), NEZ, EQZ, X_CF | X_ZF)
+            break;
+        case 0x70 + 0x8:
+            INST_NAME("JS ib");
+            GO(ANDI(x1, xFlags, 1 << F_SF), EQZ, NEZ, X_SF)
+            break;
+        case 0x70 + 0x9:
+            INST_NAME("JNS ib");
+            GO(ANDI(x1, xFlags, 1 << F_SF), NEZ, EQZ, X_SF)
+            break;
+        case 0x70 + 0xA:
+            INST_NAME("JP ib");
+            GO(ANDI(x1, xFlags, 1 << F_PF), EQZ, NEZ, X_PF)
+            break;
+        case 0x70 + 0xB:
+            INST_NAME("JNP ib");
+            GO(ANDI(x1, xFlags, 1 << F_PF), NEZ, EQZ, X_PF)
+            break;
+        case 0x70 + 0xC:
+            INST_NAME("JL ib");
+            GO(SRLI(x1, xFlags, F_SF - F_OF2);
+                XOR(x1, x1, xFlags);
+                ANDI(x1, x1, 1 << F_OF2), EQZ, NEZ, X_SF | X_OF)
+            break;
+        case 0x70 + 0xD:
+            INST_NAME("JGE ib");
+            GO(SRLI(x1, xFlags, F_SF - F_OF2);
+                XOR(x1, x1, xFlags);
+                ANDI(x1, x1, 1 << F_OF2), NEZ, EQZ, X_SF | X_OF)
+            break;
+        case 0x70 + 0xE:
+            INST_NAME("JLE ib");
+            GO(SRLI(x1, xFlags, F_SF - F_OF2);
+                XOR(x1, x1, xFlags);
+                ANDI(x1, x1, 1 << F_OF2);
+                ANDI(x3, xFlags, 1 << F_ZF);
+                OR(x1, x1, x3);
+                ANDI(x1, x1, (1 << F_OF2) | (1 << F_ZF)), EQZ, NEZ, X_SF | X_OF | X_ZF)
+            break;
+        case 0x70 + 0xF:
+            INST_NAME("JG ib");
+            if (dyn->insts[ninst].pattern_code == 5 || 
+                dyn->insts[ninst].pattern_code == 13 || 
+                dyn->insts[ninst].pattern_code == 21 ||
+                dyn->insts[ninst].pattern_code == 29 ||
+                dyn->insts[ninst].pattern_code == 37){
+                GO(SLT(x1, dyn->insts[ninst].op2, dyn->insts[ninst].op1), NEZ, EQZ, X_SF | X_OF | X_ZF)
+            }
+            else{
+                GO(SRLI(x1, xFlags, F_SF - F_OF2);
+                    XOR(x1, x1, xFlags);
+                    ANDI(x1, x1, 1 << F_OF2);
+                    ANDI(x3, xFlags, 1 << F_ZF);
+                    OR(x1, x1, x3);
+                    ANDI(x1, x1, (1 << F_OF2) | (1 << F_ZF)), NEZ, EQZ, X_SF | X_OF | X_ZF)
+            }
+            break;
         #undef GO
         default:
             DEFAULT;
