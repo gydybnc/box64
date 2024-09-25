@@ -624,13 +624,13 @@ typedef struct my_XMappingEvent_s
 
 typedef struct my_XErrorEvent_s
 {
-        int type;
-        my_XDisplay_t *display;
-        XID resourceid;
-        unsigned long serial;
-        unsigned char error_code;
-        unsigned char request_code;
-        unsigned char minor_code;
+    int type;
+    my_XDisplay_t *display;
+    XID resourceid;
+    unsigned long serial;
+    unsigned char error_code;
+    unsigned char request_code;
+    unsigned char minor_code;
 } my_XErrorEvent_t;
 
 typedef struct my_XAnyEvent_s
@@ -736,6 +736,127 @@ typedef union my_XEvent_s {
 #define XEVT_ClientMessage           33
 #define XEVT_MappingNotify           34
 #define XEVT_GenericEvent            35
+
+
+// WMHints 
+typedef struct my_XWMHints_s {
+    long flags;
+    int input;
+    int initial_state;
+    XID icon_pixmap;
+    XID icon_window;
+    int icon_x;
+    int icon_y;
+    XID icon_mask;
+    XID window_group;
+} my_XWMHints_t;
+
+#define XWMHint_InputHint               (1L << 0)
+#define XWMHint_StateHint               (1L << 1)
+#define XWMHint_IconPixmapHint          (1L << 2)
+#define XWMHint_IconWindowHint          (1L << 3)
+#define XWMHint_IconPositionHint        (1L << 4)
+#define XWMHint_IconMaskHint            (1L << 5)
+#define XWMHint_WindowGroupHint         (1L << 6)
+#define XWMHint_XUrgencyHint            (1L << 8)
+
+typedef struct my_XRRModeInfo_s {
+    XID                 id;
+    unsigned int        width;
+    unsigned int        height;
+    unsigned long       dotClock;
+    unsigned int        hSyncStart;
+    unsigned int        hSyncEnd;
+    unsigned int        hTotal;
+    unsigned int        hSkew;
+    unsigned int        vSyncStart;
+    unsigned int        vSyncEnd;
+    unsigned int        vTotal;
+    char                *name;
+    unsigned int        nameLength;
+    unsigned long       modeFlags;
+} my_XRRModeInfo_t;
+
+
+typedef struct my_XRRScreenResources_s {
+    unsigned long   timestamp;
+    unsigned long   configTimestamp;
+    int             ncrtc;
+    XID             *crtcs;
+    int             noutput;
+    XID             *outputs;
+    int             nmode;
+    my_XRRModeInfo_t *modes;
+} my_XRRScreenResources_t;
+
+typedef struct my_XRRCrtcInfo_s {
+    unsigned long   timestamp;
+    int             x, y;
+    unsigned int    width, height;
+    XID             mode;
+    uint16_t        rotation;
+    int             noutput;
+    XID             *outputs;
+    uint16_t        rotations;
+    int             npossible;
+    XID             *possible;
+} my_XRRCrtcInfo_t;
+
+typedef struct my_XRROutputInfo_s {
+    unsigned long   timestamp;
+    XID             crtc;
+    char            *name;
+    int             nameLen;
+    unsigned long   mm_width;
+    unsigned long   mm_height;
+    uint16_t        connection;
+    uint16_t        subpixel_order;
+    int             ncrtc;
+    XID             *crtcs;
+    int             nclone;
+    XID             *clones;
+    int             nmode;
+    int             npreferred;
+    XID             *modes;
+} my_XRROutputInfo_t;
+
+// Window Attribute
+typedef struct my_XWindowAttributes_s {
+    int x, y;
+    int width, height;
+    int border_width;
+    int depth;
+    void* visual;   //Visual*
+    XID root;
+    int c_class;
+    int bit_gravity;
+    int win_gravity;
+    int backing_store;
+    unsigned long backing_planes;
+    unsigned long backing_pixel;
+    int save_under;
+    XID colormap;
+    int map_installed;
+    int map_state;
+    long all_event_masks;
+    long your_event_mask;
+    long do_not_propagate_mask;
+    int override_redirect;
+    void* screen;   //Screen*
+} my_XWindowAttributes_t;
+
+typedef struct my_XVisualInfo_s {
+  void* visual; //Visual*
+  unsigned long  visualid;
+  int screen;
+  int depth;
+  int c_class;
+  unsigned long red_mask;
+  unsigned long green_mask;
+  unsigned long blue_mask;
+  int colormap_size;
+  int bits_per_rgb;
+} my_XVisualInfo_t;
 
 
 #endif//MY_X11_DEFS

@@ -20,6 +20,36 @@ typedef struct struct_LL_s {
 } struct_LL_t;
 void from_struct_LL(struct_LL_t *dest, ptr_t src);
 void to_struct_LL(ptr_t dest, const struct_LL_t *src);
+typedef struct struct_LLLL_s {
+	unsigned long L0;
+	unsigned long L1;
+	unsigned long L2;
+	unsigned long L3;
+} struct_LLLL_t;
+void from_struct_LLLL(struct_LLLL_t *dest, ptr_t src);
+void to_struct_LLLL(ptr_t dest, const struct_LLLL_t *src);
+typedef struct struct_LLLLLLLLLLLLLLLLLL_s {
+	unsigned long L0;
+	unsigned long L1;
+	unsigned long L2;
+	unsigned long L3;
+	unsigned long L4;
+	unsigned long L5;
+	unsigned long L6;
+	unsigned long L7;
+	unsigned long L8;
+	unsigned long L9;
+	unsigned long L10;
+	unsigned long L11;
+	unsigned long L12;
+	unsigned long L13;
+	unsigned long L14;
+	unsigned long L15;
+	unsigned long L16;
+	unsigned long L17;
+} struct_LLLLLLLLLLLLLLLLLL_t;
+void from_struct_LLLLLLLLLLLLLLLLLL(struct_LLLLLLLLLLLLLLLLLL_t *dest, ptr_t src);
+void to_struct_LLLLLLLLLLLLLLLLLL(ptr_t dest, const struct_LLLLLLLLLLLLLLLLLL_t *src);
 typedef struct struct_h_s {
 	uintptr_t h0;
 } struct_h_t;
@@ -60,13 +90,23 @@ typedef struct struct_up_s {
 } struct_up_t;
 void from_struct_up(struct_up_t *dest, ptr_t src);
 void to_struct_up(ptr_t dest, const struct_up_t *src);
-typedef struct struct_hWcc_s {
+typedef struct struct_LWWWcc_s {
 	unsigned long L0;
 	unsigned short W1;
-	char c2;
-	char c3;
-} struct_hWcc_t;
-void from_struct_hWcc(struct_hWcc_t *dest, ptr_t src);
-void to_struct_hWcc(ptr_t dest, const struct_hWcc_t *src);
+	unsigned short W2;
+	unsigned short W3;
+	char c4;
+	char c5;
+} struct_LWWWcc_t;
+void from_struct_LWWWcc(struct_LWWWcc_t *dest, ptr_t src);
+void to_struct_LWWWcc(ptr_t dest, const struct_LWWWcc_t *src);
+typedef struct struct_pLiL_s {
+	void* p0;
+	unsigned long L1;
+	int i2;
+	unsigned long L3;
+} struct_pLiL_t;
+void from_struct_pLiL(struct_pLiL_t *dest, ptr_t src);
+void to_struct_pLiL(ptr_t dest, const struct_pLiL_t *src);
 
 #endif // __CONVERTER_H_

@@ -17,6 +17,7 @@
 #include "emu/x64emu_private.h"
 #include "myalign32.h"
 #include "elfloader.h"
+#include "converter32.h"
 
 #ifdef ANDROID
     static const char* libx11Name = "libX11.so";
@@ -25,9 +26,10 @@
 #endif
 
 #define LIBNAME libx11
-#if 0
+
 typedef int (*XErrorHandler)(void *, void *);
 void* my32_XSetErrorHandler(x64emu_t* t, XErrorHandler handler);
+#if 0
 typedef int (*XIOErrorHandler)(void *);
 void* my32_XSetIOErrorHandler(x64emu_t* t, XIOErrorHandler handler);
 void* my32_XESetCloseDisplay(x64emu_t* emu, void* display, int32_t extension, void* handler);
@@ -58,7 +60,21 @@ typedef void* (*pFpiiuu_t)(void*, int32_t, int32_t, uint32_t, uint32_t);
 
 #include "wrappercallback32.h"
 
+void convert_Screen_to_32(void* d, void* s);
 void* FindDisplay(void* d);
+void* getDisplay(void* d);
+void convert_XErrorEvent_to_32(void* d, void* s)
+{
+    my_XErrorEvent_t* src = s;
+    my_XErrorEvent_32_t* dst = d;
+    dst->type = src->type;
+    dst->display = to_ptrv(FindDisplay(src->display));
+    dst->resourceid = to_ulong(src->resourceid);
+    dst->serial = to_ulong(src->serial);
+    dst->error_code = src->error_code;
+    dst->request_code = src->request_code;
+    dst->minor_code = src->minor_code;
+}
 
 #define SUPER() \
 GO(0)   \
@@ -143,13 +159,15 @@ static void* reverse_event_to_wireFct(library_t* lib, void* fct)
     #undef GO
     return (void*)AddBridge(lib->w.bridge, iFppp, fct, 0, NULL);
 }
-
+#endif
 // error_handler
 #define GO(A)   \
-static uintptr_t my32_error_handler_fct_##A = 0;                      \
-static int my32_error_handler_##A(void* dpy, void* error)   \
-{                                                                   \
-    return (int)RunFunctionFmt(my32_error_handler_fct_##A, "pp", dpy, error);\
+static uintptr_t my32_error_handler_fct_##A = 0;                                            \
+static int my32_error_handler_##A(void* dpy, void* error)                                   \
+{                                                                                           \
+    static my_XErrorEvent_32_t evt = {0};                                                   \
+    convert_XErrorEvent_to_32(&evt, error);                                                 \
+    return (int)RunFunctionFmt(my32_error_handler_fct_##A, "pp", getDisplay(dpy), &evt);   \
 }
 SUPER()
 #undef GO
@@ -174,9 +192,9 @@ static void* reverse_error_handlerFct(library_t* lib, void* fct)
     #define GO(A) if(my32_error_handler_##A == fct) return (void*)my32_error_handler_fct_##A;
     SUPER()
     #undef GO
-    return (void*)AddBridge(lib->w.bridge, iFpp, fct, 0, NULL);
+    return (void*)AddBridge(lib->w.bridge, iFpp_32, fct, 0, NULL);
 }
-
+#if 0
 // ioerror_handler
 #define GO(A)   \
 static uintptr_t my32_ioerror_handler_fct_##A = 0;                      \
@@ -1262,12 +1280,12 @@ EXPORT void* my32_XSetIMValues(x64emu_t* emu, void* xim, uintptr_t* va) {
 #endif
 #undef VA_CALL
 #undef SUPER
-#if 0
 EXPORT void* my32_XSetErrorHandler(x64emu_t* emu, XErrorHandler handler)
 {
     void* ret = my->XSetErrorHandler(finderror_handlerFct(handler));
     return reverse_error_handlerFct(my_lib, ret);
 }
+#if 0
 
 EXPORT void* my32_XSetIOErrorHandler(x64emu_t* emu, XIOErrorHandler handler)
 {
@@ -1539,22 +1557,24 @@ my_XDisplay_32_t my32_Displays_32[N_DISPLAY] = {0};
 
 void* getDisplay(void* d)
 {
+    if(!d) return d;
     for(int i=0; i<N_DISPLAY; ++i)
-        if(&my32_Displays_32[i]==d)
+        if(&my32_Displays_32[i]==d || my32_Displays_64[i]==d)
             return my32_Displays_64[i];
-        printf_log(LOG_INFO, "BOX32: Warning, 32bits Display not found");
+        printf_log(LOG_INFO, "BOX32: Warning, 32bits Display %p not found\n", d);
     return d;
 }
 
 void* FindDisplay(void* d)
 {
+    if(!d) return d;
     for(int i=0; i<N_DISPLAY; ++i)
-        if(my32_Displays_64[i]==d)
+        if(my32_Displays_64[i]==d || &my32_Displays_32[i]==d)
             return &my32_Displays_32[i];
     return d;
 }
 
-void refreshScreen(void* d, void* s)
+void convert_Screen_to_32(void* d, void* s)
 {
     my_Screen_t* src = s;
     my_Screen_32_t* dst = d;
@@ -1636,7 +1656,7 @@ EXPORT void* my32_XOpenDisplay(x64emu_t* emu, void* d)
                 printf_log(LOG_INFO, "BOX32: Warning, no more libX11 Screen slots!");
                 break;
             }
-            refreshScreen(&my32_screens[n_screeens++], &dpy->screens[i]);
+            convert_Screen_to_32(&my32_screens[n_screeens++], &dpy->screens[i]);
         }
     } else
         ret->screens = 0;
@@ -1673,6 +1693,21 @@ EXPORT void* my32_XOpenDisplay(x64emu_t* emu, void* d)
 
     return ret;
 }
+
+EXPORT int my32_XCloseDisplay(x64emu_t* emu, void* dpy)
+{
+    int ret = my->XCloseDisplay(dpy);
+    if(ret)
+        for(int i=0; i<N_DISPLAY; ++i) {
+            // crude free of ressources... not perfect
+            if(my32_Displays_64[i]==dpy) {
+                my32_Displays_64[i] = NULL;
+                return ret;
+            }
+        }
+    return ret;
+}
+
 
 EXPORT XID my32_XCreateWindow(x64emu_t* emu, void* d, XID Window, int x, int y, uint32_t width, uint32_t height, uint32_t border_width, int depth, uint32_t cl, void* visual,  unsigned long mask, my_XSetWindowAttributes_32_t* attr)
 {
@@ -1907,6 +1942,216 @@ void convertXEvent(my_XEvent_32_t* dst, my_XEvent_t* src)
             printf_log(LOG_INFO, "Warning, unsupported 32bits XEvent type=%d\n", src->type);
     }
 }
+void unconvertXEvent(my_XEvent_t* dst, my_XEvent_32_t* src)
+{
+    // convert the XAnyEvent first, as it's a common set
+    dst->type = src->type;
+    dst->xany.display = getDisplay(from_ptrv(src->xany.display));
+    dst->xany.window = from_ulong(src->xany.window);
+    dst->xany.send_event = src->xany.serial;
+    dst->xany.serial = from_ulong(src->xany.serial);
+    switch(src->type) {
+        case XEVT_KeyPress:
+        case XEVT_KeyRelease:
+            dst->xkey.root = from_ulong(src->xkey.root);
+            dst->xkey.subwindow = from_ulong(src->xkey.subwindow);
+            dst->xkey.time = from_ulong(src->xkey.time);
+            dst->xkey.x = src->xkey.x;
+            dst->xkey.y = src->xkey.y;
+            dst->xkey.x_root = src->xkey.x_root;
+            dst->xkey.y_root = src->xkey.y_root;
+            dst->xkey.state = src->xkey.state;
+            dst->xkey.keycode = src->xkey.keycode;
+            dst->xkey.same_screen = src->xkey.same_screen;
+            break;
+        case XEVT_ButtonPress:
+        case XEVT_ButtonRelease:
+            dst->xbutton.root = from_ulong(src->xbutton.root);
+            dst->xbutton.subwindow = from_ulong(src->xbutton.subwindow);
+            dst->xbutton.time = from_ulong(src->xbutton.time);
+            dst->xbutton.x = src->xbutton.x;
+            dst->xbutton.y = src->xbutton.y;
+            dst->xbutton.x_root = src->xbutton.x_root;
+            dst->xbutton.y_root = src->xbutton.y_root;
+            dst->xbutton.state = src->xbutton.state;
+            dst->xbutton.button = src->xbutton.button;
+            dst->xbutton.same_screen = src->xbutton.same_screen;
+            break;
+        case XEVT_MotionNotify:
+            dst->xmotion.root = from_ulong(src->xmotion.root);
+            dst->xmotion.subwindow = from_ulong(src->xmotion.subwindow);
+            dst->xmotion.time = from_ulong(src->xmotion.time);
+            dst->xmotion.x = src->xmotion.x;
+            dst->xmotion.y = src->xmotion.y;
+            dst->xmotion.x_root = src->xmotion.x_root;
+            dst->xmotion.y_root = src->xmotion.y_root;
+            dst->xmotion.state = src->xmotion.state;
+            dst->xmotion.is_hint = src->xmotion.is_hint;
+            dst->xmotion.same_screen = src->xmotion.same_screen;
+            break;
+        case XEVT_EnterNotify:
+        case XEVT_LeaveNotify:
+            dst->xcrossing.root = from_ulong(src->xcrossing.root);
+            dst->xcrossing.subwindow = from_ulong(src->xcrossing.subwindow);
+            dst->xcrossing.time = from_ulong(src->xcrossing.time);
+            dst->xcrossing.x = src->xcrossing.x;
+            dst->xcrossing.y = src->xcrossing.y;
+            dst->xcrossing.x_root = src->xcrossing.x_root;
+            dst->xcrossing.y_root = src->xcrossing.y_root;
+            dst->xcrossing.mode = src->xcrossing.mode;
+            dst->xcrossing.detail = src->xcrossing.detail;
+            dst->xcrossing.same_screen = src->xcrossing.same_screen;
+            dst->xcrossing.focus = src->xcrossing.focus;
+            dst->xcrossing.state = src->xcrossing.state;
+            break;
+        case XEVT_FocusIn:
+        case XEVT_FocusOut:
+            dst->xfocus.mode = src->xfocus.mode;
+            dst->xfocus.detail = src->xfocus.detail;
+            break;
+        case XEVT_KeymapNotify:
+            memcpy(dst->xkeymap.key_vector, src->xkeymap.key_vector, 32);
+            break;
+        case XEVT_Expose:
+            dst->xexpose.x = src->xexpose.x;
+            dst->xexpose.y = src->xexpose.y;
+            dst->xexpose.width = src->xexpose.width;
+            dst->xexpose.height = src->xexpose.height;
+            dst->xexpose.count = src->xexpose.count;
+            break;
+        case XEVT_GraphicsExpose:
+            dst->xgraphicsexpose.x = src->xgraphicsexpose.x;
+            dst->xgraphicsexpose.y = src->xgraphicsexpose.y;
+            dst->xgraphicsexpose.width = src->xgraphicsexpose.width;
+            dst->xgraphicsexpose.height = src->xgraphicsexpose.height;
+            dst->xgraphicsexpose.count = src->xgraphicsexpose.count;
+            dst->xgraphicsexpose.major_code = src->xgraphicsexpose.major_code;
+            dst->xgraphicsexpose.minor_code = src->xgraphicsexpose.minor_code;
+            break;
+        case XEVT_NoExpose:
+            dst->xnoexpose.major_code = src->xnoexpose.major_code;
+            dst->xnoexpose.minor_code = src->xnoexpose.minor_code;
+            break;
+        case XEVT_VisibilityNotify:
+            dst->xvisibility.state = src->xvisibility.state;
+            break;
+        case XEVT_CreateNotify:
+            dst->xcreatewindow.window = from_ulong(src->xcreatewindow.window);
+            dst->xcreatewindow.x = src->xcreatewindow.x;
+            dst->xcreatewindow.y = src->xcreatewindow.y;
+            dst->xcreatewindow.width = src->xcreatewindow.width;
+            dst->xcreatewindow.height = src->xcreatewindow.height;
+            dst->xcreatewindow.border_width = src->xcreatewindow.border_width;
+            dst->xcreatewindow.override_redirect = src->xcreatewindow.override_redirect;
+            break;
+        case XEVT_DestroyNotify:
+            dst->xdestroywindow.window = from_ulong(src->xdestroywindow.window);
+            break;
+        case XEVT_UnmapNotify:
+            dst->xunmap.window = from_ulong(src->xunmap.window);
+            dst->xunmap.from_configure = src->xunmap.from_configure;
+            break;
+        case XEVT_MapNotify:
+            dst->xmap.window = from_ulong(src->xmap.window);
+            dst->xmap.override_redirect = src->xmap.override_redirect;
+            break;
+        case XEVT_MapRequest:
+            dst->xmaprequest.window = from_ulong(src->xmaprequest.window);
+            break;
+        case XEVT_ReparentNotify:
+            dst->xreparent.window = from_ulong(src->xreparent.window);
+            dst->xreparent.parent = from_ulong(src->xreparent.parent);
+            dst->xreparent.x = src->xreparent.x;
+            dst->xreparent.y = src->xreparent.y;
+            dst->xreparent.override_redirect = src->xreparent.override_redirect;
+            break;
+        case XEVT_ConfigureNotify:
+            dst->xconfigure.window = from_ulong(src->xconfigure.window);
+            dst->xconfigure.x = src->xconfigure.x;
+            dst->xconfigure.y = src->xconfigure.y;
+            dst->xconfigure.width = src->xconfigure.width;
+            dst->xconfigure.height = src->xconfigure.height;
+            dst->xconfigure.border_width = src->xconfigure.border_width;
+            dst->xconfigure.above = from_ulong(src->xconfigure.above);
+            dst->xconfigure.override_redirect = src->xconfigure.override_redirect;
+            break;
+        case XEVT_ConfigureRequest:
+            dst->xconfigurerequest.window = from_ulong(src->xconfigurerequest.window);
+            dst->xconfigurerequest.x = src->xconfigurerequest.x;
+            dst->xconfigurerequest.y = src->xconfigurerequest.y;
+            dst->xconfigurerequest.width = src->xconfigurerequest.width;
+            dst->xconfigurerequest.height = src->xconfigurerequest.height;
+            dst->xconfigurerequest.border_width = src->xconfigurerequest.border_width;
+            dst->xconfigurerequest.above = from_ulong(src->xconfigurerequest.above);
+            dst->xconfigurerequest.detail = src->xconfigurerequest.detail;
+            dst->xconfigurerequest.value_mask = from_ulong(src->xconfigurerequest.value_mask);
+            break;
+        case XEVT_GravityNotify:
+            dst->xgravity.window = from_ulong(src->xgravity.window);
+            dst->xgravity.x = src->xgravity.x;
+            dst->xgravity.y = src->xgravity.y;
+            break;
+        case XEVT_ResizeRequest:
+            dst->xresizerequest.width = src->xresizerequest.width;
+            dst->xresizerequest.height = src->xresizerequest.height;
+            break;
+        case XEVT_CirculateNotify:
+            dst->xcirculate.window = from_ulong(src->xcirculate.window);
+            dst->xcirculate.place = src->xcirculate.place;
+            break;
+        case XEVT_CirculateRequest:
+            dst->xcirculaterequest.window = from_ulong(src->xcirculaterequest.window);
+            dst->xcirculaterequest.place = src->xcirculaterequest.place;
+            break;
+        case XEVT_PropertyNotify:
+            dst->xproperty.atom = from_ulong(src->xproperty.atom);
+            dst->xproperty.time = from_ulong(src->xproperty.time);
+            dst->xproperty.state = src->xproperty.state;
+            break;
+        case XEVT_SelectionClear:
+            dst->xselectionclear.selection = from_ulong(src->xselectionclear.selection);
+            dst->xselectionclear.time = from_ulong(src->xselectionclear.time);
+            break;
+        case XEVT_SelectionRequest:
+            dst->xselectionrequest.requestor = from_ulong(src->xselectionrequest.requestor);
+            dst->xselectionrequest.selection = from_ulong(src->xselectionrequest.selection);
+            dst->xselectionrequest.target = from_ulong(src->xselectionrequest.target);
+            dst->xselectionrequest.property = from_ulong(src->xselectionrequest.property);
+            dst->xselectionrequest.time = from_ulong(src->xselectionrequest.time);
+            break;
+        case XEVT_SelectionNotify:
+            dst->xselection.selection = from_ulong(src->xselection.selection);
+            dst->xselection.target = from_ulong(src->xselection.target);
+            dst->xselection.property = from_ulong(src->xselection.property);
+            dst->xselection.time = from_ulong(src->xselection.time);
+            break;
+        case XEVT_ColormapNotify:
+            dst->xcolormap.colormap = from_ulong(src->xcolormap.colormap);
+            dst->xcolormap.c_new = src->xcolormap.c_new;
+            dst->xcolormap.state = src->xcolormap.state;
+            break;
+        case XEVT_ClientMessage:
+            dst->xclient.message_type = from_ulong(src->xclient.message_type);
+            dst->xclient.format = src->xclient.format;
+            if(src->xclient.format==32)
+                for(int i=0; i<5; ++i) dst->xclient.data.l[i] = from_ulong(src->xclient.data.l[i]);
+            else
+                memcpy(dst->xclient.data.b, src->xclient.data.b, 20);
+            break;
+        case XEVT_MappingNotify:
+            dst->xmapping.request = src->xmapping.request;
+            dst->xmapping.first_keycode = src->xmapping.first_keycode;
+            dst->xmapping.count = src->xmapping.count;
+            break;
+        case XEVT_GenericEvent:
+            dst->xgeneric.extension = src->xgeneric.extension;
+            dst->xgeneric.evtype = src->xgeneric.evtype;
+            break;
+
+        default:
+            printf_log(LOG_INFO, "Warning, unsupported 32bits (un)XEvent type=%d\n", src->type);
+    }
+}
 
 EXPORT int my32_XNextEvent(x64emu_t* emu, void* dpy, my_XEvent_32_t* evt)
 {
@@ -1914,6 +2159,118 @@ EXPORT int my32_XNextEvent(x64emu_t* emu, void* dpy, my_XEvent_32_t* evt)
     int ret = my->XNextEvent(dpy, &event);
     convertXEvent(evt, &event);
     return ret;
+}
+
+EXPORT int my32_XCheckTypedEvent(x64emu_t* emu, void* dpy, int type, my_XEvent_32_t* evt)
+{
+    my_XEvent_t event = {0};
+    int ret = my->XCheckTypedEvent(dpy, type, &event);
+    if(ret) convertXEvent(evt, &event);
+    return ret;
+}
+
+EXPORT int my32_XSendEvent(x64emu_t* emu, void* dpy, XID window, int propagate, long mask, my_XEvent_32_t* evt)
+{
+    my_XEvent_t event = {0};
+    if(evt) unconvertXEvent(&event, evt);
+    return my->XSendEvent(dpy, window, propagate, mask, evt?(&event):NULL);
+}
+
+EXPORT int my32_XSetWMProtocols(x64emu_t* emu, void* dpy, XID window, XID_32* protocol, int count)
+{
+    XID list[count];
+    if(protocol)
+        for(int i=0; i<count; ++i)
+            list[i] = from_ulong(protocol[i]);
+    return my->XSetWMProtocols(dpy, window, protocol?list:NULL, count);
+}
+
+void convert_XWMints_to_64(void* d, void* s)
+{
+    my_XWMHints_t* dst = d;
+    my_XWMHints_32_t* src = s;
+    long flags = from_long(src->flags);
+    // reverse order
+    if(flags&XWMHint_WindowGroupHint)   dst->window_group = from_ulong(src->window_group);
+    if(flags&XWMHint_IconMaskHint)      dst->icon_mask = from_ulong(src->icon_mask);
+    if(flags&XWMHint_IconPositionHint)  {dst->icon_y = src->icon_y; dst->icon_x = src->icon_x;}
+    if(flags&XWMHint_IconWindowHint)    dst->icon_window = from_ulong(src->icon_window);
+    if(flags&XWMHint_IconPixmapHint)    dst->icon_pixmap = from_ulong(src->icon_pixmap);
+    if(flags&XWMHint_StateHint)         dst->initial_state = src->initial_state;
+    if(flags&XWMHint_InputHint)         dst->input = src->input;
+
+    dst->flags = flags;
+}
+void inplace_enlarge_wmhints(void* hints)
+{
+    if(!hints) return;
+    my_XWMHints_32_t* src = hints;
+    my_XWMHints_t* dst = hints;
+    long flags = from_long(src->flags);
+    // reverse order
+    if(flags&XWMHint_WindowGroupHint)   dst->window_group = from_ulong(src->window_group);
+    if(flags&XWMHint_IconMaskHint)      dst->icon_mask = from_ulong(src->icon_mask);
+    if(flags&XWMHint_IconPositionHint)  {dst->icon_y = src->icon_y; dst->icon_x = src->icon_x;}
+    if(flags&XWMHint_IconWindowHint)    dst->icon_window = from_ulong(src->icon_window);
+    if(flags&XWMHint_IconPixmapHint)    dst->icon_pixmap = from_ulong(src->icon_pixmap);
+    if(flags&XWMHint_StateHint)         dst->initial_state = src->initial_state;
+    if(flags&XWMHint_InputHint)         dst->input = src->input;
+
+    dst->flags = flags;
+}
+void inplace_shrink_wmhints(void* hints)
+{
+    if(!hints) return;
+    my_XWMHints_t* src = hints;
+    my_XWMHints_32_t* dst = hints;
+    long_t flags = to_long(src->flags);
+    // forward order
+    if(flags&XWMHint_InputHint)         dst->input = src->input;
+    if(flags&XWMHint_StateHint)         dst->initial_state = src->initial_state;
+    if(flags&XWMHint_IconPixmapHint)    dst->icon_pixmap = to_ulong(src->icon_pixmap);
+    if(flags&XWMHint_IconWindowHint)    dst->icon_window = to_ulong(src->icon_window);
+    if(flags&XWMHint_IconPositionHint)  {dst->icon_y = src->icon_y; dst->icon_x = src->icon_x;}
+    if(flags&XWMHint_IconMaskHint)      dst->icon_mask = to_ulong(src->icon_mask);
+    if(flags&XWMHint_WindowGroupHint)   dst->window_group = to_ulong(src->window_group);
+
+    dst->flags = flags;
+}
+
+void convert_XSizeHints_to_64(void* d, void *s)
+{
+    //XSizeHints is a long flag and 17*int...
+    long flags = to_long(*(long_t*)s);
+    memcpy(d+8, s+4, 17*4);
+    *(long*)d = flags;
+}
+void inplace_enlarge_wmsizehints(void* hints)
+{
+    //XSizeHints is a long flag and 17*int...
+    long flags = to_long(*(long_t*)hints);
+    memmove(hints+8, hints+4, 17*4);
+    *(long*)hints = flags;
+}
+void inplace_shrink_wmsizehints(void* hints)
+{
+    //XSizeHints is a long flag and 17*int...
+    long_t flags = from_long(*(long*)hints);
+    memmove(hints+4, hints+8, 17*4);
+    *(long_t*)hints = flags;
+}
+
+EXPORT int my32_XSetWMHints(x64emu_t* emu, void* dpy, XID window, void* hints)
+{
+    inplace_enlarge_wmhints(hints);
+    int ret = my->XSetWMHints(dpy, window, hints);
+    inplace_shrink_wmhints(hints);
+    return ret;
+}
+
+EXPORT int my32_XSetWMNormalHints(x64emu_t* emu, void* dpy, XID window, void* hints)
+{
+    inplace_enlarge_wmsizehints(hints);
+    my->XSetWMNormalHints(dpy, window, hints);
+    inplace_shrink_wmsizehints(hints);
 }
 #if 0
 EXPORT void* my32__XGetRequest(x64emu_t* emu, my_XDisplay_t* dpy, uint8_t type, size_t len)
@@ -1933,6 +2290,111 @@ EXPORT void* my32__XGetRequest(x64emu_t* emu, my_XDisplay_t* dpy, uint8_t type, 
     return my->_XGetRequest(dpy, type, len);
 }
 #endif
+
+EXPORT int my32_XStringListToTextProperty(x64emu_t* emu, ptr_t* list, int count, void* text)
+{
+    char* l_list[count];
+    if(list)
+        for(int i=0; i<count; ++i)
+            l_list[i] = from_ptrv(list[i]);
+    struct_pLiL_t text_l = {0};
+    int ret = my->XStringListToTextProperty(list?(&l_list):NULL, count, &text_l);
+    to_struct_pLiL(to_ptrv(text), &text_l);
+    return ret;
+}
+
+EXPORT int my32_Xutf8TextListToTextProperty(x64emu_t* emu, void* dpy, ptr_t* list, int count, uint32_t style, void* text)
+{
+    char* l_list[count];
+    if(list)
+        for(int i=0; i<count; ++i)
+            l_list[i] = from_ptrv(list[i]);
+    struct_pLiL_t text_l = {0};
+    int ret = my->Xutf8TextListToTextProperty(dpy, list?(&l_list):NULL, count, style, &text_l);
+    to_struct_pLiL(to_ptrv(text), &text_l);
+    return ret;
+}
+
+void convert_XWindowAttributes_to_32(void* d, void* s)
+{
+    my_XWindowAttributes_t* src = s;
+    my_XWindowAttributes_32_t* dst = d;
+    dst->x = src->x;
+    dst->y = src->y;
+    dst->width = src->width;
+    dst->height = src->height;
+    dst->border_width = src->border_width;
+    dst->depth = src->depth;
+    dst->visual = to_ptrv(src->visual);
+    dst->root = to_ulong(src->root);
+    dst->c_class = src->c_class;
+    dst->bit_gravity = src->bit_gravity;
+    dst->win_gravity = src->win_gravity;
+    dst->backing_store = src->backing_store;
+    dst->backing_planes = to_ulong(src->backing_planes);
+    dst->backing_pixel = to_ulong(src->backing_pixel);
+    dst->save_under = src->save_under;
+    dst->colormap = to_ulong(src->colormap);
+    dst->map_installed = src->map_installed;
+    dst->map_state = src->map_state;
+    dst->all_event_masks = to_long(src->all_event_masks);
+    dst->your_event_mask = to_long(src->your_event_mask);
+    dst->do_not_propagate_mask = to_long(src->do_not_propagate_mask);
+    dst->override_redirect = src->override_redirect;
+    dst->screen = to_ptrv(src->screen);
+}
+
+EXPORT int my32_XGetWindowAttributes(x64emu_t* emu, void* dpy, XID window, my_XWindowAttributes_32_t* attr)
+{
+    static my_Screen_32_t screen32 = {0};
+    my_XWindowAttributes_t l_attr = {0};
+    int ret = my->XGetWindowAttributes(dpy, window, &l_attr);
+    convert_XWindowAttributes_to_32(attr, &l_attr);
+    attr->screen = to_ptrv(&screen32);
+    convert_Screen_to_32(&screen32, l_attr.screen);
+    return ret;
+}
+
+EXPORT int my32_XChangeProperty(x64emu_t* emu, void* dpy, XID window, XID prop, XID type, int fmt, int mode, void* data, int n)
+{
+    unsigned long data_l[n];
+    if(fmt==32) {
+        for(int i=0; i<n; ++i)
+            data_l[i] = from_ulong(((ulong_t*)data)[i]);
+        data = data_l;
+    }
+    return my->XChangeProperty(dpy, window, prop, type, fmt, mode, data, n);
+}
+
+EXPORT void my32_XSetWMProperties(x64emu_t* emu, void* dpy, XID window, void* window_name, void* icon_name, ptr_t* argv, int argc, void* normal_hints, my_XWMHints_32_t* wm_hints, ptr_t* class_hints)
+{
+    struct_pLiL_t window_name_l;
+    struct_pLiL_t icon_name_l;
+    int wm_size_l[17+2] = {0};
+    my_XWMHints_t wm_hints_l = {0};
+    char* class_hints_l[2] = {0};
+    char* argv_l[argc+1];
+
+    if(window_name)
+        from_struct_pLiL(&window_name_l, to_ptrv(window_name));
+    if(icon_name)
+        from_struct_pLiL(&icon_name_l, to_ptrv(icon_name));
+    if(normal_hints)
+        convert_XSizeHints_to_64(&wm_size_l, normal_hints);
+    if(wm_hints)
+        convert_XWMints_to_64(&wm_hints_l, wm_hints);
+    if(class_hints) {
+        class_hints_l[0] = from_ptrv(class_hints[0]);
+        class_hints_l[1] = from_ptrv(class_hints[1]);
+    }
+    if(argv) {
+        memset(argv_l, 0, sizeof(argv_l));
+        for(int i=0; i<argc; ++i)
+            argv_l[i] = from_ptrv(argv[i]);
+    }
+    my->XSetWMProperties(dpy, window, window_name?(&window_name_l):NULL, icon_name?(&icon_name_l):NULL, argv?argv_l:NULL, argc, normal_hints?(&wm_size_l):NULL, wm_hints?(&wm_hints_l):NULL, class_hints?(&class_hints_l):NULL);
+}
+
 #define CUSTOM_INIT                 \
     AddAutomaticBridge(lib->w.bridge, vFp_32, *(void**)dlsym(lib->w.lib, "_XLockMutex_fn"), 0, "_XLockMutex_fn"); \
     AddAutomaticBridge(lib->w.bridge, vFp_32, *(void**)dlsym(lib->w.lib, "_XUnlockMutex_fn"), 0, "_XUnlockMutex_fn"); \

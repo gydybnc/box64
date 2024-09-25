@@ -682,4 +682,115 @@ typedef union my_XEvent_32_s {
         long_t pad[24];
 } my_XEvent_32_t;
 
+// WMHints 
+typedef struct my_XWMHints_32_s {
+    long_t flags;
+    int input;
+    int initial_state;
+    XID_32 icon_pixmap;
+    XID_32 icon_window;
+    int icon_x;
+    int icon_y;
+    XID_32 icon_mask;
+    XID_32 window_group;
+} my_XWMHints_32_t;
+
+typedef struct my_XRRModeInfo_32_s {
+    XID_32              id;
+    unsigned int        width;
+    unsigned int        height;
+    ulong_t             dotClock;
+    unsigned int        hSyncStart;
+    unsigned int        hSyncEnd;
+    unsigned int        hTotal;
+    unsigned int        hSkew;
+    unsigned int        vSyncStart;
+    unsigned int        vSyncEnd;
+    unsigned int        vTotal;
+    ptr_t               name;   //char*
+    unsigned int        nameLength;
+    ulong_t             modeFlags;
+} my_XRRModeInfo_32_t;
+
+
+typedef struct my_XRRScreenResources_32_s {
+    ulong_t     timestamp;
+    ulong_t     configTimestamp;
+    int         ncrtc;
+    ptr_t       crtcs;  //XID_32*
+    int         noutput;
+    ptr_t       outputs;    //XID_32*
+    int         nmode;
+    ptr_t       modes;  //my_XRRModeInfo_32_t *
+} my_XRRScreenResources_32_t;
+
+typedef struct my_XRRCrtcInfo_32_s {
+    ulong_t         timestamp;
+    int             x, y;
+    unsigned int    width, height;
+    XID_32          mode;
+    uint16_t        rotation;
+    int             noutput;
+    ptr_t           outputs;    //XID_32*
+    uint16_t        rotations;
+    int             npossible;
+    ptr_t           possible;   //XID_32*
+} my_XRRCrtcInfo_32_t;
+
+typedef struct my_XRROutputInfo_32_s {
+    ulong_t         timestamp;
+    XID_32          crtc;
+    ptr_t           name;   //char*
+    int             nameLen;
+    ulong_t         mm_width;
+    ulong_t         mm_height;
+    uint16_t        connection;
+    uint16_t        subpixel_order;
+    int             ncrtc;
+    ptr_t           crtcs; //XID_32*
+    int             nclone;
+    ptr_t           clones; //XID_32*
+    int             nmode;
+    int             npreferred;
+    ptr_t           modes; //XID_32*
+} my_XRROutputInfo_32_t;
+
+typedef struct my_XWindowAttributes_32_s {
+    int x, y;
+    int width, height;
+    int border_width;
+    int depth;
+    ptr_t visual;   //Visual*
+    XID_32 root;
+    int c_class;
+    int bit_gravity;
+    int win_gravity;
+    int backing_store;
+    ulong_t backing_planes;
+    ulong_t backing_pixel;
+    int save_under;
+    XID_32 colormap;
+    int map_installed;
+    int map_state;
+    long_t all_event_masks;
+    long_t your_event_mask;
+    long_t do_not_propagate_mask;
+    int override_redirect;
+    ptr_t screen;   //Screen*
+} my_XWindowAttributes_32_t;
+
+typedef struct my_XVisualInfo_32_s {
+  ptr_t visual; //Visual*
+  ulong_t visualid;
+  int screen;
+  int depth;
+  int c_class;
+  ulong_t red_mask;
+  ulong_t green_mask;
+  ulong_t blue_mask;
+  int colormap_size;
+  int bits_per_rgb;
+} my_XVisualInfo_32_t;
+
+
 #endif//MY_X11_DEFS_32
