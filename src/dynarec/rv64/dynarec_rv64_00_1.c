@@ -336,8 +336,7 @@ uintptr_t dynarec64_00_1(dynarec_rv64_t* dyn, uintptr_t addr, uintptr_t ip, int 
             break;
         case 0x70 + 0x2:
             INST_NAME("JC ib");
-            GO(ANDI(x1, xFlags, 1 << F_
-            CF), EQZ, NEZ, X_CF)
+            GO(ANDI(x1, xFlags, 1 << F_CF), EQZ, NEZ, X_CF)
             break;
         case 0x70 + 0x3:
             INST_NAME("JNC ib");
