@@ -545,6 +545,10 @@ uintptr_t dynarec64_00_0(dynarec_rv64_t* dyn, uintptr_t addr, uintptr_t ip, int 
             nextop = F8;
             GETGD;
             GETED(0);
+	    if (dyn->insts[ninst].pattern_code){
+                dyn->insts[ninst].op1 = ed;
+                dyn->insts[ninst].op2 = gd;
+            }
             emit_cmp32(dyn, ninst, rex, ed, gd, x3, x4, x5, x6);
             break;
         case 0x3A:
@@ -561,6 +565,10 @@ uintptr_t dynarec64_00_0(dynarec_rv64_t* dyn, uintptr_t addr, uintptr_t ip, int 
             nextop = F8;
             GETGD;
             GETED(0);
+	    if (dyn->insts[ninst].pattern_code){
+                dyn->insts[ninst].op1 = gd;
+                dyn->insts[ninst].op2 = ed;
+            }
             emit_cmp32(dyn, ninst, rex, gd, ed, x3, x4, x5, x6);
             break;
         case 0x3C:

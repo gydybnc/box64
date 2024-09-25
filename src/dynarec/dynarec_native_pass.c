@@ -125,7 +125,7 @@ uintptr_t native_pass(dynarec_native_t* dyn, uintptr_t addr, int alternate, int 
     memset(&dyn->insts[ninst], 0, sizeof(instruction_native_t));
     #endif
     #if STEP == 1
-    uint8_t next_opcode;
+    uint8_t old_opcode;
     uint8_t current_opcode ;
     #endif
     fpu_reset(dyn);
@@ -217,16 +217,17 @@ uintptr_t native_pass(dynarec_native_t* dyn, uintptr_t addr, int alternate, int 
 //////////////////////////////////////////////////////////////////
     #if STEP == 1
         current_opcode = PK(0);
-        next_opcode = PK(2);
-        int id = get_pattern_identifier(current_opcode, next_opcode);
-        if (id != -1) {
-            //printf("pattern: %p CMP 0x%x | Jxx 0x%x，code: %d\n",(void*)addr, current_opcode, next_opcode, id);
-            dyn->insts[ninst].pattern_code = id;
-	    dyn->insts[ninst+1].pattern_code = id;
-	    //printf("%d %d\n", dyn->insts[ninst].pattern_code,dyn->insts[ninst+1].pattern_code);
-	}
-    #endif   
-
+	if(old_opcode){
+            int id = get_pattern_identifier(old_opcode, current_opcode);
+	    if (id != -1) {
+            	printf("pattern: %p CMP 0x%x | Jxx 0x%x，code: %d\n",(void*)addr, old_opcode, current_opcode, id);
+            	dyn->insts[ninst-1].pattern_code = id;
+	    	dyn->insts[ninst].pattern_code = id;
+	    	//printf("%d %d\n", dyn->insts[ninst].pattern_code,dyn->insts[ninst+1].pattern_code);
+	    }
+	}   
+	old_opcode = current_opcode;
+    #endif
 ////////////////////////////////////////////////////////////////
         rep = 0;
         uint8_t pk = PK(0);
