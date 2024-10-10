@@ -540,6 +540,8 @@ uintptr_t dynarec64_00_0(dynarec_rv64_t* dyn, uintptr_t addr, uintptr_t ip, int 
             if (dyn->insts[ninst].pattern_code == 5 || dyn->insts[ninst].pattern_code == 45){
                 dyn->insts[ninst].op1 = x1;
                 dyn->insts[ninst].op2 = x2;
+		dyn->insts[ninst+1].op1 = x1;
+                dyn->insts[ninst+1].op2 = x2;
                 break;
             }
             emit_cmp8(dyn, ninst, x1, x2, x9, x4, x5, x6);
@@ -550,9 +552,13 @@ uintptr_t dynarec64_00_0(dynarec_rv64_t* dyn, uintptr_t addr, uintptr_t ip, int 
             nextop = F8;
             GETGD;
             GETED(0);
-	        if (dyn->insts[ninst].pattern_code == 13 || dyn->insts[ninst].pattern_code == 53){
-                dyn->insts[ninst].op1 = ed;
+	    if (dyn->insts[ninst].pattern_code == 13 || dyn->insts[ninst].pattern_code == 53){
+		dyn->insts[ninst].op1 = ed;
                 dyn->insts[ninst].op2 = gd;
+		dyn->insts[ninst+1].op1 = ed;
+                dyn->insts[ninst+1].op2 = gd;
+		emit_cmp32_noflag(dyn, ninst, rex, ed, gd, x3, x4, x5, x6);
+		printf("cmp gd ed op12:%d,%d,ninst:%d\n",dyn->insts[ninst].op2, dyn->insts[ninst].op1,ninst);
                 break;
             }
             emit_cmp32(dyn, ninst, rex, ed, gd, x3, x4, x5, x6);
@@ -566,6 +572,8 @@ uintptr_t dynarec64_00_0(dynarec_rv64_t* dyn, uintptr_t addr, uintptr_t ip, int 
             if (dyn->insts[ninst].pattern_code == 21 || dyn->insts[ninst].pattern_code == 61){
                 dyn->insts[ninst].op1 = x2;
                 dyn->insts[ninst].op2 = x1;
+		dyn->insts[ninst+1].op1 = x2;
+                dyn->insts[ninst+1].op2 = x1;
                 break;
             }
             emit_cmp8(dyn, ninst, x2, x1, x9, x4, x5, x6);
@@ -579,6 +587,8 @@ uintptr_t dynarec64_00_0(dynarec_rv64_t* dyn, uintptr_t addr, uintptr_t ip, int 
 	        if (dyn->insts[ninst].pattern_code == 29 || dyn->insts[ninst].pattern_code == 69){
                 dyn->insts[ninst].op1 = gd;
                 dyn->insts[ninst].op2 = ed;
+		dyn->insts[ninst+1].op1 = gd;
+                dyn->insts[ninst+1].op2 = ed;
                 break;
             }
             emit_cmp32(dyn, ninst, rex, gd, ed, x3, x4, x5, x6);
