@@ -32,7 +32,7 @@
 #endif
 #endif
 
-#if STEP == 1
+#if STEP == 0
 typedef struct {
     unsigned char cmp_opcode;
     unsigned char jxx_opcode;
@@ -176,7 +176,7 @@ uintptr_t native_pass(dynarec_native_t* dyn, uintptr_t addr, int alternate, int 
     #if STEP == 0
     memset(&dyn->insts[ninst], 0, sizeof(instruction_native_t));
     #endif
-    #if STEP == 1
+    #if STEP == 0
     uint8_t old_opcode;
     uint8_t current_opcode ;
     #endif
@@ -264,10 +264,9 @@ uintptr_t native_pass(dynarec_native_t* dyn, uintptr_t addr, int alternate, int 
                 MESSAGE(LOG_DUMP, "----------\n");
             }
         }
-#endif
-	
+#endif	
 //////////////////////////////////////////////////////////////////
-    #if STEP == 1
+    #if STEP == 0
         current_opcode = PK(0);
 	if(old_opcode){
             int id = get_pattern_identifier(old_opcode, current_opcode);
