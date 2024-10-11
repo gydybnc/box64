@@ -198,10 +198,89 @@ void emit_cmp32_noflag(dynarec_rv64_t* dyn, int ninst, rex_t rex, int s1, int s2
         SDxw(s1, xEmu, offsetof(x64emu_t, op1));
         SDxw(s2, xEmu, offsetof(x64emu_t, op2));
         SET_DF(s4, rex.w?d_cmp64:d_cmp32);
-    } else {
+    } else { 
         SET_DFNONE();
     }
+    IFX(X_AF | X_CF | X_OF) {
+        // for later flag calculation
+        NOP();
+    }
+
+    // It's a cmp, we can't store the result back to s1.
+    NOP();
+    IFX_PENDOR0 {
+        NOP();
+    }
+    IFX(X_SF) {
+        NOP();
+        NOP();
+    }
+    if (!rex.w) {
+        NOP();
+    }
+    //CALC_SUB_FLAGS(s5, s2, s6, s3, s4, rex.w?64:32);
+    IFX(X_AF | X_CF | X_OF)                                           \
+    {                                                                 \
+        /* calc borrow chain */                                       \
+        /* bc = (res & (~op1 | op2)) | (~op1 & op2) */                \
+        NOP();                                      \
+        NOP();                                 \
+        NOP();                                         \
+        NOP();                                 \
+        IFX(X_AF)                                                     \
+        {                                                             \
+            /* af = bc & 0x8 */                                       \
+            NOP();                              \
+            NOP();                                        \
+            NOP();                           \
+        }                                                             \
+        IFX(X_CF)                                                     \
+        {                                                             \
+            /* cf = bc & (1<<(width-1)) */                            \
+            if (rex.w?64:32) {                                       \
+                NOP();                       \
+            } else {                                                  \
+                NOP();                  \
+                if ((rex.w?64:32) != 64) NOP();       \
+            }                                                         \
+            NOP();                                        \
+            NOP();                           \
+        }                                                             \
+        IFX(X_OF)                                                     \
+        {                                                             \
+            /* of = ((bc >> (width-2)) ^ (bc >> (width-1))) & 0x1; */ \
+            NOP();                      \
+            NOP();                              \
+            NOP();                        \
+            NOP();                              \
+            NOP();                                        \
+            NOP();                          \
+        }                                                             \
+    }
+    IFX(X_ZF) {
+        NOP();
+        NOP();
+    }
+    IFX(X_PF) {
+        MAYUSE(dyn);
+        MAYUSE(ninst);
+
+        NOP();
+        NOP();
+
+        NOP();
+        NOP();
+
+        NOP();
+        NOP();
+
+        NOP();
+        NOP();
+        NOP();
+        NOP();
+    }
 }
+
 
 // emit CMP32 instruction, from cmp s1, 0, using s3 and s4 as scratch
 void emit_cmp32_0(dynarec_rv64_t* dyn, int ninst, rex_t rex, int s1, int s3, int s4)
