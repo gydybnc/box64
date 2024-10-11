@@ -402,8 +402,13 @@ uintptr_t dynarec64_00_1(dynarec_rv64_t* dyn, uintptr_t addr, uintptr_t ip, int 
                 dyn->insts[ninst].pattern_code == 21 ||
                 dyn->insts[ninst].pattern_code == 29 ||
                 dyn->insts[ninst].pattern_code == 37){
-		printf("JG ib op12:%d,%d,ninst:%d\n",dyn->insts[ninst].op2, dyn->insts[ninst].op1,ninst);
-                GO(SLT(x1, dyn->insts[ninst].op2, dyn->insts[ninst].op1 ), NEZ, EQZ, X_SF | X_OF | X_ZF)
+		
+                GO(SLT(x1, dyn->insts[ninst].op2, dyn->insts[ninst].op1);
+		   NOP();
+   		   NOP();
+		   NOP();
+		   NOP();
+		   NOP() , NEZ, EQZ, X_SF | X_OF | X_ZF)
             }
             else{
                 GO(SRLI(x1, xFlags, F_SF - F_OF2);
