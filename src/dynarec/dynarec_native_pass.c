@@ -32,6 +32,129 @@
 #endif
 #endif
 
+#if STEP == 0
+typedef struct {
+    unsigned char cmp_opcode;
+    unsigned char jxx_opcode;
+    int identifier;
+} CmpJxxPair;
+
+CmpJxxPair cmp_jxx_pairs[] = {
+    //Jxx ib: 0x70
+    // CMP 0x38: CMP Eb, Gb
+    {0x38, 0x74, 0}, // CMP 0x38 后跟 JZ (0x74)
+    {0x38, 0x75, 1}, // CMP 0x38 后跟 JNZ (0x75)
+    {0x38, 0x7C, 2}, // CMP 0x38 后跟 JL (0x7C)
+    {0x38, 0x7D, 3}, // CMP 0x38 后跟 JGE (0x7D)
+    {0x38, 0x7E, 4}, // CMP 0x38 后跟 JLE (0x7E)
+    {0x38, 0x7F, 5}, // CMP 0x38 后跟 JG (0x7F)
+    {0x38, 0x76, 6}, // CMP 0x38 后跟 JBE (0x76)
+    {0x38, 0x77, 7}, // CMP 0x38 后跟 JNBE (0x77)
+
+    // CMP 0x39: CMP Ed, Gd
+    {0x39, 0x74, 8},
+    {0x39, 0x75, 9},
+    {0x39, 0x7C, 10},
+    {0x39, 0x7D, 11},
+    {0x39, 0x7E, 12},
+    {0x39, 0x7F, 13},
+    {0x39, 0x76, 14},
+    {0x39, 0x77, 15},
+
+    // CMP 0x3A: CMP Gb, Eb
+    {0x3A, 0x74, 16},
+    {0x3A, 0x75, 17},
+    {0x3A, 0x7C, 18},
+    {0x3A, 0x7D, 19},
+    {0x3A, 0x7E, 20},
+    {0x3A, 0x7F, 21},
+    {0x3A, 0x76, 22},
+    {0x3A, 0x77, 23},
+
+    // CMP 0x3B: CMP Gd, Ed
+    {0x3B, 0x74, 24},
+    {0x3B, 0x75, 25},
+    {0x3B, 0x7C, 26},
+    {0x3B, 0x7D, 27},
+    {0x3B, 0x7E, 28},
+    {0x3B, 0x7F, 29},
+    {0x3B, 0x76, 30},
+    {0x3B, 0x77, 31},
+
+    // CMP 0x3C: CMP AL, Ib
+    {0x3C, 0x74, 32},
+    {0x3C, 0x75, 33},
+    {0x3C, 0x7C, 34},
+    {0x3C, 0x7D, 35},
+    {0x3C, 0x7E, 36},
+    {0x3C, 0x7F, 37},
+    {0x3C, 0x76, 38},
+    {0x3C, 0x77, 39},
+
+    //Jxx Id: 0x80
+    // CMP 0x38: CMP Eb, Gb
+    {0x38, 0x84, 40}, // CMP 0x38 后跟 JZ (0x84)
+    {0x38, 0x85, 41}, // CMP 0x38 后跟 JNZ (0x85)
+    {0x38, 0x8C, 42}, // CMP 0x38 后跟 JL (0x8C)
+    {0x38, 0x8D, 43}, // CMP 0x38 后跟 JGE (0x8D)
+    {0x38, 0x8E, 44}, // CMP 0x38 后跟 JLE (0x8E)
+    {0x38, 0x8F, 45}, // CMP 0x38 后跟 JG (0x8F)
+    {0x38, 0x86, 46}, // CMP 0x38 后跟 JBE (0x86)
+    {0x38, 0x87, 47}, // CMP 0x38 后跟 JNBE (0x87)
+
+    // CMP 0x39: CMP Ed, Gd
+    {0x39, 0x84, 48},
+    {0x39, 0x85, 49},
+    {0x39, 0x8C, 50},
+    {0x39, 0x8D, 51},
+    {0x39, 0x8E, 52},
+    {0x39, 0x8F, 53},
+    {0x39, 0x86, 54},
+    {0x39, 0x87, 55},
+
+    // CMP 0x3A: CMP Gb, Eb
+    {0x3A, 0x84, 56},
+    {0x3A, 0x85, 57},
+    {0x3A, 0x8C, 58},
+    {0x3A, 0x8D, 59},
+    {0x3A, 0x8E, 60},
+    {0x3A, 0x8F, 61},
+    {0x3A, 0x86, 62},
+    {0x3A, 0x87, 63},
+
+    // CMP 0x3B: CMP Gd, Ed
+    {0x3B, 0x84, 64},
+    {0x3B, 0x85, 65},
+    {0x3B, 0x8C, 66},
+    {0x3B, 0x8D, 67},
+    {0x3B, 0x8E, 68},
+    {0x3B, 0x8F, 69},
+    {0x3B, 0x86, 70},
+    {0x3B, 0x87, 71},
+
+    // CMP 0x3C: CMP AL, Ib
+    {0x3C, 0x84, 72},
+    {0x3C, 0x85, 73},
+    {0x3C, 0x8C, 74},
+    {0x3C, 0x8D, 75},
+    {0x3C, 0x8E, 76},
+    {0x3C, 0x8F, 77},
+    {0x3C, 0x86, 78},
+    {0x3C, 0x87, 79}
+};
+
+#define NUM_PAIRS (sizeof(cmp_jxx_pairs) / sizeof(CmpJxxPair))
+
+int get_pattern_identifier(unsigned char current_opcode, unsigned char next_opcode) {
+    for (int i = 0; i < NUM_PAIRS; i++) {
+        if (cmp_jxx_pairs[i].cmp_opcode == current_opcode && cmp_jxx_pairs[i].jxx_opcode == next_opcode) {
+            return cmp_jxx_pairs[i].identifier;
+        }
+    }
+    return -1; // no found
+}
+#endif
+
 uintptr_t native_pass(dynarec_native_t* dyn, uintptr_t addr, int alternate, int is32bits)
 {
     int ok = 1;
@@ -52,6 +175,10 @@ uintptr_t native_pass(dynarec_native_t* dyn, uintptr_t addr, int alternate, int 
     dyn->ymm_zero = 0;
     #if STEP == 0
     memset(&dyn->insts[ninst], 0, sizeof(instruction_native_t));
+    #endif
+    #if STEP == 0
+    uint8_t old_opcode;
+    uint8_t current_opcode ;
     #endif
     fpu_reset(dyn);
     ARCH_INIT();
@@ -139,6 +266,21 @@ uintptr_t native_pass(dynarec_native_t* dyn, uintptr_t addr, int alternate, int 
         }
 #endif
 
+//////////////////////////////////////////////////////////////////
+    #if STEP == 0
+        current_opcode = PK(0);
+        if(old_opcode){
+            int id = get_pattern_identifier(old_opcode, current_opcode);
+            if (id != -1) {
+                printf("pattern: %p CMP 0x%x | Jxx 0x%x, code: %d\n",(void*)addr, old_opcode, current_opcode, id);
+                dyn->insts[ninst-1].pattern_code = id;
+                dyn->insts[ninst].pattern_code = id;
+                //printf("%d %d\n", dyn->insts[ninst].pattern_code,dyn->insts[ninst+1].pattern_code);
+            }
+        }   
+        old_opcode = current_opcode;
+    #endif
+////////////////////////////////////////////////////////////////
         rep = 0;
         uint8_t pk = PK(0);
         while((pk==0xF2) || (pk==0xF3) || (pk==0x3E) || (pk==0x26)) {
