@@ -1700,19 +1700,65 @@ uintptr_t dynarec64_0F(dynarec_rv64_t* dyn, uintptr_t addr, uintptr_t ip, int ni
             break;
         case 0x80 + 0x4:
             INST_NAME("JZ Id");
-            GO(ANDI(x1, xFlags, 1 << F_ZF), EQZ, NEZ, X_ZF)
+            if (dyn->insts[ninst].pattern_code == 40 || 
+                dyn->insts[ninst].pattern_code == 48 || 
+                dyn->insts[ninst].pattern_code == 56 ||
+                dyn->insts[ninst].pattern_code == 64 ||
+                dyn->insts[ninst].pattern_code == 72){
+                    //GO(NO,YES)
+                    //NEZ=1  EQZ=0
+                    //op1=op2 then jmp -> x1==0 -> YES -> GO(NEZ,EQZ)
+                GO(SUB(x1, dyn->insts[ninst].op1, dyn->insts[ninst].op2), NEZ, EQZ, X_ZF)
+            }
+            else{
+                GO(ANDI(x1, xFlags, 1 << F_ZF), EQZ, NEZ, X_ZF)
+            }
             break;
         case 0x80 + 0x5:
             INST_NAME("JNZ Id");
-            GO(ANDI(x1, xFlags, 1 << F_ZF), NEZ, EQZ, X_ZF)
+            if (dyn->insts[ninst].pattern_code == 41 || 
+                dyn->insts[ninst].pattern_code == 49 || 
+                dyn->insts[ninst].pattern_code == 57 ||
+                dyn->insts[ninst].pattern_code == 65 ||
+                dyn->insts[ninst].pattern_code == 73){
+                    //GO(NO,YES)
+                    //NEZ=1  EQZ=0
+                    //op1!=op2 then jmp -> x1!=0 -> YES -> GO(EQZ,NEZ)
+                GO(SUB(x1, dyn->insts[ninst].op1, dyn->insts[ninst].op2), EQZ, NEZ, X_ZF)
+            }
+            else{
+                GO(ANDI(x1, xFlags, 1 << F_ZF), NEZ, EQZ, X_ZF)
+            }
             break;
         case 0x80 + 0x6:
             INST_NAME("JBE Id");
-            GO(ANDI(x1, xFlags, (1 << F_CF) | (1 << F_ZF)), EQZ, NEZ, X_CF | X_ZF)
+            if (dyn->insts[ninst].pattern_code == 46 || 
+                dyn->insts[ninst].pattern_code == 54 || 
+                dyn->insts[ninst].pattern_code == 62 ||
+                dyn->insts[ninst].pattern_code == 70 ||
+                dyn->insts[ninst].pattern_code == 78){
+                    //op1<=op2 then jmp -> op2<op1 then not jmp
+                    //op2<op1 -> x1==1 -> NO -> GO(NEZ,EQZ)
+                GO(SLTU(x1, dyn->insts[ninst].op2, dyn->insts[ninst].op1), NEZ, EQZ, X_CF | X_ZF)
+            }
+            else{
+                GO(ANDI(x1, xFlags, (1 << F_CF) | (1 << F_ZF)), EQZ, NEZ, X_CF | X_ZF)
+            }
             break;
         case 0x80 + 0x7:
             INST_NAME("JNBE Id");
-            GO(ANDI(x1, xFlags, (1 << F_CF) | (1 << F_ZF)), NEZ, EQZ, X_CF | X_ZF)
+            if (dyn->insts[ninst].pattern_code == 47 || 
+                dyn->insts[ninst].pattern_code == 55 || 
+                dyn->insts[ninst].pattern_code == 63 ||
+                dyn->insts[ninst].pattern_code == 71 ||
+                dyn->insts[ninst].pattern_code == 79){
+                    //op1>op2 then jmp -> op2<op1 then jmp
+                    //op2<op1 -> x1==1 -> YES -> GO(EQZ,NEZ)
+                GO(SLTU(x1, dyn->insts[ninst].op2, dyn->insts[ninst].op1), EQZ, NEZ, X_CF | X_ZF)
+            }
+            else{
+                GO(ANDI(x1, xFlags, (1 << F_CF) | (1 << F_ZF)), NEZ, EQZ, X_CF | X_ZF)
+            }
             break;
         case 0x80 + 0x8:
             INST_NAME("JS Id");
@@ -1732,24 +1778,58 @@ uintptr_t dynarec64_0F(dynarec_rv64_t* dyn, uintptr_t addr, uintptr_t ip, int ni
             break;
         case 0x80 + 0xC:
             INST_NAME("JL Id");
-            GO(SRLI(x1, xFlags, F_SF - F_OF2);
-                XOR(x1, x1, xFlags);
-                ANDI(x1, x1, 1 << F_OF2), EQZ, NEZ, X_SF | X_OF)
+            if (dyn->insts[ninst].pattern_code == 42 || 
+                dyn->insts[ninst].pattern_code == 50 || 
+                dyn->insts[ninst].pattern_code == 58 ||
+                dyn->insts[ninst].pattern_code == 66 ||
+                dyn->insts[ninst].pattern_code == 74){
+                    //GO(NO,YES)
+                    //NEZ=1  EQZ=0
+                    //op1<op2 then jmp -> x1==1 -> YES -> GO(EQZ,NEZ)
+                GO(SLT(x1, dyn->insts[ninst].op1, dyn->insts[ninst].op2), EQZ, NEZ, X_SF | X_OF)
+            }
+            else{
+                GO(SRLI(x1, xFlags, F_SF - F_OF2);
+                    XOR(x1, x1, xFlags);
+                    ANDI(x1, x1, 1 << F_OF2), EQZ, NEZ, X_SF | X_OF)
+            }
             break;
         case 0x80 + 0xD:
             INST_NAME("JGE Id");
-            GO(SRLI(x1, xFlags, F_SF - F_OF2);
-                XOR(x1, x1, xFlags);
-                ANDI(x1, x1, 1 << F_OF2), NEZ, EQZ, X_SF | X_OF)
+            if (dyn->insts[ninst].pattern_code == 43 || 
+                dyn->insts[ninst].pattern_code == 51 || 
+                dyn->insts[ninst].pattern_code == 59 ||
+                dyn->insts[ninst].pattern_code == 67 ||
+                dyn->insts[ninst].pattern_code == 75) {
+                    //op1>=op2 then jmp -> op1<op2 then not jmp
+                    //op1<op2 -> x1 == 1 -> NO -> GO(NEZ,EQZ)
+                GO(SLT(x1, dyn->insts[ninst].op1, dyn->insts[ninst].op2), NEZ, EQZ, X_SF | X_OF)
+            }
+            else{
+                GO(SRLI(x1, xFlags, F_SF - F_OF2);
+                    XOR(x1, x1, xFlags);
+                    ANDI(x1, x1, 1 << F_OF2), NEZ, EQZ, X_SF | X_OF)
+            }
             break;
         case 0x80 + 0xE:
             INST_NAME("JLE Id");
-            GO(SRLI(x1, xFlags, F_SF - F_OF2);
-                XOR(x1, x1, xFlags);
-                ANDI(x1, x1, 1 << F_OF2);
-                ANDI(x3, xFlags, 1 << F_ZF);
-                OR(x1, x1, x3);
-                ANDI(x1, x1, (1 << F_OF2) | (1 << F_ZF)), EQZ, NEZ, X_SF | X_OF | X_ZF)
+            if (dyn->insts[ninst].pattern_code == 44 || 
+                dyn->insts[ninst].pattern_code == 52 || 
+                dyn->insts[ninst].pattern_code == 60 ||
+                dyn->insts[ninst].pattern_code == 68 ||
+                dyn->insts[ninst].pattern_code == 76) {
+                    //op1<=op2 then jmp -> op2<op1 then not jmp
+                    //op2<op1 -> x1 == 1 -> NO -> GO(NEZ,EQZ)
+                GO(SLT(x1, dyn->insts[ninst].op2, dyn->insts[ninst].op1), NEZ, EQZ, X_SF | X_OF | X_ZF)
+            }
+            else{
+                GO(SRLI(x1, xFlags, F_SF - F_OF2);
+                    XOR(x1, x1, xFlags);
+                    ANDI(x1, x1, 1 << F_OF2);
+                    ANDI(x3, xFlags, 1 << F_ZF);
+                    OR(x1, x1, x3);
+                    ANDI(x1, x1, (1 << F_OF2) | (1 << F_ZF)), EQZ, NEZ, X_SF | X_OF | X_ZF)
+            }
             break;
         case 0x80 + 0xF:
             INST_NAME("JG Id");
@@ -1758,6 +1838,8 @@ uintptr_t dynarec64_0F(dynarec_rv64_t* dyn, uintptr_t addr, uintptr_t ip, int ni
                 dyn->insts[ninst].pattern_code == 61 ||
                 dyn->insts[ninst].pattern_code == 69 ||
                 dyn->insts[ninst].pattern_code == 77){
+                    //op1>op2 then jmp -> op2<op1 then jmp
+                    //op2<op1 -> x1 == 1 -> YES -> GO(EQZ,NEZ)
                 GO(SLT(x1, dyn->insts[ninst].op2, dyn->insts[ninst].op1), EQZ, NEZ, X_SF | X_OF | X_ZF)
             }
             else{

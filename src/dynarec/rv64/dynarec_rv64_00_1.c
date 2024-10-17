@@ -381,9 +381,9 @@ uintptr_t dynarec64_00_1(dynarec_rv64_t* dyn, uintptr_t addr, uintptr_t ip, int 
                 dyn->insts[ninst].pattern_code == 22 ||
                 dyn->insts[ninst].pattern_code == 30 ||
                 dyn->insts[ninst].pattern_code == 38){
-                    //op2<=op1 then jmp -> op2<op1 then not jmp
+                    //op1<=op2 then jmp -> op2<op1 then not jmp
                     //op2<op1 -> x1==1 -> NO -> GO(NEZ,EQZ)
-                GO(SLTU(x1, dyn->insts[ninst].op2, dyn->insts[ninst].op1), EQZ, NEZ, X_CF | X_ZF)
+                GO(SLTU(x1, dyn->insts[ninst].op2, dyn->insts[ninst].op1), NEZ, EQZ, X_CF | X_ZF)
             }
             else{
                 GO(ANDI(x1, xFlags, (1 << F_CF) | (1 << F_ZF)), EQZ, NEZ, X_CF | X_ZF)
@@ -397,7 +397,7 @@ uintptr_t dynarec64_00_1(dynarec_rv64_t* dyn, uintptr_t addr, uintptr_t ip, int 
                 dyn->insts[ninst].pattern_code == 31 ||
                 dyn->insts[ninst].pattern_code == 39){
                     //op1>op2 then jmp -> op2<op1 then jmp
-                    //op2<op1 -> x1 == 1 -> YES -> GO(EQZ,NEZ)
+                    //op2<op1 -> x1==1 -> YES -> GO(EQZ,NEZ)
                 GO(SLTU(x1, dyn->insts[ninst].op2, dyn->insts[ninst].op1), EQZ, NEZ, X_CF | X_ZF)
             }
             else{
