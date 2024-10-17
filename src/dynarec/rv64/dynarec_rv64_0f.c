@@ -1758,7 +1758,7 @@ uintptr_t dynarec64_0F(dynarec_rv64_t* dyn, uintptr_t addr, uintptr_t ip, int ni
                 dyn->insts[ninst].pattern_code == 61 ||
                 dyn->insts[ninst].pattern_code == 69 ||
                 dyn->insts[ninst].pattern_code == 77){
-                GO(SLT(x1, dyn->insts[ninst].op2, dyn->insts[ninst].op1), NEZ, EQZ, X_SF | X_OF | X_ZF)
+                GO(SLT(x1, dyn->insts[ninst].op2, dyn->insts[ninst].op1), EQZ, NEZ, X_SF | X_OF | X_ZF)
             }
             else{
                 GO(SRLI(x1, xFlags, F_SF - F_OF2);

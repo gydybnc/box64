@@ -540,6 +540,8 @@ uintptr_t dynarec64_00_0(dynarec_rv64_t* dyn, uintptr_t addr, uintptr_t ip, int 
             if (dyn->insts[ninst].pattern_code == 5 || dyn->insts[ninst].pattern_code == 45){
                 dyn->insts[ninst].op1 = x1;
                 dyn->insts[ninst].op2 = x2;
+                dyn->insts[ninst+1].op1 = x1;
+                dyn->insts[ninst+1].op2 = x2;
                 break;
             }
             emit_cmp8(dyn, ninst, x1, x2, x9, x4, x5, x6);
