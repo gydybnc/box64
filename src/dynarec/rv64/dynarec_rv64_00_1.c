@@ -381,7 +381,7 @@ uintptr_t dynarec64_00_1(dynarec_rv64_t* dyn, uintptr_t addr, uintptr_t ip, int 
                 dyn->insts[ninst].pattern_code == 18 ||
                 dyn->insts[ninst].pattern_code == 26 ||
                 dyn->insts[ninst].pattern_code == 34){
-                GO(SLT(x1, dyn->insts[ninst].op2, dyn->insts[ninst].op1), EQZ, NEZ, X_SF | X_OF | X_ZF)
+                GO(SLT(x1, dyn->insts[ninst].op1, dyn->insts[ninst].op2), EQZ, NEZ, X_SF | X_OF | X_ZF)
             }
             else{
                 GO(SRLI(x1, xFlags, F_SF - F_OF2);
@@ -411,7 +411,7 @@ uintptr_t dynarec64_00_1(dynarec_rv64_t* dyn, uintptr_t addr, uintptr_t ip, int 
                 dyn->insts[ninst].pattern_code == 21 ||
                 dyn->insts[ninst].pattern_code == 29 ||
                 dyn->insts[ninst].pattern_code == 37){
-                GO(SLT(x1, dyn->insts[ninst].op1, dyn->insts[ninst].op2), EQZ, NEZ, X_SF | X_OF | X_ZF)
+                GO(SLT(x1, dyn->insts[ninst].op2, dyn->insts[ninst].op1), EQZ, NEZ, X_SF | X_OF | X_ZF)
             }
             else{
                 GO(SRLI(x1, xFlags, F_SF - F_OF2);
