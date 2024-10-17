@@ -265,22 +265,6 @@ uintptr_t native_pass(dynarec_native_t* dyn, uintptr_t addr, int alternate, int 
             }
         }
 #endif
-
-//////////////////////////////////////////////////////////////////
-    #if STEP == 0
-        current_opcode = PK(0);
-        if(old_opcode){
-            int id = get_pattern_identifier(old_opcode, current_opcode);
-            if (id != -1) {
-                printf("pattern: %p CMP 0x%x | Jxx 0x%x, code: %d\n",(void*)addr, old_opcode, current_opcode, id);
-                dyn->insts[ninst-1].pattern_code = id;
-                dyn->insts[ninst].pattern_code = id;
-                //printf("%d %d\n", dyn->insts[ninst].pattern_code,dyn->insts[ninst+1].pattern_code);
-            }
-        }   
-        old_opcode = current_opcode;
-    #endif
-////////////////////////////////////////////////////////////////
         rep = 0;
         uint8_t pk = PK(0);
         while((pk==0xF2) || (pk==0xF3) || (pk==0x3E) || (pk==0x26)) {
@@ -302,6 +286,21 @@ uintptr_t native_pass(dynarec_native_t* dyn, uintptr_t addr, int alternate, int 
                 pk = PK(0);
             }
 
+	//////////////////////////////////////////////////////////////////
+    #if STEP == 0
+        current_opcode = PK(0);
+        if(old_opcode){
+            int id = get_pattern_identifier(old_opcode, current_opcode);
+            if (id != -1) {
+                printf("pattern: %p CMP 0x%x | Jxx 0x%x, code: %d\n",(void*)addr, old_opcode, current_opcode, id);
+                dyn->insts[ninst-1].pattern_code = id;
+                dyn->insts[ninst].pattern_code = id;
+                //printf("%d %d\n", dyn->insts[ninst].pattern_code,dyn->insts[ninst+1].pattern_code);
+            }
+        }
+        old_opcode = current_opcode;
+    #endif
+////////////////////////////////////////////////////////////////
         addr = dynarec64_00(dyn, addr, ip, ninst, rex, rep, &ok, &need_epilog);
         if(dyn->abort)
             return ip;

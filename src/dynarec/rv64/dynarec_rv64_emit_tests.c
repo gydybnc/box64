@@ -59,6 +59,17 @@ void emit_cmp8(dynarec_rv64_t* dyn, int ninst, int s1, int s2, int s3, int s4, i
     }
 }
 
+void emit_cmp8_noflag(dynarec_rv64_t* dyn, int ninst, int s1, int s2, int s3, int s4, int s5, int s6)
+{
+    CLEAR_FLAGS();
+    IFX_PENDOR0 {
+        SB(s1, xEmu, offsetof(x64emu_t, op1));
+        SB(s2, xEmu, offsetof(x64emu_t, op2));
+        SET_DF(s4, d_cmp8);
+    } else {
+        SET_DFNONE();
+    }
+}
 // emit CMP8 instruction, from cmp s1 , 0, using s3 and s4 as scratch
 void emit_cmp8_0(dynarec_rv64_t* dyn, int ninst, int s1, int s3, int s4)
 {
@@ -86,6 +97,18 @@ void emit_cmp8_0(dynarec_rv64_t* dyn, int ninst, int s1, int s3, int s4)
     }
 }
 
+void emit_cmp8_0_noflag(dynarec_rv64_t* dyn, int ninst, int s1, int s3, int s4)
+{
+    CLEAR_FLAGS();
+    IFX_PENDOR0 {
+        SB(s1, xEmu, offsetof(x64emu_t, op1));
+        SB(xZR, xEmu, offsetof(x64emu_t, op2));
+        SB(s1, xEmu, offsetof(x64emu_t, res));
+        SET_DF(s3, d_cmp8);
+    } else {
+        SET_DFNONE();
+    }
+}
 // emit CMP16 instruction, from cmp s1, s2, using s3 and s4 as scratch
 void emit_cmp16(dynarec_rv64_t* dyn, int ninst, int s1, int s2, int s3, int s4, int s5, int s6)
 {
@@ -125,7 +148,17 @@ void emit_cmp16(dynarec_rv64_t* dyn, int ninst, int s1, int s2, int s3, int s4, 
         emit_pf(dyn, ninst, s6, s3, s4);
     }
 }
-
+void emit_cmp16_noflag(dynarec_rv64_t* dyn, int ninst, int s1, int s2, int s3, int s4, int s5, int s6)
+{
+    CLEAR_FLAGS();
+    IFX_PENDOR0 {
+        SH(s1, xEmu, offsetof(x64emu_t, op1));
+        SH(s2, xEmu, offsetof(x64emu_t, op2));
+        SET_DF(s4, d_cmp16);
+    } else {
+        SET_DFNONE();
+    }
+}
 // emit CMP16 instruction, from cmp s1 , #0, using s3 and s4 as scratch
 void emit_cmp16_0(dynarec_rv64_t* dyn, int ninst, int s1, int s3, int s4)
 {
@@ -152,7 +185,18 @@ void emit_cmp16_0(dynarec_rv64_t* dyn, int ninst, int s1, int s3, int s4)
         emit_pf(dyn, ninst, s1, s3, s4);
     }
 }
-
+void emit_cmp16_0_noflag(dynarec_rv64_t* dyn, int ninst, int s1, int s3, int s4)
+{
+    CLEAR_FLAGS();
+    IFX_PENDOR0 {
+        SH(s1, xEmu, offsetof(x64emu_t, op1));
+        SH(xZR, xEmu, offsetof(x64emu_t, op2));
+        SH(s1, xEmu, offsetof(x64emu_t, res));
+        SET_DF(s3, d_cmp16);
+    } else {
+        SET_DFNONE();
+    }
+}
 // emit CMP32 instruction, from cmp s1, s2, using s3 and s4 as scratch
 void emit_cmp32(dynarec_rv64_t* dyn, int ninst, rex_t rex, int s1, int s2, int s3, int s4, int s5, int s6)
 {
@@ -232,7 +276,18 @@ void emit_cmp32_0(dynarec_rv64_t* dyn, int ninst, rex_t rex, int s1, int s3, int
         emit_pf(dyn, ninst, s1, s3, s4);
     }
 }
-
+void emit_cmp32_0_noflag(dynarec_rv64_t* dyn, int ninst, rex_t rex, int s1, int s3, int s4)
+{
+    CLEAR_FLAGS();
+    IFX_PENDOR0 {
+        SD(s1, xEmu, offsetof(x64emu_t, op1));
+        SD(xZR, xEmu, offsetof(x64emu_t, op2));
+        SD(s1, xEmu, offsetof(x64emu_t, res));
+        SET_DF(s4, rex.w?d_cmp64:d_cmp32);
+    } else {
+        SET_DFNONE();
+    }
+}
 // emit TEST8 instruction, from test s1, s2, using s3, s4 and s5 as scratch
 void emit_test8(dynarec_rv64_t* dyn, int ninst, int s1, int s2, int s3, int s4, int s5) {
     CLEAR_FLAGS();

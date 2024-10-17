@@ -1,0 +1,2799 @@
+Box64 with Dynarec v0.3.1 a21f77f6 built on Oct 17 2024 06:06:24
+Debug level is 2
+Dynarec blocks are dumped in color
+Dynarec for RISC-V With extension: I M A F D C XTheadBa XTheadBb XTheadBs XTheadCondMov XTheadMemIdx XTheadMemPair XTheadFMemIdx XTheadMac PageSize:4096 Running on unknown riscv64 cpu with 128 Cores
+Will use Hardware counter measured at 50.0 MHz emulating 3.2 GHz
+Params database has 90 entries
+Box64 with Dynarec v0.3.1 a21f77f6 built on Oct 17 2024 06:06:24
+BOX64: Didn't detect 48bits of address space, considering it's 39bits
+Setting up canary (for Stack protector) at FS:0x28, value:91314800
+Counted 17 Env var
+ Env[00]: HOSTNAME=fedora-riscv-6-1
+ Env[01]: HISTSIZE=1000
+ Env[02]: LANG=en_US.UTF-8
+ Env[03]: LS_COLORS=rs=0:di=01;34:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:mi=01;37;41:su=37;41:sg=30;43:ca=00:tw=30;42:ow=34;42:st=37;44:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arc=01;31:*.arj=01;31:*.taz=01;31:*.lha=01;31:*.lz4=01;31:*.lzh=01;31:*.lzma=01;31:*.tlz=01;31:*.txz=01;31:*.tzo=01;31:*.t7z=01;31:*.zip=01;31:*.z=01;31:*.dz=01;31:*.gz=01;31:*.lrz=01;31:*.lz=01;31:*.lzo=01;31:*.xz=01;31:*.zst=01;31:*.tzst=01;31:*.bz2=01;31:*.bz=01;31:*.tbz=01;31:*.tbz2=01;31:*.tz=01;31:*.deb=01;31:*.rpm=01;31:*.jar=01;31:*.war=01;31:*.ear=01;31:*.sar=01;31:*.rar=01;31:*.alz=01;31:*.ace=01;31:*.zoo=01;31:*.cpio=01;31:*.7z=01;31:*.rz=01;31:*.cab=01;31:*.wim=01;31:*.swm=01;31:*.dwm=01;31:*.esd=01;31:*.avif=01;35:*.jpg=01;35:*.jpeg=01;35:*.mjpg=01;35:*.mjpeg=01;35:*.gif=01;35:*.bmp=01;35:*.pbm=01;35:*.pgm=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.tiff=01;35:*.png=01;35:*.svg=01;35:*.svgz=01;35:*.mng=01;35:*.pcx=01;35:*.mov=01;35:*.mpg=01;35:*.mpeg=01;35:*.m2v=01;35:*.mkv=01;35:*.webm=01;35:*.webp=01;35:*.ogm=01;35:*.mp4=01;35:*.m4v=01;35:*.mp4v=01;35:*.vob=01;35:*.qt=01;35:*.nuv=01;35:*.wmv=01;35:*.asf=01;35:*.rm=01;35:*.rmvb=01;35:*.flc=01;35:*.avi=01;35:*.fli=01;35:*.flv=01;35:*.gl=01;35:*.dl=01;35:*.xcf=01;35:*.xwd=01;35:*.yuv=01;35:*.cgm=01;35:*.emf=01;35:*.ogv=01;35:*.ogx=01;35:*.aac=01;36:*.au=01;36:*.flac=01;36:*.m4a=01;36:*.mid=01;36:*.midi=01;36:*.mka=01;36:*.mp3=01;36:*.mpc=01;36:*.ogg=01;36:*.ra=01;36:*.wav=01;36:*.oga=01;36:*.opus=01;36:*.spx=01;36:*.xspf=01;36:*~=00;90:*#=00;90:*.bak=00;90:*.old=00;90:*.orig=00;90:*.part=00;90:*.rej=00;90:*.swp=00;90:*.tmp=00;90:*.dpkg-dist=00;90:*.dpkg-old=00;90:*.ucf-dist=00;90:*.ucf-new=00;90:*.ucf-old=00;90:*.rpmnew=00;90:*.rpmorig=00;90:*.rpmsave=00;90:
+ Env[04]: TERM=xterm-256color
+ Env[05]: MAIL=/var/spool/mail/ICT-02-01
+ Env[06]: PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/var/lib/snapd/snap/bin
+ Env[07]: LOGNAME=root
+ Env[08]: USER=root
+ Env[09]: HOME=/root
+ Env[10]: SHELL=/bin/bash
+ Env[11]: SUDO_COMMAND=./box64 /home/ICT-02-02/test/coremark.exe
+ Env[12]: SUDO_USER=ICT-02-02
+ Env[13]: SUDO_UID=1003
+ Env[14]: SUDO_GID=1003
+ Env[15]: BOX64_PATH=.:bin
+ Env[16]: BOX64_LD_LIBRARY_PATH=.:lib:lib64:x86_64:bin64:libs64
+BOX64 LIB PATH: BOX64 BIN PATH: ./:bin/:/usr/local/sbin/:/usr/local/bin/:/usr/sbin/:/usr/bin/:/sbin/:/bin/:/var/lib/snapd/snap/bin/
+Looking for /home/ICT-02-02/test/coremark.exe
+Read 32 Section header
+Read 13 Program header
+Loading Sections Table String (idx = 31)
+Loading SymTab Strings (idx = 30)
+Loading SymTab (idx = 29)
+Loading Dynamic (idx = 24)
+The DT_INIT is at address 0x1000
+The DT_FINI is at address 0x35b8
+The DT_INIT_ARRAY is at address 0x6cf0
+The DT_INIT_ARRAYSZ is 1
+The DT_FINI_ARRAY is at address 0x6cf8
+The DT_FINI_ARRAYSZ is 1
+The DT_GNU_HASH is at address 0x3b0
+The DT_FLAGS is 0x8
+The DT_VERNEED is at address 0x640
+The DT_VERNEEDNUM is 1
+RelA Table @0x6a0 (0x288/0x18)
+PLT Table @0x928 (type=7 0xc0/0x18)
+The GOT Table is at address 0x6f70..0x6ff0
+The PLT Table is at address 0x1020..0x10b0
+The .gnu.version is at address 0x61e
+The .text is at address 0x1140, and is 9336 big
+The .eh_frame section is at address 0x46d0..0x4d94
+The .eh_frame_hdr section is at address 0x4550
+Loading DynSym Strings (idx = 7)
+Loading DynSym (idx = 6)
+Adding "/home/ICT-02-02/test/coremark.exe" as #0 in elf collection
+Elf Addr(v/p)=(nil)/(nil) Memsize=0x7060 (align=0x1000)
+Elf Stack Memsize=1048576 (align=16)
+Elf TLS Memsize=0 (align=0)
+Pre-allocated 0x7060 byte at 0x100000000 for /home/ICT-02-02/test/coremark.exe
+Delta of 0x100000000 (vaddr=(nil)) for Elf "/home/ICT-02-02/test/coremark.exe"
+Mmaping 0x9e8(0x1000) bytes @0x100000000 for Elf "/home/ICT-02-02/test/coremark.exe"
+Mmaping 0x25c5(0x3000) bytes @0x100001000 for Elf "/home/ICT-02-02/test/coremark.exe"
+Mmaping 0xd94(0x1000) bytes @0x100004000 for Elf "/home/ICT-02-02/test/coremark.exe"
+Allocating 0x3000 (0x100006000/0x370) bytes @0x100006000, will read 0x33c @0x100006cf0 for Elf "/home/ICT-02-02/test/coremark.exe"
+Rename process to "coremark.exe"
+Program linked with GLIBC 2.34+
+Calc stack size, based on 1 elf(s)
+Stack is @0x3fbd320000 size=0x800000 align=0x10
+Allocate a new X86_64 Emu, with RIP=(nil) and Stack=0x3fbd320000/0x800000
+Setup X86_64 Emu
+Grabbing R_X86_64_COPY Relocation(s) in advance for /home/ICT-02-02/test/coremark.exe
+Trying to add "libc.so.6" to maplib
+Trying to load "libc.so.6"
+Simplified name is "libc.so.6"
+Using native(wrapped) libc.so.6
+Trying to add "ld-linux-x86-64.so.2" to maplib
+Trying to load "ld-linux-x86-64.so.2"
+Simplified name is "ld-linux-x86-64.so.2"
+Using native(wrapped) ld-linux-x86-64.so.2
+Trying to add "libpthread.so.0" to maplib
+Trying to load "libpthread.so.0"
+Simplified name is "libpthread.so.0"
+Using native(wrapped) libpthread.so.0
+Trying to add "libdl.so.2" to maplib
+Trying to load "libdl.so.2"
+Simplified name is "libdl.so.2"
+Using native(wrapped) libdl.so.2
+Trying to add "libutil.so.1" to maplib
+Trying to load "libutil.so.1"
+Simplified name is "libutil.so.1"
+Using native(wrapped) libutil.so.1
+Trying to add "libresolv.so.2" to maplib
+Trying to load "libresolv.so.2"
+Simplified name is "libresolv.so.2"
+Using native(wrapped) libresolv.so.2
+Trying to add "librt.so.1" to maplib
+Trying to load "librt.so.1"
+Simplified name is "librt.so.1"
+Using native(wrapped) librt.so.1
+Trying to add "libbsd.so.0" to maplib
+Trying to load "libbsd.so.0"
+Simplified name is "libbsd.so.0"
+Using native(wrapped) libbsd.so.0
+Created lib and added to maplib => success
+Created lib and added to maplib => success
+Created lib and added to maplib => success
+Created lib and added to maplib => success
+Created lib and added to maplib => success
+Created lib and added to maplib => success
+Created lib and added to maplib => success
+Created lib and added to maplib => success
+And now export symbols / relocation for /home/ICT-02-02/test/coremark.exe...
+Forcing /home/ICT-02-02/test/coremark.exe to Bind Now
+Applying 27 Relocation(s) with Addend for /home/ICT-02-02/test/coremark.exe bindnow=1, deepbind=0
+Forcing /home/ICT-02-02/test/coremark.exe to Bind Now
+Applying 8 PLT Relocation(s) with Addend for /home/ICT-02-02/test/coremark.exe bindnow=1, deepbind=0
+Entry Point is 0x100001a80
+Start x64emu on Main
+Run X86 (0x626b4460), RIP=0x100001a80, Stack=0x3fbdb1f578 is32bits=0
+227481|0x100001aa5: Calling __libc_start_main(0x100001150, 0x1, 0x3FBDB1F580, ...) =>Calling init from main elf
+Calling Init for /home/ICT-02-02/test/coremark.exe @0x100001000
+Extend block 0x3fee1839c0, 0x100001016 -> 0x100001016 (ninst=6, jump from -2)
+[01;36m227481|Emitting 240 bytes for 27 x64 bytes ( => /home/ICT-02-02/test/coremark.exe:_init)[m
+[4;32mNew instruction 0, native=0x3fbcfed010 (0x0)[m
+New Instruction x64:0x100001000, native:0x3fbcfed010
+[01;33m0x100001000: F3 0F 1E FA  NOP / ENDBR32 / ENDBR64[m
+[32m0x3fbcfed010: 0 emitted opcodes, inst=0, barrier=0 state=0/0(0), set=0/0, use=0, need=0/0, sm=0/0, sew@entry=7, sew@exit=7, last_ip=0x100001000[m
+[4;32mNew instruction 1, native=0x3fbcfed010 (0x0)[m
+New Instruction x64:0x100001004, native:0x3fbcfed010
+[01;33m0x100001004: 48 83 EC 08  SUB Ed, Ib[m
+[32m0x3fbcfed010: 1 emitted opcodes, inst=1, barrier=0 state=3/0(0), set=3F/0, use=0, need=0/0, sm=0/0, sew@entry=7, sew@exit=7, pred=0, last_ip=0x100001000[m
+	ff8a0a13	ADDI            s4_rsp, s4_rsp, 0xfffffff8(-8)
+[4;32mNew instruction 2, native=0x3fbcfed014 (0x4)[m
+New Instruction x64:0x100001008, native:0x3fbcfed014
+[01;33m0x100001008: 48 8B 05 C9 5F 00 00  MOV Gd, Ed[m
+[32m0x3fbcfed014: 4 emitted opcodes, inst=2, barrier=0 state=0/1(0), set=0/0, use=0, need=0/0, sm=0/0, sew@entry=7, sew@exit=7, pred=1, last_ip=0x100001000[m
+	00006637	LUI             a2, 0x6(6)
+	fd86061b	ADDIW           a2, a2, 0xffffffd8(-40)
+	00760633	ADD             a2, a2, t2_rip
+	00063803	LD              a6_rax, a2, 0x0(0)
+[4;32mNew instruction 3, native=0x3fbcfed024 (0x14)[m
+New Instruction x64:0x10000100f, native:0x3fbcfed024
+[01;33m0x10000100f: 48 85 C0  TEST Ed, Gd[m
+[32m0x3fbcfed024: 7 emitted opcodes, inst=3, barrier=0 state=3/1(0), set=3F/88, use=0, need=0/88, sm=0/0, sew@entry=7, sew@exit=7, pred=2, last_ip=0x100001000[m
+	f0a47413	ANDI            s0_flags, s0_flags, 0xffffff0a(-246)
+	03d00693	ADDI            a3, zero, 0x3d(61)
+	44d52a23	SW              a3, a0, 0x454(1108)
+	010876b3	AND             a3, a6_rax, a6_rax
+	46d53423	SD              a3, a0, 0x468(1128)
+	00069463	BNE             a3, zero, 0x8(8)
+	04046413	ORI             s0_flags, s0_flags, 0x40(64)
+[4;32mNew instruction 4, native=0x3fbcfed040 (0x30)[m
+New Instruction x64:0x100001012, native:0x3fbcfed040
+[01;33m0x100001012: 74 02  JZ ib[m
+[32m0x3fbcfed040: 3 emitted opcodes, inst=4, barrier=0 state=0/3(0), set=0/0, use=8, need=88/80, sm=0/0, sew@entry=7, sew@exit=7, pred=3, jmp=6, last_ip=0x100001000[m
+	04047593	ANDI            a1, s0_flags, 0x40(64)
+	04059c63	BNE             a1, zero, 0x58(88)
+	00000013	ADDI            zero, zero, 0x0(0)
+[4;32mNew instruction 5, native=0x3fbcfed04c (0x3c)[m
+New Instruction x64:0x100001014, native:0x3fbcfed04c
+[01;33m0x100001014: FF D0  CALL Ed[m
+[32m0x3fbcfed04c: 20 emitted opcodes, inst=5, barrier=2 state=0/3(0), set=0/0, use=80, need=80/0, sm=0/0, sew@entry=7, sew@exit=7, pred=4, last_ip=0x100001000[m
+	01638393	ADDI            t2_rip, t2_rip, 0x16(22)
+	fe7a3c23	SD              t2_rip, s4_rsp, 0xfffffff8(-8)
+	ff8a0a13	ADDI            s4_rsp, s4_rsp, 0xfffffff8(-8)
+Jump to next
+	00080393	ADDI            t2_rip, a6_rax, 0x0(0)
+  Table64: 0x359c2628
+	00000697	AUIPC           a3, 0x0(0)
+	0a46b683	LD              a3, a3, 0xa4(164)
+	fee3b60b	TH.EXTU         a2, t2_rip, 0x3f(63), 0x2e(46)
+	06c6968b	TH.ADDSL        a3, a3, a2, 0x3(3)
+	0006b683	LD              a3, a3, 0x0(0)
+	b5c3b60b	TH.EXTU         a2, t2_rip, 0x2d(45), 0x1c(28)
+	06c6968b	TH.ADDSL        a3, a3, a2, 0x3(3)
+	0006b683	LD              a3, a3, 0x0(0)
+	6ca3b60b	TH.EXTU         a2, t2_rip, 0x1b(27), 0xa(10)
+	06c6968b	TH.ADDSL        a3, a3, a2, 0x3(3)
+	0006b683	LD              a3, a3, 0x0(0)
+	2403b60b	TH.EXTU         a2, t2_rip, 0x9(9), 0x0(0)
+	06c6968b	TH.ADDSL        a3, a3, a2, 0x3(3)
+	0006b603	LD              a2, a3, 0x0(0)
+	00038593	ADDI            a1, t2_rip, 0x0(0)
+	000600e7	JALR            ra, a2, 0x0(0)
+Reset Caches with 4
+[4;32mNew instruction 6, native=0x3fbcfed09c (0x8c)[m
+New Instruction x64:0x100001016, native:0x3fbcfed09c
+[01;33m0x100001016: 48 83 C4 08  ADD Ed, Ib[m
+[32m0x3fbcfed09c: 1 emitted opcodes, inst=6, barrier=0 state=3/3(0), set=3F/80, use=0, need=0/80, sm=0/0, sew@entry=7, sew@exit=7, pred=4[m
+	008a0a13	ADDI            s4_rsp, s4_rsp, 0x8(8)
+[4;32mNew instruction 7, native=0x3fbcfed0a0 (0x90)[m
+New Instruction x64:0x10000101a, native:0x3fbcfed0a0
+[01;33m0x10000101a: C3  RET[m
+[32m0x3fbcfed0a0: 24 emitted opcodes, inst=7, barrier=0 state=0/3(0), set=0/0, use=80, need=80/0, sm=0/0, sew@entry=7, sew@exit=7, pred=6[m
+Ret to epilog
+	000a3383	LD              t2_rip, s4_rsp, 0x0(0)
+	008a0a13	ADDI            s4_rsp, s4_rsp, 0x8(8)
+	00038593	ADDI            a1, t2_rip, 0x0(0)
+	359c26b7	LUI             a3, 0x359c2(219586)
+	6286869b	ADDIW           a3, a3, 0x628(1576)
+	02e3d613	SRLI            a2, t2_rip, 0x2e(46)
+	00361613	SLLI            a2, a2, 0x3(3)
+	00c686b3	ADD             a3, a3, a2
+	0006b683	LD              a3, a3, 0x0(0)
+	00200737	LUI             a4, 0x200(512)
+	ff87071b	ADDIW           a4, a4, 0xfffffff8(-8)
+	0193d613	SRLI            a2, t2_rip, 0x19(25)
+	00e67633	AND             a2, a2, a4
+	00c686b3	ADD             a3, a3, a2
+	0006b683	LD              a3, a3, 0x0(0)
+	0073d613	SRLI            a2, t2_rip, 0x7(7)
+	00e67633	AND             a2, a2, a4
+	00c686b3	ADD             a3, a3, a2
+	0006b683	LD              a3, a3, 0x0(0)
+	3ff3f613	ANDI            a2, t2_rip, 0x3ff(1023)
+	00361613	SLLI            a2, a2, 0x3(3)
+	00c686b3	ADD             a3, a3, a2
+	0006b603	LD              a2, a3, 0x0(0)
+	000600e7	JALR            ra, a2, 0x0(0)
+---- END OF BLOCK ---- (8)
+[01;36m227481|Emitting 20 bytes for 11 x64 bytes ( => box64:ExitEmulation)[m
+[4;32mNew instruction 0, native=0x3fbcfed148 (0x0)[m
+New Instruction x64:0x10080, native:0x3fbcfed148
+[01;33m0x10080: Exit x64emu[m
+[32m0x3fbcfed148: 2 emitted opcodes, inst=0, barrier=2 state=17/1(0), set=3F/0, use=0, need=0/0, sm=0/0, sew@entry=7, sew@exit=7, last_ip=0x10080[m
+Exit x64 Emu
+	0010059b	ADDIW           a1, zero, 0x1(1)
+	56b52c23	SW              a1, a0, 0x578(1400)
+Jump to epilog
+  Table64: 0x353147f0
+	00000617	AUIPC           a2, 0x0(0)
+	01063603	LD              a2, a2, 0x10(16)
+	00060067	JALR            zero, a2, 0x0(0)
+---- END OF BLOCK ---- (1)
+Done Init for /home/ICT-02-02/test/coremark.exe
+Calling Init[0] for /home/ICT-02-02/test/coremark.exe @0x100001b60
+[01;36m227481|Emitting 28 bytes for 9 x64 bytes ( => /home/ICT-02-02/test/coremark.exe:frame_dummy)[m
+[4;32mNew instruction 0, native=0x3fbcfed1c8 (0x0)[m
+New Instruction x64:0x100001b60, native:0x3fbcfed1c8
+[01;33m0x100001b60: F3 0F 1E FA  NOP / ENDBR32 / ENDBR64[m
+[32m0x3fbcfed1c8: 0 emitted opcodes, inst=0, barrier=0 state=0/0(0), set=0/0, use=0, need=80/80, sm=0/0, sew@entry=7, sew@exit=7, last_ip=0x100001b60[m
+[4;32mNew instruction 1, native=0x3fbcfed1c8 (0x0)[m
+New Instruction x64:0x100001b64, native:0x3fbcfed1c8
+[01;33m0x100001b64: E9 77 FF FF FF  JMP Id (=> /home/ICT-02-02/test/coremark.exe:register_tm_clones)[m
+[32m0x3fbcfed1c8: 7 emitted opcodes, inst=1, barrier=0 state=0/0(0), set=0/0, use=0, need=80/80, sm=0/0, sew@entry=7, sew@exit=7, pred=0, jmp=out, last_ip=0x100001b60[m
+Jump to next
+  Table64: 0x3fbc9dd710
+	00000697	AUIPC           a3, 0x0(0)
+	0206b683	LD              a3, a3, 0x20(32)
+  Table64: 0x100001ae0
+	00000397	AUIPC           t2_rip, 0x0(0)
+	0203b383	LD              t2_rip, t2_rip, 0x20(32)
+	0006b603	LD              a2, a3, 0x0(0)
+	00038593	ADDI            a1, t2_rip, 0x0(0)
+	000600e7	JALR            ra, a2, 0x0(0)
+---- END OF BLOCK ---- (2)
+Extend block 0x3fee183860, 0x100001b12 -> 0x100001b18 (ninst=13, jump from -2)
+[01;36m227481|Emitting 324 bytes for 57 x64 bytes ( => /home/ICT-02-02/test/coremark.exe:register_tm_clones)[m
+[4;32mNew instruction 0, native=0x3fbcfed248 (0x0)[m
+New Instruction x64:0x100001ae0, native:0x3fbcfed248
+[01;33m0x100001ae0: 48 8D 3D 49 55 00 00  LEA Gd, Ed[m
+[32m0x3fbcfed248: 4 emitted opcodes, inst=0, barrier=0 state=0/0(0), set=0/0, use=0, need=0/0, sm=0/0, sew@entry=7, sew@exit=7, last_ip=0x100001ae0[m
+	00005637	LUI             a2, 0x5(5)
+	5506061b	ADDIW           a2, a2, 0x550(1360)
+	00760633	ADD             a2, a2, t2_rip
+	00060b93	ADDI            s7_rdi, a2, 0x0(0)
+[4;32mNew instruction 1, native=0x3fbcfed258 (0x10)[m
+New Instruction x64:0x100001ae7, native:0x3fbcfed258
+[01;33m0x100001ae7: 48 8D 35 42 55 00 00  LEA Gd, Ed[m
+[32m0x3fbcfed258: 4 emitted opcodes, inst=1, barrier=0 state=0/0(0), set=0/0, use=0, need=0/0, sm=0/0, sew@entry=7, sew@exit=7, pred=0, last_ip=0x100001ae0[m
+	00005637	LUI             a2, 0x5(5)
+	5506061b	ADDIW           a2, a2, 0x550(1360)
+	00760633	ADD             a2, a2, t2_rip
+	00060b13	ADDI            s6_rsi, a2, 0x0(0)
+[4;32mNew instruction 2, native=0x3fbcfed268 (0x20)[m
+New Instruction x64:0x100001aee, native:0x3fbcfed268
+[01;33m0x100001aee: 48 29 FE  SUB Ed, Gd[m
+[32m0x3fbcfed268: 1 emitted opcodes, inst=2, barrier=0 state=3/0(0), set=3F/0, use=0, need=0/0, sm=0/0, sew@entry=7, sew@exit=7, pred=1, last_ip=0x100001ae0[m
+	417b0b33	SUB             s6_rsi, s6_rsi, s7_rdi
+[4;32mNew instruction 3, native=0x3fbcfed26c (0x24)[m
+New Instruction x64:0x100001af1, native:0x3fbcfed26c
+[01;33m0x100001af1: 48 89 F0  MOV Ed, Gd[m
+[32m0x3fbcfed26c: 1 emitted opcodes, inst=3, barrier=0 state=0/1(0), set=0/0, use=0, need=0/0, sm=0/0, sew@entry=7, sew@exit=7, pred=2, last_ip=0x100001ae0[m
+	000b0813	ADDI            a6_rax, s6_rsi, 0x0(0)
+[4;32mNew instruction 4, native=0x3fbcfed270 (0x28)[m
+New Instruction x64:0x100001af4, native:0x3fbcfed270
+[01;33m0x100001af4: 48 C1 EE 3F  SHR Ed, Ib[m
+[32m0x3fbcfed270: 1 emitted opcodes, inst=4, barrier=0 state=3/1(0), set=3F/0, use=0, need=0/0, sm=0/0, sew@entry=7, sew@exit=7, pred=3, last_ip=0x100001ae0[m
+	03fb5b13	SRLI            s6_rsi, s6_rsi, 0x3f(63)
+[4;32mNew instruction 5, native=0x3fbcfed274 (0x2c)[m
+New Instruction x64:0x100001af8, native:0x3fbcfed274
+[01;33m0x100001af8: 48 C1 F8 03  SAR Ed, Ib[m
+[32m0x3fbcfed274: 1 emitted opcodes, inst=5, barrier=0 state=3/1(0), set=3F/0, use=0, need=0/0, sm=0/0, sew@entry=7, sew@exit=7, pred=4, last_ip=0x100001ae0[m
+	40385813	SRAI            a6_rax, a6_rax, 0x3(3)
+[4;32mNew instruction 6, native=0x3fbcfed278 (0x30)[m
+New Instruction x64:0x100001afc, native:0x3fbcfed278
+[01;33m0x100001afc: 48 01 C6  ADD Ed, Gd[m
+[32m0x3fbcfed278: 1 emitted opcodes, inst=6, barrier=0 state=3/1(0), set=3F/0, use=0, need=0/0, sm=0/0, sew@entry=7, sew@exit=7, pred=5, last_ip=0x100001ae0[m
+	010b0b33	ADD             s6_rsi, s6_rsi, a6_rax
+[4;32mNew instruction 7, native=0x3fbcfed27c (0x34)[m
+New Instruction x64:0x100001aff, native:0x3fbcfed27c
+[01;33m0x100001aff: 48 D1 FE  SAR Ed, 1[m
+[32m0x3fbcfed27c: 10 emitted opcodes, inst=7, barrier=0 state=3/1(0), set=3F/88, use=0, need=0/88, sm=0/0, sew@entry=7, sew@exit=7, pred=6, last_ip=0x100001ae0[m
+	f0a47413	ANDI            s0_flags, s0_flags, 0xffffff0a(-246)
+	0010069b	ADDIW           a3, zero, 0x1(1)
+	46d53023	SD              a3, a0, 0x460(1120)
+	45653c23	SD              s6_rsi, a0, 0x458(1112)
+	02d00713	ADDI            a4, zero, 0x2d(45)
+	44e52a23	SW              a4, a0, 0x454(1108)
+	401b5b13	SRAI            s6_rsi, s6_rsi, 0x1(1)
+	47653423	SD              s6_rsi, a0, 0x468(1128)
+	000b1463	BNE             s6_rsi, zero, 0x8(8)
+	04046413	ORI             s0_flags, s0_flags, 0x40(64)
+[4;32mNew instruction 8, native=0x3fbcfed2a4 (0x5c)[m
+New Instruction x64:0x100001b02, native:0x3fbcfed2a4
+[01;33m0x100001b02: 74 14  JZ ib[m
+[32m0x3fbcfed2a4: 3 emitted opcodes, inst=8, barrier=0 state=0/3(0), set=0/0, use=8, need=88/80, sm=0/0, sew@entry=7, sew@exit=7, pred=7, jmp=14, last_ip=0x100001ae0[m
+	04047593	ANDI            a1, s0_flags, 0x40(64)
+	08059263	BNE             a1, zero, 0x84(132)
+	00000013	ADDI            zero, zero, 0x0(0)
+[4;32mNew instruction 9, native=0x3fbcfed2b0 (0x68)[m
+New Instruction x64:0x100001b04, native:0x3fbcfed2b0
+[01;33m0x100001b04: 48 8B 05 D5 54 00 00  MOV Gd, Ed[m
+[32m0x3fbcfed2b0: 4 emitted opcodes, inst=9, barrier=0 state=0/3(0), set=0/0, use=0, need=0/0, sm=0/0, sew@entry=7, sew@exit=7, pred=8, last_ip=0x100001ae0[m
+	00005637	LUI             a2, 0x5(5)
+	5006061b	ADDIW           a2, a2, 0x500(1280)
+	00760633	ADD             a2, a2, t2_rip
+	00063803	LD              a6_rax, a2, 0x0(0)
+[4;32mNew instruction 10, native=0x3fbcfed2c0 (0x78)[m
+New Instruction x64:0x100001b0b, native:0x3fbcfed2c0
+[01;33m0x100001b0b: 48 85 C0  TEST Ed, Gd[m
+[32m0x3fbcfed2c0: 7 emitted opcodes, inst=10, barrier=0 state=3/3(0), set=3F/88, use=0, need=0/88, sm=0/0, sew@entry=7, sew@exit=7, pred=9, last_ip=0x100001ae0[m
+	f0a47413	ANDI            s0_flags, s0_flags, 0xffffff0a(-246)
+	03d00693	ADDI            a3, zero, 0x3d(61)
+	44d52a23	SW              a3, a0, 0x454(1108)
+	010876b3	AND             a3, a6_rax, a6_rax
+	46d53423	SD              a3, a0, 0x468(1128)
+	00069463	BNE             a3, zero, 0x8(8)
+	04046413	ORI             s0_flags, s0_flags, 0x40(64)
+[4;32mNew instruction 11, native=0x3fbcfed2dc (0x94)[m
+New Instruction x64:0x100001b0e, native:0x3fbcfed2dc
+[01;33m0x100001b0e: 74 08  JZ ib[m
+[32m0x3fbcfed2dc: 3 emitted opcodes, inst=11, barrier=0 state=0/3(0), set=0/0, use=8, need=88/80, sm=0/0, sew@entry=7, sew@exit=7, pred=10, jmp=14, last_ip=0x100001ae0[m
+	04047593	ANDI            a1, s0_flags, 0x40(64)
+	04059663	BNE             a1, zero, 0x4c(76)
+	00000013	ADDI            zero, zero, 0x0(0)
+[4;32mNew instruction 12, native=0x3fbcfed2e8 (0xa0)[m
+New Instruction x64:0x100001b10, native:0x3fbcfed2e8
+[01;33m0x100001b10: FF E0  JMP Ed[m
+[32m0x3fbcfed2e8: 17 emitted opcodes, inst=12, barrier=2 state=0/3(0), set=0/0, use=80, need=80/0, sm=0/0, sew@entry=7, sew@exit=7, pred=11, last_ip=0x100001ae0[m
+Jump to next
+	00080393	ADDI            t2_rip, a6_rax, 0x0(0)
+  Table64: 0x359c2628
+	00000697	AUIPC           a3, 0x0(0)
+	0a46b683	LD              a3, a3, 0xa4(164)
+	fee3b60b	TH.EXTU         a2, t2_rip, 0x3f(63), 0x2e(46)
+	06c6968b	TH.ADDSL        a3, a3, a2, 0x3(3)
+	0006b683	LD              a3, a3, 0x0(0)
+	b5c3b60b	TH.EXTU         a2, t2_rip, 0x2d(45), 0x1c(28)
+	06c6968b	TH.ADDSL        a3, a3, a2, 0x3(3)
+	0006b683	LD              a3, a3, 0x0(0)
+	6ca3b60b	TH.EXTU         a2, t2_rip, 0x1b(27), 0xa(10)
+	06c6968b	TH.ADDSL        a3, a3, a2, 0x3(3)
+	0006b683	LD              a3, a3, 0x0(0)
+	2403b60b	TH.EXTU         a2, t2_rip, 0x9(9), 0x0(0)
+	06c6968b	TH.ADDSL        a3, a3, a2, 0x3(3)
+	0006b603	LD              a2, a3, 0x0(0)
+	00038593	ADDI            a1, t2_rip, 0x0(0)
+	000600e7	JALR            ra, a2, 0x0(0)
+[4;32mNew instruction 13, native=0x3fbcfed32c (0xe4)[m
+Skipping unused opcode
+[01;33m0x100001b12: 66 0F 1F 44 00 00  Skipped opcode[m
+[32m0x3fbcfed32c: 0 emitted opcodes, inst=13, barrier=0 state=0/0(0), set=0/0, use=0, need=0/0, sm=0/0, sew@entry=7, sew@exit=7[m
+Reset Caches with 8
+[4;32mNew instruction 14, native=0x3fbcfed32c (0xe4)[m
+New Instruction x64:0x100001b18, native:0x3fbcfed32c
+[01;33m0x100001b18: C3  RET[m
+[32m0x3fbcfed32c: 24 emitted opcodes, inst=14, barrier=0 state=0/3(0), set=0/0, use=80, need=80/0, sm=0/0, sew@entry=7, sew@exit=7, pred=8/11[m
+Ret to epilog
+	000a3383	LD              t2_rip, s4_rsp, 0x0(0)
+	008a0a13	ADDI            s4_rsp, s4_rsp, 0x8(8)
+	00038593	ADDI            a1, t2_rip, 0x0(0)
+	359c26b7	LUI             a3, 0x359c2(219586)
+	6286869b	ADDIW           a3, a3, 0x628(1576)
+	02e3d613	SRLI            a2, t2_rip, 0x2e(46)
+	00361613	SLLI            a2, a2, 0x3(3)
+	00c686b3	ADD             a3, a3, a2
+	0006b683	LD              a3, a3, 0x0(0)
+	00200737	LUI             a4, 0x200(512)
+	ff87071b	ADDIW           a4, a4, 0xfffffff8(-8)
+	0193d613	SRLI            a2, t2_rip, 0x19(25)
+	00e67633	AND             a2, a2, a4
+	00c686b3	ADD             a3, a3, a2
+	0006b683	LD              a3, a3, 0x0(0)
+	0073d613	SRLI            a2, t2_rip, 0x7(7)
+	00e67633	AND             a2, a2, a4
+	00c686b3	ADD             a3, a3, a2
+	0006b683	LD              a3, a3, 0x0(0)
+	3ff3f613	ANDI            a2, t2_rip, 0x3ff(1023)
+	00361613	SLLI            a2, a2, 0x3(3)
+	00c686b3	ADD             a3, a3, a2
+	0006b603	LD              a2, a3, 0x0(0)
+	000600e7	JALR            ra, a2, 0x0(0)
+---- END OF BLOCK ---- (15)
+All Init Done for /home/ICT-02-02/test/coremark.exe
+Transfert to main(1, 0x3fbdb1f580, 0x3fbdb1f590)=>0x100001150 from __libc_start_main
+[01;36m227481|Emitting 300 bytes for 71 x64 bytes ( => /home/ICT-02-02/test/coremark.exe:main)[m
+[4;32mNew instruction 0, native=0x3fbcfed3e0 (0x0)[m
+New Instruction x64:0x100001150, native:0x3fbcfed3e0
+[01;33m0x100001150: F3 0F 1E FA  NOP / ENDBR32 / ENDBR64[m
+[32m0x3fbcfed3e0: 0 emitted opcodes, inst=0, barrier=0 state=0/0(0), set=0/0, use=0, need=0/0, sm=0/0, sew@entry=7, sew@exit=7, last_ip=0x100001150[m
+[4;32mNew instruction 1, native=0x3fbcfed3e0 (0x0)[m
+New Instruction x64:0x100001154, native:0x3fbcfed3e0
+[01;33m0x100001154: 41 57  PUSH reg[m
+[32m0x3fbcfed3e0: 2 emitted opcodes, inst=1, barrier=0 state=0/0(0), set=0/0, use=0, need=0/0, sm=0/0, sew@entry=7, sew@exit=7, pred=0, last_ip=0x100001150[m
+	fffa3c23	SD              t6_r15, s4_rsp, 0xfffffff8(-8)
+	ff8a0a13	ADDI            s4_rsp, s4_rsp, 0xfffffff8(-8)
+[4;32mNew instruction 2, native=0x3fbcfed3e8 (0x8)[m
+New Instruction x64:0x100001156, native:0x3fbcfed3e8
+[01;33m0x100001156: 41 56  PUSH reg[m
+[32m0x3fbcfed3e8: 2 emitted opcodes, inst=2, barrier=0 state=0/0(0), set=0/0, use=0, need=0/0, sm=0/0, sew@entry=7, sew@exit=7, pred=1, last_ip=0x100001150[m
+	ffea3c23	SD              t5_r14, s4_rsp, 0xfffffff8(-8)
+	ff8a0a13	ADDI            s4_rsp, s4_rsp, 0xfffffff8(-8)
+[4;32mNew instruction 3, native=0x3fbcfed3f0 (0x10)[m
+New Instruction x64:0x100001158, native:0x3fbcfed3f0
+[01;33m0x100001158: 41 55  PUSH reg[m
+[32m0x3fbcfed3f0: 2 emitted opcodes, inst=3, barrier=0 state=0/0(0), set=0/0, use=0, need=0/0, sm=0/0, sew@entry=7, sew@exit=7, pred=2, last_ip=0x100001150[m
+	ffda3c23	SD              t4_r13, s4_rsp, 0xfffffff8(-8)
+	ff8a0a13	ADDI            s4_rsp, s4_rsp, 0xfffffff8(-8)
+[4;32mNew instruction 4, native=0x3fbcfed3f8 (0x18)[m
+New Instruction x64:0x10000115a, native:0x3fbcfed3f8
+[01;33m0x10000115a: 49 89 F5  MOV Ed, Gd[m
+[32m0x3fbcfed3f8: 1 emitted opcodes, inst=4, barrier=0 state=0/0(0), set=0/0, use=0, need=0/0, sm=0/0, sew@entry=7, sew@exit=7, pred=3, last_ip=0x100001150[m
+	000b0e93	ADDI            t4_r13, s6_rsi, 0x0(0)
+[4;32mNew instruction 5, native=0x3fbcfed3fc (0x1c)[m
+New Instruction x64:0x10000115d, native:0x3fbcfed3fc
+[01;33m0x10000115d: 41 54  PUSH reg[m
+[32m0x3fbcfed3fc: 2 emitted opcodes, inst=5, barrier=0 state=0/0(0), set=0/0, use=0, need=0/0, sm=0/0, sew@entry=7, sew@exit=7, pred=4, last_ip=0x100001150[m
+	ffca3c23	SD              t3_r12, s4_rsp, 0xfffffff8(-8)
+	ff8a0a13	ADDI            s4_rsp, s4_rsp, 0xfffffff8(-8)
+[4;32mNew instruction 6, native=0x3fbcfed404 (0x24)[m
+New Instruction x64:0x10000115f, native:0x3fbcfed404
+[01;33m0x10000115f: 4C 89 EA  MOV Ed, Gd[m
+[32m0x3fbcfed404: 1 emitted opcodes, inst=6, barrier=0 state=0/0(0), set=0/0, use=0, need=0/0, sm=0/0, sew@entry=7, sew@exit=7, pred=5, last_ip=0x100001150[m
+	000e8913	ADDI            s2_rdx, t4_r13, 0x0(0)
+[4;32mNew instruction 7, native=0x3fbcfed408 (0x28)[m
+New Instruction x64:0x100001162, native:0x3fbcfed408
+[01;33m0x100001162: 55  PUSH reg[m
+[32m0x3fbcfed408: 2 emitted opcodes, inst=7, barrier=0 state=0/0(0), set=0/0, use=0, need=0/0, sm=0/0, sew@entry=7, sew@exit=7, pred=6, last_ip=0x100001150[m
+	ff5a3c23	SD              s5_rbp, s4_rsp, 0xfffffff8(-8)
+	ff8a0a13	ADDI            s4_rsp, s4_rsp, 0xfffffff8(-8)
+[4;32mNew instruction 8, native=0x3fbcfed410 (0x30)[m
+New Instruction x64:0x100001163, native:0x3fbcfed410
+[01;33m0x100001163: 53  PUSH reg[m
+[32m0x3fbcfed410: 2 emitted opcodes, inst=8, barrier=0 state=0/0(0), set=0/0, use=0, need=0/0, sm=0/0, sew@entry=7, sew@exit=7, pred=7, last_ip=0x100001150[m
+	ff3a3c23	SD              s3_rbx, s4_rsp, 0xfffffff8(-8)
+	ff8a0a13	ADDI            s4_rsp, s4_rsp, 0xfffffff8(-8)
+[4;32mNew instruction 9, native=0x3fbcfed418 (0x38)[m
+New Instruction x64:0x100001164, native:0x3fbcfed418
+[01;33m0x100001164: 48 81 EC A8 00 00 00  SUB Ed, Id[m
+[32m0x3fbcfed418: 1 emitted opcodes, inst=9, barrier=0 state=3/0(0), set=3F/0, use=0, need=0/0, sm=0/0, sew@entry=7, sew@exit=7, pred=8, last_ip=0x100001150[m
+	f58a0a13	ADDI            s4_rsp, s4_rsp, 0xffffff58(-168)
+[4;32mNew instruction 10, native=0x3fbcfed41c (0x3c)[m
+New Instruction x64:0x10000116b, native:0x3fbcfed41c
+[01;33m0x10000116b: 89 7C 24 1C  MOV Ed, Gd[m
+[32m0x3fbcfed41c: 1 emitted opcodes, inst=10, barrier=0 state=0/1(0), set=0/0, use=0, need=0/0, sm=0/0, sew@entry=7, sew@exit=7, pred=9, last_ip=0x100001150[m
+	017a2e23	SW              s7_rdi, s4_rsp, 0x1c(28)
+[4;32mNew instruction 11, native=0x3fbcfed420 (0x40)[m
+New Instruction x64:0x10000116f, native:0x3fbcfed420
+[01;33m0x10000116f: 4C 8D A4 24 8A 00 00 00  LEA Gd, Ed[m
+[32m0x3fbcfed420: 2 emitted opcodes, inst=11, barrier=0 state=0/1(0), set=0/0, use=0, need=0/0, sm=0/1, sew@entry=7, sew@exit=7, pred=10, last_ip=0x100001150[m
+	08aa0613	ADDI            a2, s4_rsp, 0x8a(138)
+	00060e13	ADDI            t3_r12, a2, 0x0(0)
+[4;32mNew instruction 12, native=0x3fbcfed428 (0x48)[m
+New Instruction x64:0x100001177, native:0x3fbcfed428
+[01;33m0x100001177: 48 8D 74 24 1C  LEA Gd, Ed[m
+[32m0x3fbcfed428: 2 emitted opcodes, inst=12, barrier=0 state=0/1(0), set=0/0, use=0, need=0/0, sm=0/1, sew@entry=7, sew@exit=7, pred=11, last_ip=0x100001150[m
+	01ca0613	ADDI            a2, s4_rsp, 0x1c(28)
+	00060b13	ADDI            s6_rsi, a2, 0x0(0)
+[4;32mNew instruction 13, native=0x3fbcfed430 (0x50)[m
+New Instruction x64:0x10000117c, native:0x3fbcfed430
+[01;33m0x10000117c: 4C 89 E7  MOV Ed, Gd[m
+[32m0x3fbcfed430: 1 emitted opcodes, inst=13, barrier=0 state=0/1(0), set=0/0, use=0, need=0/0, sm=0/1, sew@entry=7, sew@exit=7, pred=12, last_ip=0x100001150[m
+	000e0b93	ADDI            s7_rdi, t3_r12, 0x0(0)
+[4;32mNew instruction 14, native=0x3fbcfed434 (0x54)[m
+New Instruction x64:0x10000117f, native:0x3fbcfed434
+[01;33m0x10000117f: 64 48 8B 04 25 28 00 00 00  MOV Gd, Seg:Ed[m
+[32m0x3fbcfed434: 38 emitted opcodes, inst=14, barrier=0 state=0/1(0), set=0/0, use=0, need=0/0, sm=0/1, sew@entry=7, sew@exit=7, pred=13, last_ip=0x100001150[m
+Get FS Offset
+	4e056783	LWU             a5, a0, 0x4e0(1248)
+	4c053703	LD              a4, a0, 0x4c0(1216)
+	4e853583	LD              a1, a0, 0x4e8(1256)
+	0385e583	LWU             a1, a1, 0x38(56)
+	40f585bb	SUBW            a1, a1, a5
+	06058c63	BEQ             a1, zero, 0x78(120)
+	0040059b	ADDIW           a1, zero, 0x4(4)
+	ff010113	ADDI            sp, sp, 0xfffffff0(-16)
+	00a13023	SD              a0, sp, 0x0(0)
+	00813423	SD              s0_flags, sp, 0x8(8)
+	01053023	SD              a6_rax, a0, 0x0(0)
+	01153423	SD              a7_rcx, a0, 0x8(8)
+	01253823	SD              s2_rdx, a0, 0x10(16)
+	07c53023	SD              t3_r12, a0, 0x60(96)
+	07d53423	SD              t4_r13, a0, 0x68(104)
+	07e53823	SD              t5_r14, a0, 0x70(112)
+	07f53c23	SD              t6_r15, a0, 0x78(120)
+	08753423	SD              t2_rip, a0, 0x88(136)
+  Table64: 0x34de6520
+	00000797	AUIPC           a5, 0x0(0)
+	0947b783	LD              a5, a5, 0x94(148)
+	000780e7	JALR            ra, a5, 0x0(0)
+	00050713	ADDI            a4, a0, 0x0(0)
+	00013503	LD              a0, sp, 0x0(0)
+	00813403	LD              s0_flags, sp, 0x8(8)
+	01010113	ADDI            sp, sp, 0x10(16)
+	00053803	LD              a6_rax, a0, 0x0(0)
+	00853883	LD              a7_rcx, a0, 0x8(8)
+	01053903	LD              s2_rdx, a0, 0x10(16)
+	06053e03	LD              t3_r12, a0, 0x60(96)
+	06853e83	LD              t4_r13, a0, 0x68(104)
+	07053f03	LD              t5_r14, a0, 0x70(112)
+	07853f83	LD              t6_r15, a0, 0x78(120)
+	08853383	LD              t2_rip, a0, 0x88(136)
+	fff04293	XORI            t0_mask, zero, 0xffffffff(-1)
+	0202d293	SRLI            t0_mask, t0_mask, 0x20(32)
+----FS Offset
+	0280061b	ADDIW           a2, zero, 0x28(40)
+	00e60733	ADD             a4, a2, a4
+	00073803	LD              a6_rax, a4, 0x0(0)
+[4;32mNew instruction 15, native=0x3fbcfed4cc (0xec)[m
+New Instruction x64:0x100001188, native:0x3fbcfed4cc
+[01;33m0x100001188: 48 89 84 24 98 00 00 00  MOV Ed, Gd[m
+[32m0x3fbcfed4cc: 1 emitted opcodes, inst=15, barrier=0 state=0/1(0), set=0/0, use=0, need=0/0, sm=1/1, sew@entry=7, sew@exit=7, pred=14[m
+	090a3c23	SD              a6_rax, s4_rsp, 0x98(152)
+[4;32mNew instruction 16, native=0x3fbcfed4d0 (0xf0)[m
+New Instruction x64:0x100001190, native:0x3fbcfed4d0
+[01;33m0x100001190: 31 C0  XOR Ed, Gd[m
+[32m0x3fbcfed4d0: 4 emitted opcodes, inst=16, barrier=0 state=3/1(0), set=3F/80, use=0, need=0/80, sm=1/1, sew@entry=7, sew@exit=7, pred=15[m
+	03400713	ADDI            a4, zero, 0x34(52)
+	44e52a23	SW              a4, a0, 0x454(1108)
+	01084833	XOR             a6_rax, a6_rax, a6_rax
+	47052423	SW              a6_rax, a0, 0x468(1128)
+[4;32mNew instruction 17, native=0x3fbcfed4e0 (0x100)[m
+New Instruction x64:0x100001192, native:0x3fbcfed4e0
+[01;33m0x100001192: E8 09 24 00 00  CALL Id (=> /home/ICT-02-02/test/coremark.exe:portable_init)[m
+[32m0x3fbcfed4e0: 11 emitted opcodes, inst=17, barrier=0 state=0/3(0), set=0/0, use=80, need=80/0, sm=1/1, sew@entry=7, sew@exit=7, pred=16[m
+  Table64: 0x100001197
+	00000617	AUIPC           a2, 0x0(0)
+	03863603	LD              a2, a2, 0x38(56)
+	feca3c23	SD              a2, s4_rsp, 0xfffffff8(-8)
+	ff8a0a13	ADDI            s4_rsp, s4_rsp, 0xfffffff8(-8)
+Jump to next
+  Table64: 0x3fbc9ded18
+	00000697	AUIPC           a3, 0x0(0)
+	0306b683	LD              a3, a3, 0x30(48)
+  Table64: 0x1000035a0
+	00000397	AUIPC           t2_rip, 0x0(0)
+	0303b383	LD              t2_rip, t2_rip, 0x30(48)
+	0006b603	LD              a2, a3, 0x0(0)
+	00038593	ADDI            a1, t2_rip, 0x0(0)
+	000600e7	JALR            ra, a2, 0x0(0)
+---- END OF BLOCK ---- (18)
+[01;36m227481|Emitting 104 bytes for 8 x64 bytes ( => /home/ICT-02-02/test/coremark.exe:portable_init)[m
+[4;32mNew instruction 0, native=0x3fbcfed578 (0x0)[m
+New Instruction x64:0x1000035a0, native:0x3fbcfed578
+[01;33m0x1000035a0: F3 0F 1E FA  NOP / ENDBR32 / ENDBR64[m
+[32m0x3fbcfed578: 0 emitted opcodes, inst=0, barrier=0 state=0/0(0), set=0/0, use=0, need=80/80, sm=0/0, sew@entry=7, sew@exit=7, last_ip=0x1000035a0[m
+[4;32mNew instruction 1, native=0x3fbcfed578 (0x0)[m
+New Instruction x64:0x1000035a4, native:0x3fbcfed578
+[01;33m0x1000035a4: C6 07 01  MOV Eb, Ib[m
+[32m0x3fbcfed578: 2 emitted opcodes, inst=1, barrier=0 state=0/0(0), set=0/0, use=0, need=80/80, sm=0/0, sew@entry=7, sew@exit=7, pred=0, last_ip=0x1000035a0[m
+	00100693	ADDI            a3, zero, 0x1(1)
+	00db8023	SB              a3, s7_rdi, 0x0(0)
+[4;32mNew instruction 2, native=0x3fbcfed580 (0x8)[m
+New Instruction x64:0x1000035a7, native:0x3fbcfed580
+[01;33m0x1000035a7: C3  RET[m
+[32m0x3fbcfed580: 24 emitted opcodes, inst=2, barrier=0 state=0/0(0), set=0/0, use=80, need=80/0, sm=0/1, sew@entry=7, sew@exit=7, pred=1, last_ip=0x1000035a0[m
+Ret to epilog
+	000a3383	LD              t2_rip, s4_rsp, 0x0(0)
+	008a0a13	ADDI            s4_rsp, s4_rsp, 0x8(8)
+	00038593	ADDI            a1, t2_rip, 0x0(0)
+	359c26b7	LUI             a3, 0x359c2(219586)
+	6286869b	ADDIW           a3, a3, 0x628(1576)
+	02e3d613	SRLI            a2, t2_rip, 0x2e(46)
+	00361613	SLLI            a2, a2, 0x3(3)
+	00c686b3	ADD             a3, a3, a2
+	0006b683	LD              a3, a3, 0x0(0)
+	00200737	LUI             a4, 0x200(512)
+	ff87071b	ADDIW           a4, a4, 0xfffffff8(-8)
+	0193d613	SRLI            a2, t2_rip, 0x19(25)
+	00e67633	AND             a2, a2, a4
+	00c686b3	ADD             a3, a3, a2
+	0006b683	LD              a3, a3, 0x0(0)
+	0073d613	SRLI            a2, t2_rip, 0x7(7)
+	00e67633	AND             a2, a2, a4
+	00c686b3	ADD             a3, a3, a2
+	0006b683	LD              a3, a3, 0x0(0)
+	3ff3f613	ANDI            a2, t2_rip, 0x3ff(1023)
+	00361613	SLLI            a2, a2, 0x3(3)
+	00c686b3	ADD             a3, a3, a2
+	0006b603	LD              a2, a3, 0x0(0)
+	000600e7	JALR            ra, a2, 0x0(0)
+---- END OF BLOCK ---- (3)
+[01;36m227481|Emitting 56 bytes for 17 x64 bytes ( => /home/ICT-02-02/test/coremark.exe:main + 0x47)[m
+[4;32mNew instruction 0, native=0x3fbcfed618 (0x0)[m
+New Instruction x64:0x100001197, native:0x3fbcfed618
+[01;33m0x100001197: 8B 74 24 1C  MOV Gd, Ed[m
+[32m0x3fbcfed618: 1 emitted opcodes, inst=0, barrier=0 state=0/0(0), set=0/0, use=0, need=0/0, sm=0/0, sew@entry=7, sew@exit=7, last_ip=0x100001197[m
+	01ca6b03	LWU             s6_rsi, s4_rsp, 0x1c(28)
+[4;32mNew instruction 1, native=0x3fbcfed61c (0x4)[m
+New Instruction x64:0x10000119b, native:0x3fbcfed61c
+[01;33m0x10000119b: 4C 89 EA  MOV Ed, Gd[m
+[32m0x3fbcfed61c: 1 emitted opcodes, inst=1, barrier=0 state=0/0(0), set=0/0, use=0, need=0/0, sm=0/0, sew@entry=7, sew@exit=7, pred=0, last_ip=0x100001197[m
+	000e8913	ADDI            s2_rdx, t4_r13, 0x0(0)
+[4;32mNew instruction 2, native=0x3fbcfed620 (0x8)[m
+New Instruction x64:0x10000119e, native:0x3fbcfed620
+[01;33m0x10000119e: BF 01 00 00 00  MOV Reg, Id[m
+[32m0x3fbcfed620: 1 emitted opcodes, inst=2, barrier=0 state=0/0(0), set=0/0, use=0, need=0/0, sm=0/0, sew@entry=7, sew@exit=7, pred=1, last_ip=0x100001197[m
+	00100b9b	ADDIW           s7_rdi, zero, 0x1(1)
+[4;32mNew instruction 3, native=0x3fbcfed624 (0xc)[m
+New Instruction x64:0x1000011a3, native:0x3fbcfed624
+[01;33m0x1000011a3: E8 48 21 00 00  CALL Id (=> /home/ICT-02-02/test/coremark.exe:get_seed_args)[m
+[32m0x3fbcfed624: 11 emitted opcodes, inst=3, barrier=0 state=17/0(0), set=3F/0, use=0, need=0/0, sm=0/0, sew@entry=7, sew@exit=7, pred=2, last_ip=0x100001197[m
+  Table64: 0x1000011a8
+	00000617	AUIPC           a2, 0x0(0)
+	02c63603	LD              a2, a2, 0x2c(44)
+	feca3c23	SD              a2, s4_rsp, 0xfffffff8(-8)
+	ff8a0a13	ADDI            s4_rsp, s4_rsp, 0xfffffff8(-8)
+Jump to next
+  Table64: 0x3fbc9e17a0
+	00000697	AUIPC           a3, 0x0(0)
+	0246b683	LD              a3, a3, 0x24(36)
+  Table64: 0x1000032f0
+	00000397	AUIPC           t2_rip, 0x0(0)
+	0243b383	LD              t2_rip, t2_rip, 0x24(36)
+	0006b603	LD              a2, a3, 0x0(0)
+	00038593	ADDI            a1, t2_rip, 0x0(0)
+	000600e7	JALR            ra, a2, 0x0(0)
+---- END OF BLOCK ---- (4)
+Extend block 0x3fee1839c0, 0x1000032fb -> 0x100003300 (ninst=5, jump from -2)
+[01;36m227481|Emitting 184 bytes for 28 x64 bytes ( => /home/ICT-02-02/test/coremark.exe:get_seed_args)[m
+[4;32mNew instruction 0, native=0x3fbcfed6a0 (0x0)[m
+New Instruction x64:0x1000032f0, native:0x3fbcfed6a0
+[01;33m0x1000032f0: F3 0F 1E FA  NOP / ENDBR32 / ENDBR64[m
+[32m0x3fbcfed6a0: 0 emitted opcodes, inst=0, barrier=0 state=0/0(0), set=0/0, use=0, need=0/0, sm=0/0, sew@entry=7, sew@exit=7, last_ip=0x1000032f0[m
+[4;32mNew instruction 1, native=0x3fbcfed6a0 (0x0)[m
+New Instruction x64:0x1000032f4, native:0x3fbcfed6a0
+[01;33m0x1000032f4: 39 FE  CMP Ed, Gd[m
+[32m0x3fbcfed6a0: 5 emitted opcodes, inst=1, barrier=0 state=3/0(0), set=3F/B8, use=0, need=0/B8, sm=0/0, sew@entry=7, sew@exit=7, pred=0, last_ip=0x1000032f0[m
+	f0a47413	ANDI            s0_flags, s0_flags, 0xffffff0a(-246)
+	45652c23	SW              s6_rsi, a0, 0x458(1112)
+	47752023	SW              s7_rdi, a0, 0x460(1120)
+	03800713	ADDI            a4, zero, 0x38(56)
+	44e52a23	SW              a4, a0, 0x454(1108)
+[4;32mNew instruction 2, native=0x3fbcfed6b4 (0x14)[m
+New Instruction x64:0x1000032f6, native:0x3fbcfed6b4
+[01;33m0x1000032f6: 7F 08  JG ib[m
+[32m0x3fbcfed6b4: 3 emitted opcodes, inst=2, barrier=0 state=0/3(0), set=0/0, use=38, need=B8/80, sm=0/0, sew@entry=7, sew@exit=7, pred=1, jmp=6, last_ip=0x1000032f0[m
+	016ba5b3	SLT             a1, s7_rdi, s6_rsi
+	06059c63	BNE             a1, zero, 0x78(120)
+	00000013	ADDI            zero, zero, 0x0(0)
+[4;32mNew instruction 3, native=0x3fbcfed6c0 (0x20)[m
+New Instruction x64:0x1000032f8, native:0x3fbcfed6c0
+[01;33m0x1000032f8: 31 C0  XOR Ed, Gd[m
+[32m0x3fbcfed6c0: 4 emitted opcodes, inst=3, barrier=0 state=3/3(0), set=3F/80, use=0, need=0/80, sm=0/0, sew@entry=7, sew@exit=7, pred=2, last_ip=0x1000032f0[m
+	03400713	ADDI            a4, zero, 0x34(52)
+	44e52a23	SW              a4, a0, 0x454(1108)
+	01084833	XOR             a6_rax, a6_rax, a6_rax
+	47052423	SW              a6_rax, a0, 0x468(1128)
+[4;32mNew instruction 4, native=0x3fbcfed6d0 (0x30)[m
+New Instruction x64:0x1000032fa, native:0x3fbcfed6d0
+[01;33m0x1000032fa: C3  RET[m
+[32m0x3fbcfed6d0: 24 emitted opcodes, inst=4, barrier=0 state=0/3(0), set=0/0, use=80, need=80/0, sm=0/0, sew@entry=7, sew@exit=7, pred=3, last_ip=0x1000032f0[m
+Ret to epilog
+	000a3383	LD              t2_rip, s4_rsp, 0x0(0)
+	008a0a13	ADDI            s4_rsp, s4_rsp, 0x8(8)
+	00038593	ADDI            a1, t2_rip, 0x0(0)
+	359c26b7	LUI             a3, 0x359c2(219586)
+	6286869b	ADDIW           a3, a3, 0x628(1576)
+	02e3d613	SRLI            a2, t2_rip, 0x2e(46)
+	00361613	SLLI            a2, a2, 0x3(3)
+	00c686b3	ADD             a3, a3, a2
+	0006b683	LD              a3, a3, 0x0(0)
+	00200737	LUI             a4, 0x200(512)
+	ff87071b	ADDIW           a4, a4, 0xfffffff8(-8)
+	0193d613	SRLI            a2, t2_rip, 0x19(25)
+	00e67633	AND             a2, a2, a4
+	00c686b3	ADD             a3, a3, a2
+	0006b683	LD              a3, a3, 0x0(0)
+	0073d613	SRLI            a2, t2_rip, 0x7(7)
+	00e67633	AND             a2, a2, a4
+	00c686b3	ADD             a3, a3, a2
+	0006b683	LD              a3, a3, 0x0(0)
+	3ff3f613	ANDI            a2, t2_rip, 0x3ff(1023)
+	00361613	SLLI            a2, a2, 0x3(3)
+	00c686b3	ADD             a3, a3, a2
+	0006b603	LD              a2, a3, 0x0(0)
+	000600e7	JALR            ra, a2, 0x0(0)
+[4;32mNew instruction 5, native=0x3fbcfed730 (0x90)[m
+Skipping unused opcode
+[01;33m0x1000032fb: 0F 1F 44 00 00  Skipped opcode[m
+[32m0x3fbcfed730: 0 emitted opcodes, inst=5, barrier=0 state=0/0(0), set=0/0, use=0, need=0/0, sm=0/0, sew@entry=7, sew@exit=7[m
+Reset Caches with 2
+[4;32mNew instruction 6, native=0x3fbcfed730 (0x90)[m
+New Instruction x64:0x100003300, native:0x3fbcfed730
+[01;33m0x100003300: 48 63 FF  MOVSXD Gd, Ed[m
+[32m0x3fbcfed730: 1 emitted opcodes, inst=6, barrier=0 state=0/3(0), set=0/0, use=0, need=80/80, sm=0/0, sew@entry=7, sew@exit=7, pred=2[m
+	000b8b9b	ADDIW           s7_rdi, s7_rdi, 0x0(0)
+[4;32mNew instruction 7, native=0x3fbcfed734 (0x94)[m
+New Instruction x64:0x100003303, native:0x3fbcfed734
+[01;33m0x100003303: 48 8B 3C FA  MOV Gd, Ed[m
+[32m0x3fbcfed734: 2 emitted opcodes, inst=7, barrier=0 state=0/3(0), set=0/0, use=0, need=80/80, sm=0/0, sew@entry=7, sew@exit=7, pred=6[m
+	0779160b	TH.ADDSL        a2, s2_rdx, s7_rdi, 0x3(3)
+	00063b83	LD              s7_rdi, a2, 0x0(0)
+[4;32mNew instruction 8, native=0x3fbcfed73c (0x9c)[m
+New Instruction x64:0x100003307, native:0x3fbcfed73c
+[01;33m0x100003307: E9 F4 FE FF FF  JMP Id (=> /home/ICT-02-02/test/coremark.exe:parseval)[m
+[32m0x3fbcfed73c: 7 emitted opcodes, inst=8, barrier=0 state=0/3(0), set=0/0, use=0, need=80/80, sm=0/0, sew@entry=7, sew@exit=7, pred=7, jmp=out[m
+Jump to next
+  Table64: 0x3fbc9e1020
+	00000697	AUIPC           a3, 0x0(0)
+	01c6b683	LD              a3, a3, 0x1c(28)
+  Table64: 0x100003200
+	00000397	AUIPC           t2_rip, 0x0(0)
+	01c3b383	LD              t2_rip, t2_rip, 0x1c(28)
+	0006b603	LD              a2, a3, 0x0(0)
+	00038593	ADDI            a1, t2_rip, 0x0(0)
+	000600e7	JALR            ra, a2, 0x0(0)
+---- END OF BLOCK ---- (9)
+[01;36m227481|Emitting 60 bytes for 22 x64 bytes ( => /home/ICT-02-02/test/coremark.exe:main + 0x58)[m
+[4;32mNew instruction 0, native=0x3fbcfed7a8 (0x0)[m
+New Instruction x64:0x1000011a8, native:0x3fbcfed7a8
+[01;33m0x1000011a8: 8B 74 24 1C  MOV Gd, Ed[m
+[32m0x3fbcfed7a8: 1 emitted opcodes, inst=0, barrier=0 state=0/0(0), set=0/0, use=0, need=0/0, sm=0/0, sew@entry=7, sew@exit=7, last_ip=0x1000011a8[m
+	01ca6b03	LWU             s6_rsi, s4_rsp, 0x1c(28)
+[4;32mNew instruction 1, native=0x3fbcfed7ac (0x4)[m
+New Instruction x64:0x1000011ac, native:0x3fbcfed7ac
+[01;33m0x1000011ac: 4C 89 EA  MOV Ed, Gd[m
+[32m0x3fbcfed7ac: 1 emitted opcodes, inst=1, barrier=0 state=0/0(0), set=0/0, use=0, need=0/0, sm=0/0, sew@entry=7, sew@exit=7, pred=0, last_ip=0x1000011a8[m
+	000e8913	ADDI            s2_rdx, t4_r13, 0x0(0)
+[4;32mNew instruction 2, native=0x3fbcfed7b0 (0x8)[m
+New Instruction x64:0x1000011af, native:0x3fbcfed7b0
+[01;33m0x1000011af: BF 02 00 00 00  MOV Reg, Id[m
+[32m0x3fbcfed7b0: 1 emitted opcodes, inst=2, barrier=0 state=0/0(0), set=0/0, use=0, need=0/0, sm=0/0, sew@entry=7, sew@exit=7, pred=1, last_ip=0x1000011a8[m
+	00200b9b	ADDIW           s7_rdi, zero, 0x2(2)
+[4;32mNew instruction 3, native=0x3fbcfed7b4 (0xc)[m
+New Instruction x64:0x1000011b4, native:0x3fbcfed7b4
+[01;33m0x1000011b4: 66 89 44 24 20  MOV Ew, Gw[m
+[32m0x3fbcfed7b4: 1 emitted opcodes, inst=3, barrier=0 state=0/0(0), set=0/0, use=0, need=0/0, sm=0/0, sew@entry=7, sew@exit=7, pred=2, last_ip=0x1000011a8[m
+	030a1023	SH              a6_rax, s4_rsp, 0x20(32)
+[4;32mNew instruction 4, native=0x3fbcfed7b8 (0x10)[m
+New Instruction x64:0x1000011b9, native:0x3fbcfed7b8
+[01;33m0x1000011b9: E8 32 21 00 00  CALL Id (=> /home/ICT-02-02/test/coremark.exe:get_seed_args)[m
+[32m0x3fbcfed7b8: 11 emitted opcodes, inst=4, barrier=0 state=17/0(0), set=3F/0, use=0, need=0/0, sm=0/1, sew@entry=7, sew@exit=7, pred=3, last_ip=0x1000011a8[m
+  Table64: 0x1000011be
+	00000617	AUIPC           a2, 0x0(0)
+	03063603	LD              a2, a2, 0x30(48)
+	feca3c23	SD              a2, s4_rsp, 0xfffffff8(-8)
+	ff8a0a13	ADDI            s4_rsp, s4_rsp, 0xfffffff8(-8)
+Jump to next
+  Table64: 0x3fbc9e17a0
+	00000697	AUIPC           a3, 0x0(0)
+	0286b683	LD              a3, a3, 0x28(40)
+  Table64: 0x1000032f0
+	00000397	AUIPC           t2_rip, 0x0(0)
+	0283b383	LD              t2_rip, t2_rip, 0x28(40)
+	0006b603	LD              a2, a3, 0x0(0)
+	00038593	ADDI            a1, t2_rip, 0x0(0)
+	000600e7	JALR            ra, a2, 0x0(0)
+---- END OF BLOCK ---- (5)
+[01;36m227481|Emitting 60 bytes for 22 x64 bytes ( => /home/ICT-02-02/test/coremark.exe:main + 0x6e)[m
+[4;32mNew instruction 0, native=0x3fbcfed838 (0x0)[m
+New Instruction x64:0x1000011be, native:0x3fbcfed838
+[01;33m0x1000011be: 8B 74 24 1C  MOV Gd, Ed[m
+[32m0x3fbcfed838: 1 emitted opcodes, inst=0, barrier=0 state=0/0(0), set=0/0, use=0, need=0/0, sm=0/0, sew@entry=7, sew@exit=7, last_ip=0x1000011be[m
+	01ca6b03	LWU             s6_rsi, s4_rsp, 0x1c(28)
+[4;32mNew instruction 1, native=0x3fbcfed83c (0x4)[m
+New Instruction x64:0x1000011c2, native:0x3fbcfed83c
+[01;33m0x1000011c2: 4C 89 EA  MOV Ed, Gd[m
+[32m0x3fbcfed83c: 1 emitted opcodes, inst=1, barrier=0 state=0/0(0), set=0/0, use=0, need=0/0, sm=0/0, sew@entry=7, sew@exit=7, pred=0, last_ip=0x1000011be[m
+	000e8913	ADDI            s2_rdx, t4_r13, 0x0(0)
+[4;32mNew instruction 2, native=0x3fbcfed840 (0x8)[m
+New Instruction x64:0x1000011c5, native:0x3fbcfed840
+[01;33m0x1000011c5: BF 03 00 00 00  MOV Reg, Id[m
+[32m0x3fbcfed840: 1 emitted opcodes, inst=2, barrier=0 state=0/0(0), set=0/0, use=0, need=0/0, sm=0/0, sew@entry=7, sew@exit=7, pred=1, last_ip=0x1000011be[m
+	00300b9b	ADDIW           s7_rdi, zero, 0x3(3)
+[4;32mNew instruction 3, native=0x3fbcfed844 (0xc)[m
+New Instruction x64:0x1000011ca, native:0x3fbcfed844
+[01;33m0x1000011ca: 66 89 44 24 22  MOV Ew, Gw[m
+[32m0x3fbcfed844: 1 emitted opcodes, inst=3, barrier=0 state=0/0(0), set=0/0, use=0, need=0/0, sm=0/0, sew@entry=7, sew@exit=7, pred=2, last_ip=0x1000011be[m
+	030a1123	SH              a6_rax, s4_rsp, 0x22(34)
+[4;32mNew instruction 4, native=0x3fbcfed848 (0x10)[m
+New Instruction x64:0x1000011cf, native:0x3fbcfed848
+[01;33m0x1000011cf: E8 1C 21 00 00  CALL Id (=> /home/ICT-02-02/test/coremark.exe:get_seed_args)[m
+[32m0x3fbcfed848: 11 emitted opcodes, inst=4, barrier=0 state=17/0(0), set=3F/0, use=0, need=0/0, sm=0/1, sew@entry=7, sew@exit=7, pred=3, last_ip=0x1000011be[m
+  Table64: 0x1000011d4
+	00000617	AUIPC           a2, 0x0(0)
+	03063603	LD              a2, a2, 0x30(48)
+	feca3c23	SD              a2, s4_rsp, 0xfffffff8(-8)
+	ff8a0a13	ADDI            s4_rsp, s4_rsp, 0xfffffff8(-8)
+Jump to next
+  Table64: 0x3fbc9e17a0
+	00000697	AUIPC           a3, 0x0(0)
+	0286b683	LD              a3, a3, 0x28(40)
+  Table64: 0x1000032f0
+	00000397	AUIPC           t2_rip, 0x0(0)
+	0283b383	LD              t2_rip, t2_rip, 0x28(40)
+	0006b603	LD              a2, a3, 0x0(0)
+	00038593	ADDI            a1, t2_rip, 0x0(0)
+	000600e7	JALR            ra, a2, 0x0(0)
+---- END OF BLOCK ---- (5)
+[01;36m227481|Emitting 60 bytes for 22 x64 bytes ( => /home/ICT-02-02/test/coremark.exe:main + 0x84)[m
+[4;32mNew instruction 0, native=0x3fbcfed8c8 (0x0)[m
+New Instruction x64:0x1000011d4, native:0x3fbcfed8c8
+[01;33m0x1000011d4: 8B 74 24 1C  MOV Gd, Ed[m
+[32m0x3fbcfed8c8: 1 emitted opcodes, inst=0, barrier=0 state=0/0(0), set=0/0, use=0, need=0/0, sm=0/0, sew@entry=7, sew@exit=7, last_ip=0x1000011d4[m
+	01ca6b03	LWU             s6_rsi, s4_rsp, 0x1c(28)
+[4;32mNew instruction 1, native=0x3fbcfed8cc (0x4)[m
+New Instruction x64:0x1000011d8, native:0x3fbcfed8cc
+[01;33m0x1000011d8: 4C 89 EA  MOV Ed, Gd[m
+[32m0x3fbcfed8cc: 1 emitted opcodes, inst=1, barrier=0 state=0/0(0), set=0/0, use=0, need=0/0, sm=0/0, sew@entry=7, sew@exit=7, pred=0, last_ip=0x1000011d4[m
+	000e8913	ADDI            s2_rdx, t4_r13, 0x0(0)
+[4;32mNew instruction 2, native=0x3fbcfed8d0 (0x8)[m
+New Instruction x64:0x1000011db, native:0x3fbcfed8d0
+[01;33m0x1000011db: BF 04 00 00 00  MOV Reg, Id[m
+[32m0x3fbcfed8d0: 1 emitted opcodes, inst=2, barrier=0 state=0/0(0), set=0/0, use=0, need=0/0, sm=0/0, sew@entry=7, sew@exit=7, pred=1, last_ip=0x1000011d4[m
+	00400b9b	ADDIW           s7_rdi, zero, 0x4(4)
+[4;32mNew instruction 3, native=0x3fbcfed8d4 (0xc)[m
+New Instruction x64:0x1000011e0, native:0x3fbcfed8d4
+[01;33m0x1000011e0: 66 89 44 24 24  MOV Ew, Gw[m
+[32m0x3fbcfed8d4: 1 emitted opcodes, inst=3, barrier=0 state=0/0(0), set=0/0, use=0, need=0/0, sm=0/0, sew@entry=7, sew@exit=7, pred=2, last_ip=0x1000011d4[m
+	030a1223	SH              a6_rax, s4_rsp, 0x24(36)
+[4;32mNew instruction 4, native=0x3fbcfed8d8 (0x10)[m
+New Instruction x64:0x1000011e5, native:0x3fbcfed8d8
+[01;33m0x1000011e5: E8 06 21 00 00  CALL Id (=> /home/ICT-02-02/test/coremark.exe:get_seed_args)[m
+[32m0x3fbcfed8d8: 11 emitted opcodes, inst=4, barrier=0 state=17/0(0), set=3F/0, use=0, need=0/0, sm=0/1, sew@entry=7, sew@exit=7, pred=3, last_ip=0x1000011d4[m
+  Table64: 0x1000011ea
+	00000617	AUIPC           a2, 0x0(0)
+	03063603	LD              a2, a2, 0x30(48)
+	feca3c23	SD              a2, s4_rsp, 0xfffffff8(-8)
+	ff8a0a13	ADDI            s4_rsp, s4_rsp, 0xfffffff8(-8)
+Jump to next
+  Table64: 0x3fbc9e17a0
+	00000697	AUIPC           a3, 0x0(0)
+	0286b683	LD              a3, a3, 0x28(40)
+  Table64: 0x1000032f0
+	00000397	AUIPC           t2_rip, 0x0(0)
+	0283b383	LD              t2_rip, t2_rip, 0x28(40)
+	0006b603	LD              a2, a3, 0x0(0)
+	00038593	ADDI            a1, t2_rip, 0x0(0)
+	000600e7	JALR            ra, a2, 0x0(0)
+---- END OF BLOCK ---- (5)
+[01;36m227481|Emitting 60 bytes for 21 x64 bytes ( => /home/ICT-02-02/test/coremark.exe:main + 0x9a)[m
+[4;32mNew instruction 0, native=0x3fbcfed958 (0x0)[m
+New Instruction x64:0x1000011ea, native:0x3fbcfed958
+[01;33m0x1000011ea: 8B 74 24 1C  MOV Gd, Ed[m
+[32m0x3fbcfed958: 1 emitted opcodes, inst=0, barrier=0 state=0/0(0), set=0/0, use=0, need=0/0, sm=0/0, sew@entry=7, sew@exit=7, last_ip=0x1000011ea[m
+	01ca6b03	LWU             s6_rsi, s4_rsp, 0x1c(28)
+[4;32mNew instruction 1, native=0x3fbcfed95c (0x4)[m
+New Instruction x64:0x1000011ee, native:0x3fbcfed95c
+[01;33m0x1000011ee: 4C 89 EA  MOV Ed, Gd[m
+[32m0x3fbcfed95c: 1 emitted opcodes, inst=1, barrier=0 state=0/0(0), set=0/0, use=0, need=0/0, sm=0/0, sew@entry=7, sew@exit=7, pred=0, last_ip=0x1000011ea[m
+	000e8913	ADDI            s2_rdx, t4_r13, 0x0(0)
+[4;32mNew instruction 2, native=0x3fbcfed960 (0x8)[m
+New Instruction x64:0x1000011f1, native:0x3fbcfed960
+[01;33m0x1000011f1: BF 05 00 00 00  MOV Reg, Id[m
+[32m0x3fbcfed960: 1 emitted opcodes, inst=2, barrier=0 state=0/0(0), set=0/0, use=0, need=0/0, sm=0/0, sew@entry=7, sew@exit=7, pred=1, last_ip=0x1000011ea[m
+	00500b9b	ADDIW           s7_rdi, zero, 0x5(5)
+[4;32mNew instruction 3, native=0x3fbcfed964 (0xc)[m
+New Instruction x64:0x1000011f6, native:0x3fbcfed964
+[01;33m0x1000011f6: 89 44 24 4C  MOV Ed, Gd[m
+[32m0x3fbcfed964: 1 emitted opcodes, inst=3, barrier=0 state=0/0(0), set=0/0, use=0, need=0/0, sm=0/0, sew@entry=7, sew@exit=7, pred=2, last_ip=0x1000011ea[m
+	050a2623	SW              a6_rax, s4_rsp, 0x4c(76)
+[4;32mNew instruction 4, native=0x3fbcfed968 (0x10)[m
+New Instruction x64:0x1000011fa, native:0x3fbcfed968
+[01;33m0x1000011fa: E8 F1 20 00 00  CALL Id (=> /home/ICT-02-02/test/coremark.exe:get_seed_args)[m
+[32m0x3fbcfed968: 11 emitted opcodes, inst=4, barrier=0 state=17/0(0), set=3F/0, use=0, need=0/0, sm=0/1, sew@entry=7, sew@exit=7, pred=3, last_ip=0x1000011ea[m
+  Table64: 0x1000011ff
+	00000617	AUIPC           a2, 0x0(0)
+	03063603	LD              a2, a2, 0x30(48)
+	feca3c23	SD              a2, s4_rsp, 0xfffffff8(-8)
+	ff8a0a13	ADDI            s4_rsp, s4_rsp, 0xfffffff8(-8)
+Jump to next
+  Table64: 0x3fbc9e17a0
+	00000697	AUIPC           a3, 0x0(0)
+	0286b683	LD              a3, a3, 0x28(40)
+  Table64: 0x1000032f0
+	00000397	AUIPC           t2_rip, 0x0(0)
+	0283b383	LD              t2_rip, t2_rip, 0x28(40)
+	0006b603	LD              a2, a3, 0x0(0)
+	00038593	ADDI            a1, t2_rip, 0x0(0)
+	000600e7	JALR            ra, a2, 0x0(0)
+---- END OF BLOCK ---- (5)
+[01;36m227481|Emitting 248 bytes for 104 x64 bytes ( => /home/ICT-02-02/test/coremark.exe:main + 0xaf)[m
+[4;32mNew instruction 0, native=0x3fbcfed9e8 (0x0)[m
+New Instruction x64:0x1000011ff, native:0x3fbcfed9e8
+[01;33m0x1000011ff: BA 07 00 00 00  MOV Reg, Id[m
+[32m0x3fbcfed9e8: 1 emitted opcodes, inst=0, barrier=0 state=0/0(0), set=0/0, use=0, need=0/0, sm=0/0, sew@entry=7, sew@exit=7, last_ip=0x1000011ff[m
+	0070091b	ADDIW           s2_rdx, zero, 0x7(7)
+[4;32mNew instruction 1, native=0x3fbcfed9ec (0x4)[m
+New Instruction x64:0x100001204, native:0x3fbcfed9ec
+[01;33m0x100001204: 85 C0  TEST Ed, Gd[m
+[32m0x3fbcfed9ec: 6 emitted opcodes, inst=1, barrier=0 state=3/0(0), set=3F/8, use=0, need=0/8, sm=0/0, sew@entry=7, sew@exit=7, pred=0, last_ip=0x1000011ff[m
+	f0a47413	ANDI            s0_flags, s0_flags, 0xffffff0a(-246)
+	44052a23	SW              zero, a0, 0x454(1108)
+	010876b3	AND             a3, a6_rax, a6_rax
+	0056f6b3	AND             a3, a3, t0_mask
+	00069463	BNE             a3, zero, 0x8(8)
+	04046413	ORI             s0_flags, s0_flags, 0x40(64)
+[4;32mNew instruction 2, native=0x3fbcfeda04 (0x1c)[m
+New Instruction x64:0x100001206, native:0x3fbcfeda04
+[01;33m0x100001206: 0F 44 C2  CMOVZ Gd, Ed[m
+[32m0x3fbcfeda04: 4 emitted opcodes, inst=2, barrier=0 state=0/1(1), set=0/0, use=8, need=8/0, sm=0/0, sew@entry=7, sew@exit=7, pred=1, last_ip=0x1000011ff[m
+	04047593	ANDI            a1, s0_flags, 0x40(64)
+	00058463	BEQ             a1, zero, 0x8(8)
+	00090813	ADDI            a6_rax, s2_rdx, 0x0(0)
+	00587833	AND             a6_rax, a6_rax, t0_mask
+[4;32mNew instruction 3, native=0x3fbcfeda14 (0x2c)[m
+New Instruction x64:0x100001209, native:0x3fbcfeda14
+[01;33m0x100001209: 89 44 24 50  MOV Ed, Gd[m
+[32m0x3fbcfeda14: 1 emitted opcodes, inst=3, barrier=0 state=0/1(1), set=0/0, use=0, need=0/0, sm=0/0, sew@entry=7, sew@exit=7, pred=2, last_ip=0x1000011ff[m
+	050a2823	SW              a6_rax, s4_rsp, 0x50(80)
+[4;32mNew instruction 4, native=0x3fbcfeda18 (0x30)[m
+New Instruction x64:0x10000120d, native:0x3fbcfeda18
+[01;33m0x10000120d: 48 B8 FF FF FF FF FF FF 00 00  MOV Reg, Id[m
+[32m0x3fbcfeda18: 3 emitted opcodes, inst=4, barrier=0 state=0/1(1), set=0/0, use=0, need=0/0, sm=0/1, sew@entry=7, sew@exit=7, pred=3, last_ip=0x1000011ff[m
+	0010081b	ADDIW           a6_rax, zero, 0x1(1)
+	03081813	SLLI            a6_rax, a6_rax, 0x30(48)
+	fff80813	ADDI            a6_rax, a6_rax, 0xffffffff(-1)
+[4;32mNew instruction 5, native=0x3fbcfeda24 (0x3c)[m
+New Instruction x64:0x100001217, native:0x3fbcfeda24
+[01;33m0x100001217: 48 23 44 24 20  AND Gd, Ed[m
+[32m0x3fbcfeda24: 5 emitted opcodes, inst=5, barrier=0 state=3/1(1), set=3F/8, use=0, need=0/8, sm=0/1, sew@entry=7, sew@exit=7, pred=4, last_ip=0x1000011ff[m
+	020a3583	LD              a1, s4_rsp, 0x20(32)
+	f0a47413	ANDI            s0_flags, s0_flags, 0xffffff0a(-246)
+	00b87833	AND             a6_rax, a6_rax, a1
+	00081463	BNE             a6_rax, zero, 0x8(8)
+	04046413	ORI             s0_flags, s0_flags, 0x40(64)
+[4;32mNew instruction 6, native=0x3fbcfeda38 (0x50)[m
+New Instruction x64:0x10000121c, native:0x3fbcfeda38
+[01;33m0x10000121c: 75 0F  JNZ ib[m
+[32m0x3fbcfeda38: 3 emitted opcodes, inst=6, barrier=0 state=0/1(1), set=0/0, use=8, need=8/0, sm=1/1, sew@entry=7, sew@exit=7, pred=5, jmp=9, last_ip=0x1000011ff[m
+	04047593	ANDI            a1, s0_flags, 0x40(64)
+	00058c63	BEQ             a1, zero, 0x18(24)
+	00000013	ADDI            zero, zero, 0x0(0)
+[4;32mNew instruction 7, native=0x3fbcfeda44 (0x5c)[m
+New Instruction x64:0x10000121e, native:0x3fbcfeda44
+[01;33m0x10000121e: C7 44 24 20 00 00 00 00  MOV Ed, Id[m
+[32m0x3fbcfeda44: 2 emitted opcodes, inst=7, barrier=0 state=0/1(1), set=0/0, use=0, need=0/0, sm=1/1, sew@entry=7, sew@exit=7, pred=6, last_ip=0x1000011ff[m
+	020a0613	ADDI            a2, s4_rsp, 0x20(32)
+	00062023	SW              zero, a2, 0x0(0)
+[4;32mNew instruction 8, native=0x3fbcfeda4c (0x64)[m
+New Instruction x64:0x100001226, native:0x3fbcfeda4c
+[01;33m0x100001226: 66 C7 44 24 24 66 00  MOV Ew, Iw[m
+[32m0x3fbcfeda4c: 2 emitted opcodes, inst=8, barrier=0 state=0/1(1), set=0/0, use=0, need=0/0, sm=1/1, sew@entry=7, sew@exit=7, pred=7, last_ip=0x1000011ff[m
+	0660059b	ADDIW           a1, zero, 0x66(102)
+	02ba1223	SH              a1, s4_rsp, 0x24(36)
+[4;32mNew instruction 9, native=0x3fbcfeda54 (0x6c)[m
+New Instruction x64:0x10000122d, native:0x3fbcfeda54
+[01;33m0x10000122d: 48 B8 FF FF FF FF FF FF 00 00  MOV Reg, Id[m
+[32m0x3fbcfeda54: 3 emitted opcodes, inst=9, barrier=0 state=0/1(1), set=0/0, use=0, need=0/0, sm=0/0, sew@entry=7, sew@exit=7, pred=6/8[m
+	0010081b	ADDIW           a6_rax, zero, 0x1(1)
+	03081813	SLLI            a6_rax, a6_rax, 0x30(48)
+	fff80813	ADDI            a6_rax, a6_rax, 0xffffffff(-1)
+[4;32mNew instruction 10, native=0x3fbcfeda60 (0x78)[m
+New Instruction x64:0x100001237, native:0x3fbcfeda60
+[01;33m0x100001237: 48 23 44 24 20  AND Gd, Ed[m
+[32m0x3fbcfeda60: 2 emitted opcodes, inst=10, barrier=0 state=3/1(1), set=3F/0, use=0, need=0/0, sm=0/0, sew@entry=7, sew@exit=7, pred=9[m
+	020a3583	LD              a1, s4_rsp, 0x20(32)
+	00b87833	AND             a6_rax, a6_rax, a1
+[4;32mNew instruction 11, native=0x3fbcfeda68 (0x80)[m
+New Instruction x64:0x10000123c, native:0x3fbcfeda68
+[01;33m0x10000123c: 48 83 F8 01  CMP Ed, Ib[m
+[32m0x3fbcfeda68: 5 emitted opcodes, inst=11, barrier=0 state=3/1(1), set=3F/8, use=0, need=0/8, sm=1/0, sew@entry=7, sew@exit=7, pred=10[m
+	0010061b	ADDIW           a2, zero, 0x1(1)
+	f0a47413	ANDI            s0_flags, s0_flags, 0xffffff0a(-246)
+	40c80333	SUB             t1, a6_rax, a2
+	00031463	BNE             t1, zero, 0x8(8)
+	04046413	ORI             s0_flags, s0_flags, 0x40(64)
+[4;32mNew instruction 12, native=0x3fbcfeda7c (0x94)[m
+New Instruction x64:0x100001240, native:0x3fbcfeda7c
+[01;33m0x100001240: 75 0F  JNZ ib[m
+[32m0x3fbcfeda7c: 3 emitted opcodes, inst=12, barrier=0 state=0/1(1), set=0/0, use=8, need=8/0, sm=1/0, sew@entry=7, sew@exit=7, pred=11, jmp=15[m
+	04047593	ANDI            a1, s0_flags, 0x40(64)
+	02058063	BEQ             a1, zero, 0x20(32)
+	00000013	ADDI            zero, zero, 0x0(0)
+[4;32mNew instruction 13, native=0x3fbcfeda88 (0xa0)[m
+New Instruction x64:0x100001242, native:0x3fbcfeda88
+[01;33m0x100001242: C7 44 24 20 15 34 15 34  MOV Ed, Id[m
+[32m0x3fbcfeda88: 4 emitted opcodes, inst=13, barrier=0 state=0/1(1), set=0/0, use=0, need=0/0, sm=1/0, sew@entry=7, sew@exit=7, pred=12[m
+	020a0613	ADDI            a2, s4_rsp, 0x20(32)
+	341536b7	LUI             a3, 0x34153(213331)
+	4156869b	ADDIW           a3, a3, 0x415(1045)
+	00d62023	SW              a3, a2, 0x0(0)
+[4;32mNew instruction 14, native=0x3fbcfeda98 (0xb0)[m
+New Instruction x64:0x10000124a, native:0x3fbcfeda98
+[01;33m0x10000124a: 66 C7 44 24 24 66 00  MOV Ew, Iw[m
+[32m0x3fbcfeda98: 2 emitted opcodes, inst=14, barrier=0 state=0/1(1), set=0/0, use=0, need=0/0, sm=1/1, sew@entry=7, sew@exit=7, pred=13[m
+	0660059b	ADDIW           a1, zero, 0x66(102)
+	02ba1223	SH              a1, s4_rsp, 0x24(36)
+[4;32mNew instruction 15, native=0x3fbcfedaa0 (0xb8)[m
+New Instruction x64:0x100001251, native:0x3fbcfedaa0
+[01;33m0x100001251: 8B 74 24 1C  MOV Gd, Ed[m
+[32m0x3fbcfedaa0: 1 emitted opcodes, inst=15, barrier=0 state=0/1(1), set=0/0, use=0, need=0/0, sm=0/0, sew@entry=7, sew@exit=7, pred=12/14[m
+	01ca6b03	LWU             s6_rsi, s4_rsp, 0x1c(28)
+[4;32mNew instruction 16, native=0x3fbcfedaa4 (0xbc)[m
+New Instruction x64:0x100001255, native:0x3fbcfedaa4
+[01;33m0x100001255: 4C 89 EA  MOV Ed, Gd[m
+[32m0x3fbcfedaa4: 1 emitted opcodes, inst=16, barrier=0 state=0/1(1), set=0/0, use=0, need=0/0, sm=0/0, sew@entry=7, sew@exit=7, pred=15[m
+	000e8913	ADDI            s2_rdx, t4_r13, 0x0(0)
+[4;32mNew instruction 17, native=0x3fbcfedaa8 (0xc0)[m
+New Instruction x64:0x100001258, native:0x3fbcfedaa8
+[01;33m0x100001258: BF 07 00 00 00  MOV Reg, Id[m
+[32m0x3fbcfedaa8: 1 emitted opcodes, inst=17, barrier=0 state=0/1(1), set=0/0, use=0, need=0/0, sm=0/0, sew@entry=7, sew@exit=7, pred=16[m
+	00700b9b	ADDIW           s7_rdi, zero, 0x7(7)
+[4;32mNew instruction 18, native=0x3fbcfedaac (0xc4)[m
+New Instruction x64:0x10000125d, native:0x3fbcfedaac
+[01;33m0x10000125d: 48 8D 6C 24 20  LEA Gd, Ed[m
+[32m0x3fbcfedaac: 2 emitted opcodes, inst=18, barrier=0 state=0/1(1), set=0/0, use=0, need=0/0, sm=0/0, sew@entry=7, sew@exit=7, pred=17[m
+	020a0613	ADDI            a2, s4_rsp, 0x20(32)
+	00060a93	ADDI            s5_rbp, a2, 0x0(0)
+[4;32mNew instruction 19, native=0x3fbcfedab4 (0xcc)[m
+New Instruction x64:0x100001262, native:0x3fbcfedab4
+[01;33m0x100001262: E8 89 20 00 00  CALL Id (=> /home/ICT-02-02/test/coremark.exe:get_seed_args)[m
+[32m0x3fbcfedab4: 11 emitted opcodes, inst=19, barrier=0 state=17/1(1), set=3F/0, use=0, need=0/0, sm=0/0, sew@entry=7, sew@exit=7, pred=18[m
+  Table64: 0x100001267
+	00000617	AUIPC           a2, 0x0(0)
+	02c63603	LD              a2, a2, 0x2c(44)
+	feca3c23	SD              a2, s4_rsp, 0xfffffff8(-8)
+	ff8a0a13	ADDI            s4_rsp, s4_rsp, 0xfffffff8(-8)
+Jump to next
+  Table64: 0x3fbc9e17a0
+	00000697	AUIPC           a3, 0x0(0)
+	0246b683	LD              a3, a3, 0x24(36)
+  Table64: 0x1000032f0
+	00000397	AUIPC           t2_rip, 0x0(0)
+	0243b383	LD              t2_rip, t2_rip, 0x24(36)
+	0006b603	LD              a2, a3, 0x0(0)
+	00038593	ADDI            a1, t2_rip, 0x0(0)
+	000600e7	JALR            ra, a2, 0x0(0)
+---- END OF BLOCK ---- (20)
+[01;36m227481|Emitting 132 bytes for 30 x64 bytes ( => /home/ICT-02-02/test/coremark.exe:main + 0x117)[m
+[4;32mNew instruction 0, native=0x3fbcfedb40 (0x0)[m
+New Instruction x64:0x100001267, native:0x3fbcfedb40
+[01;33m0x100001267: 0F BF F8  MOVSX Gd, Ew[m
+[32m0x3fbcfedb40: 3 emitted opcodes, inst=0, barrier=0 state=0/0(0), set=0/0, use=0, need=0/0, sm=0/0, sew@entry=7, sew@exit=7, last_ip=0x100001267[m
+	03081b93	SLLI            s7_rdi, a6_rax, 0x30(48)
+	430bdb93	SRAI            s7_rdi, s7_rdi, 0x30(48)
+	005bfbb3	AND             s7_rdi, s7_rdi, t0_mask
+[4;32mNew instruction 1, native=0x3fbcfedb4c (0xc)[m
+New Instruction x64:0x10000126a, native:0x3fbcfedb4c
+[01;33m0x10000126a: 66 85 C0  TEST Ew, Gw[m
+[32m0x3fbcfedb4c: 9 emitted opcodes, inst=1, barrier=0 state=3/0(0), set=3F/8, use=0, need=0/8, sm=0/0, sew@entry=7, sew@exit=7, pred=0, last_ip=0x100001267[m
+	03081593	SLLI            a1, a6_rax, 0x30(48)
+	0305d593	SRLI            a1, a1, 0x30(48)
+	03081613	SLLI            a2, a6_rax, 0x30(48)
+	03065613	SRLI            a2, a2, 0x30(48)
+	f0a47413	ANDI            s0_flags, s0_flags, 0xffffff0a(-246)
+	44052a23	SW              zero, a0, 0x454(1108)
+	00c5f333	AND             t1, a1, a2
+	00031463	BNE             t1, zero, 0x8(8)
+	04046413	ORI             s0_flags, s0_flags, 0x40(64)
+[4;32mNew instruction 2, native=0x3fbcfedb70 (0x30)[m
+New Instruction x64:0x10000126d, native:0x3fbcfedb70
+[01;33m0x10000126d: B8 D0 07 00 00  MOV Reg, Id[m
+[32m0x3fbcfedb70: 1 emitted opcodes, inst=2, barrier=0 state=0/1(1), set=0/0, use=0, need=8/8, sm=0/0, sew@entry=7, sew@exit=7, pred=1, last_ip=0x100001267[m
+	7d00081b	ADDIW           a6_rax, zero, 0x7d0(2000)
+[4;32mNew instruction 3, native=0x3fbcfedb74 (0x34)[m
+New Instruction x64:0x100001272, native:0x3fbcfedb74
+[01;33m0x100001272: 48 89 FA  MOV Ed, Gd[m
+[32m0x3fbcfedb74: 1 emitted opcodes, inst=3, barrier=0 state=0/1(1), set=0/0, use=0, need=8/8, sm=0/0, sew@entry=7, sew@exit=7, pred=2, last_ip=0x100001267[m
+	000b8913	ADDI            s2_rdx, s7_rdi, 0x0(0)
+[4;32mNew instruction 4, native=0x3fbcfedb78 (0x38)[m
+New Instruction x64:0x100001275, native:0x3fbcfedb78
+[01;33m0x100001275: 48 0F 44 F8  CMOVZ Gd, Ed[m
+[32m0x3fbcfedb78: 3 emitted opcodes, inst=4, barrier=0 state=0/1(1), set=0/0, use=8, need=8/8, sm=0/0, sew@entry=7, sew@exit=7, pred=3, last_ip=0x100001267[m
+	04047593	ANDI            a1, s0_flags, 0x40(64)
+	00058463	BEQ             a1, zero, 0x8(8)
+	00080b93	ADDI            s7_rdi, a6_rax, 0x0(0)
+[4;32mNew instruction 5, native=0x3fbcfedb84 (0x44)[m
+New Instruction x64:0x100001279, native:0x3fbcfedb84
+[01;33m0x100001279: 0F 44 D0  CMOVZ Gd, Ed[m
+[32m0x3fbcfedb84: 4 emitted opcodes, inst=5, barrier=0 state=0/1(1), set=0/0, use=8, need=8/0, sm=0/0, sew@entry=7, sew@exit=7, pred=4, last_ip=0x100001267[m
+	04047593	ANDI            a1, s0_flags, 0x40(64)
+	00058463	BEQ             a1, zero, 0x8(8)
+	00080913	ADDI            s2_rdx, a6_rax, 0x0(0)
+	00597933	AND             s2_rdx, s2_rdx, t0_mask
+[4;32mNew instruction 6, native=0x3fbcfedb94 (0x54)[m
+New Instruction x64:0x10000127c, native:0x3fbcfedb94
+[01;33m0x10000127c: 89 54 24 48  MOV Ed, Gd[m
+[32m0x3fbcfedb94: 1 emitted opcodes, inst=6, barrier=0 state=0/1(1), set=0/0, use=0, need=0/0, sm=0/0, sew@entry=7, sew@exit=7, pred=5, last_ip=0x100001267[m
+	052a2423	SW              s2_rdx, s4_rsp, 0x48(72)
+[4;32mNew instruction 7, native=0x3fbcfedb98 (0x58)[m
+New Instruction x64:0x100001280, native:0x3fbcfedb98
+[01;33m0x100001280: E8 4B 22 00 00  CALL Id (=> /home/ICT-02-02/test/coremark.exe:portable_malloc)[m
+[32m0x3fbcfedb98: 11 emitted opcodes, inst=7, barrier=0 state=17/1(1), set=3F/0, use=0, need=0/0, sm=0/1, sew@entry=7, sew@exit=7, pred=6, last_ip=0x100001267[m
+  Table64: 0x100001285
+	00000617	AUIPC           a2, 0x0(0)
+	03063603	LD              a2, a2, 0x30(48)
+	feca3c23	SD              a2, s4_rsp, 0xfffffff8(-8)
+	ff8a0a13	ADDI            s4_rsp, s4_rsp, 0xfffffff8(-8)
+Jump to next
+  Table64: 0x3fbc9de698
+	00000697	AUIPC           a3, 0x0(0)
+	0286b683	LD              a3, a3, 0x28(40)
+  Table64: 0x1000034d0
+	00000397	AUIPC           t2_rip, 0x0(0)
+	0283b383	LD              t2_rip, t2_rip, 0x28(40)
+	0006b603	LD              a2, a3, 0x0(0)
+	00038593	ADDI            a1, t2_rip, 0x0(0)
+	000600e7	JALR            ra, a2, 0x0(0)
+---- END OF BLOCK ---- (8)
+[01;36m227481|Emitting 28 bytes for 9 x64 bytes ( => /home/ICT-02-02/test/coremark.exe:portable_malloc)[m
+[4;32mNew instruction 0, native=0x3fbcfedc20 (0x0)[m
+New Instruction x64:0x1000034d0, native:0x3fbcfedc20
+[01;33m0x1000034d0: F3 0F 1E FA  NOP / ENDBR32 / ENDBR64[m
+[32m0x3fbcfedc20: 0 emitted opcodes, inst=0, barrier=0 state=0/0(0), set=0/0, use=0, need=80/80, sm=0/0, sew@entry=7, sew@exit=7, last_ip=0x1000034d0[m
+[4;32mNew instruction 1, native=0x3fbcfedc20 (0x0)[m
+New Instruction x64:0x1000034d4, native:0x3fbcfedc20
+[01;33m0x1000034d4: E9 47 DC FF FF  JMP Id[m
+[32m0x3fbcfedc20: 7 emitted opcodes, inst=1, barrier=0 state=0/0(0), set=0/0, use=0, need=80/80, sm=0/0, sew@entry=7, sew@exit=7, pred=0, jmp=out, last_ip=0x1000034d0[m
+Jump to next
+  Table64: 0x3fbd20d3b0
+	00000697	AUIPC           a3, 0x0(0)
+	0206b683	LD              a3, a3, 0x20(32)
+  Table64: 0x100001120
+	00000397	AUIPC           t2_rip, 0x0(0)
+	0203b383	LD              t2_rip, t2_rip, 0x20(32)
+	0006b603	LD              a2, a3, 0x0(0)
+	00038593	ADDI            a1, t2_rip, 0x0(0)
+	000600e7	JALR            ra, a2, 0x0(0)
+---- END OF BLOCK ---- (2)
+[01;36m227481|Emitting 80 bytes for 11 x64 bytes[m
+[4;32mNew instruction 0, native=0x3fbcfedca0 (0x0)[m
+New Instruction x64:0x100001120, native:0x3fbcfedca0
+[01;33m0x100001120: F3 0F 1E FA  NOP / ENDBR32 / ENDBR64[m
+[32m0x3fbcfedca0: 0 emitted opcodes, inst=0, barrier=0 state=0/0(0), set=0/0, use=0, need=80/80, sm=0/0, sew@entry=7, sew@exit=7, last_ip=0x100001120[m
+[4;32mNew instruction 1, native=0x3fbcfedca0 (0x0)[m
+New Instruction x64:0x100001124, native:0x3fbcfedca0
+[01;33m0x100001124: F2 FF 25 8D 5E 00 00  JMP Ed[m
+[32m0x3fbcfedca0: 20 emitted opcodes, inst=1, barrier=2 state=0/0(0), set=0/0, use=80, need=80/0, sm=0/0, sew@entry=7, sew@exit=7, pred=0, last_ip=0x100001120[m
+	00006637	LUI             a2, 0x6(6)
+	e986061b	ADDIW           a2, a2, 0xfffffe98(-360)
+	00760633	ADD             a2, a2, t2_rip
+	00063583	LD              a1, a2, 0x0(0)
+Jump to next
+	00058393	ADDI            t2_rip, a1, 0x0(0)
+  Table64: 0x359c2628
+	00000697	AUIPC           a3, 0x0(0)
+	03c6b683	LD              a3, a3, 0x3c(60)
+	fee3b60b	TH.EXTU         a2, t2_rip, 0x3f(63), 0x2e(46)
+	06c6968b	TH.ADDSL        a3, a3, a2, 0x3(3)
+	0006b683	LD              a3, a3, 0x0(0)
+	b5c3b60b	TH.EXTU         a2, t2_rip, 0x2d(45), 0x1c(28)
+	06c6968b	TH.ADDSL        a3, a3, a2, 0x3(3)
+	0006b683	LD              a3, a3, 0x0(0)
+	6ca3b60b	TH.EXTU         a2, t2_rip, 0x1b(27), 0xa(10)
+	06c6968b	TH.ADDSL        a3, a3, a2, 0x3(3)
+	0006b683	LD              a3, a3, 0x0(0)
+	2403b60b	TH.EXTU         a2, t2_rip, 0x9(9), 0x0(0)
+	06c6968b	TH.ADDSL        a3, a3, a2, 0x3(3)
+	0006b603	LD              a2, a3, 0x0(0)
+	000600e7	JALR            ra, a2, 0x0(0)
+---- END OF BLOCK ---- (2)
+[01;36m227481|Emitting 268 bytes for 20 x64 bytes ( => box64:malloc)[m
+[4;32mNew instruction 0, native=0x3fbcfedd30 (0x0)[m
+New Instruction x64:0x20120, native:0x3fbcfedd30
+[01;33m0x20120: Native call to 0x34e02964[m
+[32m0x3fbcfedd30: 43 emitted opcodes, inst=0, barrier=2 state=17/1(0), set=3F/3F, use=0, need=0/3F, sm=0/0, sew@entry=7, sew@exit=7, last_ip=0x20120[m
+Native Call to malloc(/home/ICT-02-02/test/coremark.exe)
+	00138393	ADDI            t2_rip, t2_rip, 0x1(1)
+	02050693	ADDI            a3, a0, 0x20(32)
+	fb35590b	TH.SDD          s2_rdx, s3_rbx, a0, 0x1(1)
+	f956da0b	TH.SDD          s4_rsp, s5_rbp, a3, 0x0(0)
+	fb76db0b	TH.SDD          s6_rsi, s7_rdi, a3, 0x1(1)
+	fd96dc0b	TH.SDD          s8_r8, s9_r9, a3, 0x2(2)
+	ffb6dd0b	TH.SDD          s10_r10, s11_r11, a3, 0x3(3)
+	08850593	ADDI            a1, a0, 0x88(136)
+	ff010113	ADDI            sp, sp, 0xfffffff0(-16)
+	00a13023	SD              a0, sp, 0x0(0)
+	00613423	SD              t1, sp, 0x8(8)
+	01053023	SD              a6_rax, a0, 0x0(0)
+	01153423	SD              a7_rcx, a0, 0x8(8)
+	01253823	SD              s2_rdx, a0, 0x10(16)
+	07c53023	SD              t3_r12, a0, 0x60(96)
+	07d53423	SD              t4_r13, a0, 0x68(104)
+	07e53823	SD              t5_r14, a0, 0x70(112)
+	07f53c23	SD              t6_r15, a0, 0x78(120)
+	08753423	SD              t2_rip, a0, 0x88(136)
+  Table64: 0x34ddf2ec
+	00000317	AUIPC           t1, 0x0(0)
+	0c433303	LD              t1, t1, 0xc4(196)
+	000300e7	JALR            ra, t1, 0x0(0)
+	00013503	LD              a0, sp, 0x0(0)
+	00813303	LD              t1, sp, 0x8(8)
+	01010113	ADDI            sp, sp, 0x10(16)
+	00053803	LD              a6_rax, a0, 0x0(0)
+	00853883	LD              a7_rcx, a0, 0x8(8)
+	01053903	LD              s2_rdx, a0, 0x10(16)
+	06053e03	LD              t3_r12, a0, 0x60(96)
+	06853e83	LD              t4_r13, a0, 0x68(104)
+	07053f03	LD              t5_r14, a0, 0x70(112)
+	07853f83	LD              t6_r15, a0, 0x78(120)
+	08853383	LD              t2_rip, a0, 0x88(136)
+	fff04293	XORI            t0_mask, zero, 0xffffffff(-1)
+	0202d293	SRLI            t0_mask, t0_mask, 0x20(32)
+  Table64: 0x20133
+	00000697	AUIPC           a3, 0x0(0)
+	08c6b683	LD              a3, a3, 0x8c(140)
+	00d39663	BNE             t2_rip, a3, 0xc(12)
+	57852583	LW              a1, a0, 0x578(1400)
+	00058863	BEQ             a1, zero, 0x10(16)
+Jump to epilog_fast
+  Table64: 0x3531484a
+	00000617	AUIPC           a2, 0x0(0)
+	08063603	LD              a2, a2, 0x80(128)
+	00060067	JALR            zero, a2, 0x0(0)
+[4;32mNew instruction 1, native=0x3fbcfedddc (0xac)[m
+New Instruction x64:0x20133, native:0x3fbcfedddc
+[01;33m0x20133: C3  RET[m
+[32m0x3fbcfedddc: 24 emitted opcodes, inst=1, barrier=0 state=0/1(0), set=0/0, use=80, need=80/0, sm=0/0, sew@entry=7, sew@exit=7, pred=0[m
+Ret to epilog
+	000a3383	LD              t2_rip, s4_rsp, 0x0(0)
+	008a0a13	ADDI            s4_rsp, s4_rsp, 0x8(8)
+	00038593	ADDI            a1, t2_rip, 0x0(0)
+	359c26b7	LUI             a3, 0x359c2(219586)
+	6286869b	ADDIW           a3, a3, 0x628(1576)
+	02e3d613	SRLI            a2, t2_rip, 0x2e(46)
+	00361613	SLLI            a2, a2, 0x3(3)
+	00c686b3	ADD             a3, a3, a2
+	0006b683	LD              a3, a3, 0x0(0)
+	00200737	LUI             a4, 0x200(512)
+	ff87071b	ADDIW           a4, a4, 0xfffffff8(-8)
+	0193d613	SRLI            a2, t2_rip, 0x19(25)
+	00e67633	AND             a2, a2, a4
+	00c686b3	ADD             a3, a3, a2
+	0006b683	LD              a3, a3, 0x0(0)
+	0073d613	SRLI            a2, t2_rip, 0x7(7)
+	00e67633	AND             a2, a2, a4
+	00c686b3	ADD             a3, a3, a2
+	0006b683	LD              a3, a3, 0x0(0)
+	3ff3f613	ANDI            a2, t2_rip, 0x3ff(1023)
+	00361613	SLLI            a2, a2, 0x3(3)
+	00c686b3	ADD             a3, a3, a2
+	0006b603	LD              a2, a3, 0x0(0)
+	000600e7	JALR            ra, a2, 0x0(0)
+---- END OF BLOCK ---- (2)
+227481|0x100001285: Calling malloc(0x7D0, 0x1, 0x7D0, ...) => return 0x626C7460
+Forward extend block for 9 bytes 0x100001305 -> 0x10000130e (ninst 32 - 38)
+New x87stack=0
+Extend block 0x3fee1839c0, 0x100001330 -> 0x100001330 (ninst=47, jump from -2)
+Could not forward extend block for 76 bytes 0x10000135a -> 0x1000013a6
+[01;36m227481|Emitting 888 bytes for 213 x64 bytes ( => /home/ICT-02-02/test/coremark.exe:main + 0x135)[m
+[4;32mNew instruction 0, native=0x3fbcfede90 (0x0)[m
+New Instruction x64:0x100001285, native:0x3fbcfede90
+[01;33m0x100001285: 8B 74 24 50  MOV Gd, Ed[m
+[32m0x3fbcfede90: 1 emitted opcodes, inst=0, barrier=0 state=0/0(0), set=0/0, use=0, need=0/0, sm=0/0, sew@entry=7, sew@exit=7, last_ip=0x100001285[m
+	050a6b03	LWU             s6_rsi, s4_rsp, 0x50(80)
+[4;32mNew instruction 1, native=0x3fbcfede94 (0x4)[m
+New Instruction x64:0x100001289, native:0x3fbcfede94
+[01;33m0x100001289: 48 89 44 24 28  MOV Ed, Gd[m
+[32m0x3fbcfede94: 1 emitted opcodes, inst=1, barrier=0 state=0/0(0), set=0/0, use=0, need=0/0, sm=0/0, sew@entry=7, sew@exit=7, pred=0, last_ip=0x100001285[m
+	030a3423	SD              a6_rax, s4_rsp, 0x28(40)
+[4;32mNew instruction 2, native=0x3fbcfede98 (0x8)[m
+New Instruction x64:0x10000128e, native:0x3fbcfede98
+[01;33m0x10000128e: 48 89 C7  MOV Ed, Gd[m
+[32m0x3fbcfede98: 1 emitted opcodes, inst=2, barrier=0 state=0/0(0), set=0/0, use=0, need=0/0, sm=0/1, sew@entry=7, sew@exit=7, pred=1, last_ip=0x100001285[m
+	00080b93	ADDI            s7_rdi, a6_rax, 0x0(0)
+[4;32mNew instruction 3, native=0x3fbcfede9c (0xc)[m
+New Instruction x64:0x100001291, native:0x3fbcfede9c
+[01;33m0x100001291: 31 C0  XOR Ed, Gd[m
+[32m0x3fbcfede9c: 1 emitted opcodes, inst=3, barrier=0 state=3/0(0), set=3F/0, use=0, need=0/0, sm=0/1, sew@entry=7, sew@exit=7, pred=2, last_ip=0x100001285[m
+	01084833	XOR             a6_rax, a6_rax, a6_rax
+[4;32mNew instruction 4, native=0x3fbcfedea0 (0x10)[m
+New Instruction x64:0x100001293, native:0x3fbcfedea0
+[01;33m0x100001293: 66 89 84 24 88 00 00 00  MOV Ew, Gw[m
+[32m0x3fbcfedea0: 1 emitted opcodes, inst=4, barrier=0 state=0/1(0), set=0/0, use=0, need=0/0, sm=0/1, sew@entry=7, sew@exit=7, pred=3, last_ip=0x100001285[m
+	090a1423	SH              a6_rax, s4_rsp, 0x88(136)
+[4;32mNew instruction 5, native=0x3fbcfedea4 (0x14)[m
+New Instruction x64:0x10000129b, native:0x3fbcfedea4
+[01;33m0x10000129b: 41 89 F0  MOV Ed, Gd[m
+[32m0x3fbcfedea4: 1 emitted opcodes, inst=5, barrier=0 state=0/1(0), set=0/0, use=0, need=0/0, sm=0/1, sew@entry=7, sew@exit=7, pred=4, last_ip=0x100001285[m
+	005b7c33	AND             s8_r8, s6_rsi, t0_mask
+[4;32mNew instruction 6, native=0x3fbcfedea8 (0x18)[m
+New Instruction x64:0x10000129e, native:0x3fbcfedea8
+[01;33m0x10000129e: 89 F0  MOV Ed, Gd[m
+[32m0x3fbcfedea8: 1 emitted opcodes, inst=6, barrier=0 state=0/1(0), set=0/0, use=0, need=0/0, sm=0/1, sew@entry=7, sew@exit=7, pred=5, last_ip=0x100001285[m
+	005b7833	AND             a6_rax, s6_rsi, t0_mask
+[4;32mNew instruction 7, native=0x3fbcfedeac (0x1c)[m
+New Instruction x64:0x1000012a0, native:0x3fbcfedeac
+[01;33m0x1000012a0: 89 F2  MOV Ed, Gd[m
+[32m0x3fbcfedeac: 1 emitted opcodes, inst=7, barrier=0 state=0/1(0), set=0/0, use=0, need=0/0, sm=0/1, sew@entry=7, sew@exit=7, pred=6, last_ip=0x100001285[m
+	005b7933	AND             s2_rdx, s6_rsi, t0_mask
+[4;32mNew instruction 8, native=0x3fbcfedeb0 (0x20)[m
+New Instruction x64:0x1000012a2, native:0x3fbcfedeb0
+[01;33m0x1000012a2: 41 83 E0 01  AND Ed, Ib[m
+[32m0x3fbcfedeb0: 2 emitted opcodes, inst=8, barrier=0 state=3/1(0), set=3F/0, use=0, need=0/0, sm=0/1, sew@entry=7, sew@exit=7, pred=7, last_ip=0x100001285[m
+	001c7c13	ANDI            s8_r8, s8_r8, 0x1(1)
+	005c7c33	AND             s8_r8, s8_r8, t0_mask
+[4;32mNew instruction 9, native=0x3fbcfedeb8 (0x28)[m
+New Instruction x64:0x1000012a6, native:0x3fbcfedeb8
+[01;33m0x1000012a6: 83 E0 02  AND Ed, Ib[m
+[32m0x3fbcfedeb8: 2 emitted opcodes, inst=9, barrier=0 state=3/1(0), set=3F/0, use=0, need=0/0, sm=0/1, sew@entry=7, sew@exit=7, pred=8, last_ip=0x100001285[m
+	00287813	ANDI            a6_rax, a6_rax, 0x2(2)
+	00587833	AND             a6_rax, a6_rax, t0_mask
+[4;32mNew instruction 10, native=0x3fbcfedec0 (0x30)[m
+New Instruction x64:0x1000012a9, native:0x3fbcfedec0
+[01;33m0x1000012a9: 83 F8 01  CMP Ed, Ib[m
+[32m0x3fbcfedec0: 14 emitted opcodes, inst=10, barrier=0 state=3/1(0), set=3F/1, use=0, need=0/1, sm=0/1, sew@entry=7, sew@exit=7, pred=9, last_ip=0x100001285[m
+	0010061b	ADDIW           a2, zero, 0x1(1)
+	f0a47413	ANDI            s0_flags, s0_flags, 0xffffff0a(-246)
+	44052a23	SW              zero, a0, 0x454(1108)
+	fff84793	XORI            a5, a6_rax, 0xffffffff(-1)
+	40c8033b	SUBW            t1, a6_rax, a2
+	00537333	AND             t1, t1, t0_mask
+	00c7e6b3	OR              a3, a5, a2
+	00d37733	AND             a4, t1, a3
+	00c7f7b3	AND             a5, a5, a2
+	00f76733	OR              a4, a4, a5
+	01f75693	SRLI            a3, a4, 0x1f(31)
+	0016f693	ANDI            a3, a3, 0x1(1)
+	00068463	BEQ             a3, zero, 0x8(8)
+	00146413	ORI             s0_flags, s0_flags, 0x1(1)
+[4;32mNew instruction 11, native=0x3fbcfedef8 (0x68)[m
+New Instruction x64:0x1000012ac, native:0x3fbcfedef8
+[01;33m0x1000012ac: 44 89 C0  MOV Ed, Gd[m
+[32m0x3fbcfedef8: 1 emitted opcodes, inst=11, barrier=0 state=0/1(1), set=0/0, use=0, need=1/1, sm=0/1, sew@entry=7, sew@exit=7, pred=10, last_ip=0x100001285[m
+	005c7833	AND             a6_rax, s8_r8, t0_mask
+[4;32mNew instruction 12, native=0x3fbcfedefc (0x6c)[m
+New Instruction x64:0x1000012af, native:0x3fbcfedefc
+[01;33m0x1000012af: 66 83 D8 FF  SBB Ew, Ib[m
+[32m0x3fbcfedefc: 12 emitted opcodes, inst=12, barrier=0 state=3/1(1), set=3F/0, use=1, need=1/0, sm=0/1, sew@entry=7, sew@exit=7, pred=11, last_ip=0x100001285[m
+	03081593	SLLI            a1, a6_rax, 0x30(48)
+	0305d593	SRLI            a1, a1, 0x30(48)
+	000107b7	LUI             a5, 0x10(16)
+	fff7879b	ADDIW           a5, a5, 0xffffffff(-1)
+	40f585bb	SUBW            a1, a1, a5
+	00147613	ANDI            a2, s0_flags, 0x1(1)
+	40c585bb	SUBW            a1, a1, a2
+	0105959b	SLLIW           a1, a1, 0x10(16)
+	0105d59b	SRLIW           a1, a1, 0x10(16)
+	01085813	SRLI            a6_rax, a6_rax, 0x10(16)
+	01081813	SLLI            a6_rax, a6_rax, 0x10(16)
+	00b86833	OR              a6_rax, a6_rax, a1
+[4;32mNew instruction 13, native=0x3fbcfedf2c (0x9c)[m
+New Instruction x64:0x1000012b3, native:0x3fbcfedf2c
+[01;33m0x1000012b3: 83 E2 04  AND Ed, Ib[m
+[32m0x3fbcfedf2c: 2 emitted opcodes, inst=13, barrier=0 state=3/1(1), set=3F/0, use=0, need=0/0, sm=0/1, sew@entry=7, sew@exit=7, pred=12, last_ip=0x100001285[m
+	00497913	ANDI            s2_rdx, s2_rdx, 0x4(4)
+	00597933	AND             s2_rdx, s2_rdx, t0_mask
+[4;32mNew instruction 14, native=0x3fbcfedf34 (0xa4)[m
+New Instruction x64:0x1000012b6, native:0x3fbcfedf34
+[01;33m0x1000012b6: 83 FA 01  CMP Ed, Ib[m
+[32m0x3fbcfedf34: 13 emitted opcodes, inst=14, barrier=0 state=3/1(1), set=3F/1, use=0, need=0/1, sm=0/1, sew@entry=7, sew@exit=7, pred=13, last_ip=0x100001285[m
+	0010061b	ADDIW           a2, zero, 0x1(1)
+	f0a47413	ANDI            s0_flags, s0_flags, 0xffffff0a(-246)
+	fff94793	XORI            a5, s2_rdx, 0xffffffff(-1)
+	40c9033b	SUBW            t1, s2_rdx, a2
+	00537333	AND             t1, t1, t0_mask
+	00c7e6b3	OR              a3, a5, a2
+	00d37733	AND             a4, t1, a3
+	00c7f7b3	AND             a5, a5, a2
+	00f76733	OR              a4, a4, a5
+	01f75693	SRLI            a3, a4, 0x1f(31)
+	0016f693	ANDI            a3, a3, 0x1(1)
+	00068463	BEQ             a3, zero, 0x8(8)
+	00146413	ORI             s0_flags, s0_flags, 0x1(1)
+[4;32mNew instruction 15, native=0x3fbcfedf68 (0xd8)[m
+New Instruction x64:0x1000012b9, native:0x3fbcfedf68
+[01;33m0x1000012b9: 66 83 D8 FF  SBB Ew, Ib[m
+[32m0x3fbcfedf68: 12 emitted opcodes, inst=15, barrier=0 state=3/1(1), set=3F/0, use=1, need=1/0, sm=0/1, sew@entry=7, sew@exit=7, pred=14, last_ip=0x100001285[m
+	03081593	SLLI            a1, a6_rax, 0x30(48)
+	0305d593	SRLI            a1, a1, 0x30(48)
+	000107b7	LUI             a5, 0x10(16)
+	fff7879b	ADDIW           a5, a5, 0xffffffff(-1)
+	40f585bb	SUBW            a1, a1, a5
+	00147613	ANDI            a2, s0_flags, 0x1(1)
+	40c585bb	SUBW            a1, a1, a2
+	0105959b	SLLIW           a1, a1, 0x10(16)
+	0105d59b	SRLIW           a1, a1, 0x10(16)
+	01085813	SRLI            a6_rax, a6_rax, 0x10(16)
+	01081813	SLLI            a6_rax, a6_rax, 0x10(16)
+	00b86833	OR              a6_rax, a6_rax, a1
+[4;32mNew instruction 16, native=0x3fbcfedf98 (0x108)[m
+New Instruction x64:0x1000012bd, native:0x3fbcfedf98
+[01;33m0x1000012bd: 31 D2  XOR Ed, Gd[m
+[32m0x3fbcfedf98: 1 emitted opcodes, inst=16, barrier=0 state=3/1(1), set=3F/0, use=0, need=0/0, sm=0/1, sew@entry=7, sew@exit=7, pred=15, last_ip=0x100001285[m
+	01294933	XOR             s2_rdx, s2_rdx, s2_rdx
+[4;32mNew instruction 17, native=0x3fbcfedf9c (0x10c)[m
+New Instruction x64:0x1000012bf, native:0x3fbcfedf9c
+[01;33m0x1000012bf: 45 31 C9  XOR Ed, Gd[m
+[32m0x3fbcfedf9c: 1 emitted opcodes, inst=17, barrier=0 state=3/1(1), set=3F/0, use=0, need=0/0, sm=0/1, sew@entry=7, sew@exit=7, pred=16, last_ip=0x100001285[m
+	019cccb3	XOR             s9_r9, s9_r9, s9_r9
+[4;32mNew instruction 18, native=0x3fbcfedfa0 (0x110)[m
+New Instruction x64:0x1000012c2, native:0x3fbcfedfa0
+[01;33m0x1000012c2: 0F B7 C8  MOVZX Gd, Ew[m
+[32m0x3fbcfedfa0: 2 emitted opcodes, inst=18, barrier=0 state=0/1(1), set=0/0, use=0, need=0/0, sm=0/1, sew@entry=7, sew@exit=7, pred=17, last_ip=0x100001285[m
+	03081893	SLLI            a7_rcx, a6_rax, 0x30(48)
+	0308d893	SRLI            a7_rcx, a7_rcx, 0x30(48)
+[4;32mNew instruction 19, native=0x3fbcfedfa8 (0x118)[m
+New Instruction x64:0x1000012c5, native:0x3fbcfedfa8
+[01;33m0x1000012c5: 8B 44 24 48  MOV Gd, Ed[m
+[32m0x3fbcfedfa8: 1 emitted opcodes, inst=19, barrier=0 state=0/1(1), set=0/0, use=0, need=0/0, sm=0/1, sew@entry=7, sew@exit=7, pred=18, last_ip=0x100001285[m
+	048a6803	LWU             a6_rax, s4_rsp, 0x48(72)
+[4;32mNew instruction 20, native=0x3fbcfedfac (0x11c)[m
+New Instruction x64:0x1000012c9, native:0x3fbcfedfac
+[01;33m0x1000012c9: F7 F1  DIV Ed[m
+[32m0x3fbcfedfac: 8 emitted opcodes, inst=20, barrier=0 state=1/1(1), set=3F/0, use=0, need=0/0, sm=0/1, sew@entry=7, sew@exit=7, pred=19, last_ip=0x100001285[m
+	02091693	SLLI            a3, s2_rdx, 0x20(32)
+	00587633	AND             a2, a6_rax, t0_mask
+	00c6e6b3	OR              a3, a3, a2
+	0058f733	AND             a4, a7_rcx, t0_mask
+	02e6d633	DIVU            a2, a3, a4
+	02e6f933	REMU            s2_rdx, a3, a4
+	00567833	AND             a6_rax, a2, t0_mask
+	00597933	AND             s2_rdx, s2_rdx, t0_mask
+[4;32mNew instruction 21, native=0x3fbcfedfcc (0x13c)[m
+New Instruction x64:0x1000012cb, native:0x3fbcfedfcc
+[01;33m0x1000012cb: 31 C9  XOR Ed, Gd[m
+[32m0x3fbcfedfcc: 1 emitted opcodes, inst=21, barrier=0 state=3/1(1), set=3F/0, use=0, need=0/0, sm=0/1, sew@entry=7, sew@exit=7, pred=20, last_ip=0x100001285[m
+	0118c8b3	XOR             a7_rcx, a7_rcx, a7_rcx
+[4;32mNew instruction 22, native=0x3fbcfedfd0 (0x140)[m
+New Instruction x64:0x1000012cd, native:0x3fbcfedfd0
+[01;33m0x1000012cd: BA 01 00 00 00  MOV Reg, Id[m
+[32m0x3fbcfedfd0: 1 emitted opcodes, inst=22, barrier=0 state=0/1(1), set=0/0, use=0, need=0/0, sm=0/1, sew@entry=7, sew@exit=7, pred=21, last_ip=0x100001285[m
+	0010091b	ADDIW           s2_rdx, zero, 0x1(1)
+[4;32mNew instruction 23, native=0x3fbcfedfd4 (0x144)[m
+New Instruction x64:0x1000012d2, native:0x3fbcfedfd4
+[01;33m0x1000012d2: 89 44 24 48  MOV Ed, Gd[m
+[32m0x3fbcfedfd4: 1 emitted opcodes, inst=23, barrier=0 state=0/1(1), set=0/0, use=0, need=0/0, sm=0/1, sew@entry=7, sew@exit=7, pred=22, last_ip=0x100001285[m
+	050a2423	SW              a6_rax, s4_rsp, 0x48(72)
+[4;32mNew instruction 24, native=0x3fbcfedfd8 (0x148)[m
+New Instruction x64:0x1000012d6, native:0x3fbcfedfd8
+[01;33m0x1000012d6: 41 89 D2  MOV Ed, Gd[m
+[32m0x3fbcfedfd8: 1 emitted opcodes, inst=24, barrier=0 state=0/1(1), set=0/0, use=0, need=0/0, sm=0/0, sew@entry=7, sew@exit=7, pred=23/30[m
+	00597d33	AND             s10_r10, s2_rdx, t0_mask
+[4;32mNew instruction 25, native=0x3fbcfedfdc (0x14c)[m
+New Instruction x64:0x1000012d9, native:0x3fbcfedfdc
+[01;33m0x1000012d9: 41 D3 E2  SHL Ed, CL[m
+[32m0x3fbcfedfdc: 5 emitted opcodes, inst=25, barrier=0 state=3/1(1), set=3F/0, use=0, need=0/0, sm=0/0, sew@entry=7, sew@exit=7, pred=24[m
+	01f8f693	ANDI            a3, a7_rcx, 0x1f(31)
+	005d7d33	AND             s10_r10, s10_r10, t0_mask
+	00068663	BEQ             a3, zero, 0xc(12)
+	00dd1d3b	SLLW            s10_r10, s10_r10, a3
+	005d7d33	AND             s10_r10, s10_r10, t0_mask
+[4;32mNew instruction 26, native=0x3fbcfedff0 (0x160)[m
+New Instruction x64:0x1000012dc, native:0x3fbcfedff0
+[01;33m0x1000012dc: 41 85 F2  TEST Ed, Gd[m
+[32m0x3fbcfedff0: 8 emitted opcodes, inst=26, barrier=0 state=3/1(1), set=3F/88, use=0, need=0/88, sm=0/0, sew@entry=7, sew@exit=7, pred=25[m
+	f0a47413	ANDI            s0_flags, s0_flags, 0xffffff0a(-246)
+	03c00693	ADDI            a3, zero, 0x3c(60)
+	44d52a23	SW              a3, a0, 0x454(1108)
+	016d76b3	AND             a3, s10_r10, s6_rsi
+	46d52423	SW              a3, a0, 0x468(1128)
+	0056f6b3	AND             a3, a3, t0_mask
+	00069463	BNE             a3, zero, 0x8(8)
+	04046413	ORI             s0_flags, s0_flags, 0x40(64)
+[4;32mNew instruction 27, native=0x3fbcfee010 (0x180)[m
+New Instruction x64:0x1000012df, native:0x3fbcfee010
+[01;33m0x1000012df: 0F 85 3B 03 00 00  JNZ Id[m
+[32m0x3fbcfee010: 10 emitted opcodes, inst=27, barrier=0 state=0/3(0), set=0/0, use=8, need=88/80, sm=0/0, sew@entry=7, sew@exit=7, pred=26, jmp=out[m
+	04047593	ANDI            a1, s0_flags, 0x40(64)
+	02059263	BNE             a1, zero, 0x24(36)
+	00000013	ADDI            zero, zero, 0x0(0)
+Jump to next
+  Table64: 0x3fbc9cb108
+	00000697	AUIPC           a3, 0x0(0)
+	1ec6b683	LD              a3, a3, 0x1ec(492)
+  Table64: 0x100001620
+	00000397	AUIPC           t2_rip, 0x0(0)
+	1ec3b383	LD              t2_rip, t2_rip, 0x1ec(492)
+	0006b603	LD              a2, a3, 0x0(0)
+	00038593	ADDI            a1, t2_rip, 0x0(0)
+	000600e7	JALR            ra, a2, 0x0(0)
+[4;32mNew instruction 28, native=0x3fbcfee038 (0x1a8)[m
+New Instruction x64:0x1000012e5, native:0x3fbcfee038
+[01;33m0x1000012e5: 48 83 C1 01  ADD Ed, Ib[m
+[32m0x3fbcfee038: 1 emitted opcodes, inst=28, barrier=0 state=3/3(0), set=3F/0, use=0, need=0/0, sm=0/0, sew@entry=7, sew@exit=7, pred=27[m
+	00188893	ADDI            a7_rcx, a7_rcx, 0x1(1)
+[4;32mNew instruction 29, native=0x3fbcfee03c (0x1ac)[m
+New Instruction x64:0x1000012e9, native:0x3fbcfee03c
+[01;33m0x1000012e9: 48 83 F9 03  CMP Ed, Ib[m
+[32m0x3fbcfee03c: 6 emitted opcodes, inst=29, barrier=0 state=3/1(0), set=3F/8, use=0, need=0/8, sm=0/0, sew@entry=7, sew@exit=7, pred=28[m
+	0030061b	ADDIW           a2, zero, 0x3(3)
+	f0a47413	ANDI            s0_flags, s0_flags, 0xffffff0a(-246)
+	44052a23	SW              zero, a0, 0x454(1108)
+	40c88333	SUB             t1, a7_rcx, a2
+	00031463	BNE             t1, zero, 0x8(8)
+	04046413	ORI             s0_flags, s0_flags, 0x40(64)
+[4;32mNew instruction 30, native=0x3fbcfee054 (0x1c4)[m
+New Instruction x64:0x1000012ed, native:0x3fbcfee054
+[01;33m0x1000012ed: 75 E7  JNZ ib[m
+[32m0x3fbcfee054: 3 emitted opcodes, inst=30, barrier=0 state=0/1(1), set=0/0, use=8, need=8/0, sm=0/0, sew@entry=7, sew@exit=7, pred=29, jmp=24[m
+	04047593	ANDI            a1, s0_flags, 0x40(64)
+	f80580e3	BEQ             a1, zero, 0xffffff80(-128)
+	00000013	ADDI            zero, zero, 0x0(0)
+[4;32mNew instruction 31, native=0x3fbcfee060 (0x1d0)[m
+New Instruction x64:0x1000012ef, native:0x3fbcfee060
+[01;33m0x1000012ef: 45 85 C0  TEST Ed, Gd[m
+[32m0x3fbcfee060: 5 emitted opcodes, inst=31, barrier=0 state=3/1(1), set=3F/8, use=0, need=0/8, sm=0/0, sew@entry=7, sew@exit=7, pred=30[m
+	f0a47413	ANDI            s0_flags, s0_flags, 0xffffff0a(-246)
+	018c76b3	AND             a3, s8_r8, s8_r8
+	0056f6b3	AND             a3, a3, t0_mask
+	00069463	BNE             a3, zero, 0x8(8)
+	04046413	ORI             s0_flags, s0_flags, 0x40(64)
+[4;32mNew instruction 32, native=0x3fbcfee074 (0x1e4)[m
+New Instruction x64:0x1000012f2, native:0x3fbcfee074
+[01;33m0x1000012f2: 74 1A  JZ ib[m
+[32m0x3fbcfee074: 3 emitted opcodes, inst=32, barrier=0 state=0/1(1), set=0/0, use=8, need=8/0, sm=0/0, sew@entry=7, sew@exit=7, pred=31, jmp=39[m
+	04047593	ANDI            a1, s0_flags, 0x40(64)
+	04059263	BNE             a1, zero, 0x44(68)
+	00000013	ADDI            zero, zero, 0x0(0)
+[4;32mNew instruction 33, native=0x3fbcfee080 (0x1f0)[m
+New Instruction x64:0x1000012f4, native:0x3fbcfee080
+[01;33m0x1000012f4: 48 8B 74 24 30  MOV Gd, Ed[m
+[32m0x3fbcfee080: 1 emitted opcodes, inst=33, barrier=0 state=0/1(1), set=0/0, use=0, need=0/0, sm=0/0, sew@entry=7, sew@exit=7, pred=32[m
+	030a3b03	LD              s6_rsi, s4_rsp, 0x30(48)
+[4;32mNew instruction 34, native=0x3fbcfee084 (0x1f4)[m
+New Instruction x64:0x1000012f9, native:0x3fbcfee084
+[01;33m0x1000012f9: 0F BF 54 24 20  MOVSX Gd, Ew[m
+[32m0x3fbcfee084: 2 emitted opcodes, inst=34, barrier=0 state=0/1(1), set=0/0, use=0, need=0/0, sm=0/0, sew@entry=7, sew@exit=7, pred=33[m
+	020a1903	LH              s2_rdx, s4_rsp, 0x20(32)
+	00597933	AND             s2_rdx, s2_rdx, t0_mask
+[4;32mNew instruction 35, native=0x3fbcfee08c (0x1fc)[m
+New Instruction x64:0x1000012fe, native:0x3fbcfee08c
+[01;33m0x1000012fe: 89 C7  MOV Ed, Gd[m
+[32m0x3fbcfee08c: 1 emitted opcodes, inst=35, barrier=0 state=0/1(1), set=0/0, use=0, need=0/0, sm=1/0, sew@entry=7, sew@exit=7, pred=34[m
+	00587bb3	AND             s7_rdi, a6_rax, t0_mask
+[4;32mNew instruction 36, native=0x3fbcfee090 (0x200)[m
+New Instruction x64:0x100001300, native:0x3fbcfee090
+[01;33m0x100001300: E8 FB 0E 00 00  CALL Id (=> /home/ICT-02-02/test/coremark.exe:core_list_init)[m
+[32m0x3fbcfee090: 11 emitted opcodes, inst=36, barrier=0 state=17/1(1), set=3F/0, use=0, need=0/0, sm=1/0, sew@entry=7, sew@exit=7, pred=35[m
+  Table64: 0x100001305
+	00000617	AUIPC           a2, 0x0(0)
+	18863603	LD              a2, a2, 0x188(392)
+	feca3c23	SD              a2, s4_rsp, 0xfffffff8(-8)
+	ff8a0a13	ADDI            s4_rsp, s4_rsp, 0xfffffff8(-8)
+Jump to next
+  Table64: 0x3fbc9e5030
+	00000697	AUIPC           a3, 0x0(0)
+	1806b683	LD              a3, a3, 0x180(384)
+  Table64: 0x100002200
+	00000397	AUIPC           t2_rip, 0x0(0)
+	1803b383	LD              t2_rip, t2_rip, 0x180(384)
+	0006b603	LD              a2, a3, 0x0(0)
+	00038593	ADDI            a1, t2_rip, 0x0(0)
+	000600e7	JALR            ra, a2, 0x0(0)
+[4;32mNew instruction 37, native=0x3fbcfee0bc (0x22c)[m
+Skipping unused opcode
+[01;33m0x100001305: 8B 74 24 50  Skipped opcode[m
+[32m0x3fbcfee0bc: 0 emitted opcodes, inst=37, barrier=0 state=0/0(0), set=0/0, use=0, need=0/0, sm=0/0, sew@entry=7, sew@exit=7[m
+[4;32mNew instruction 38, native=0x3fbcfee0bc (0x22c)[m
+Skipping unused opcode
+[01;33m0x100001309: 48 89 44 24 58  Skipped opcode[m
+[32m0x3fbcfee0bc: 0 emitted opcodes, inst=38, barrier=0 state=0/0(0), set=0/0, use=0, need=0/0, sm=0/0, sew@entry=7, sew@exit=7[m
+Reset Caches with 32
+[4;32mNew instruction 39, native=0x3fbcfee0bc (0x22c)[m
+New Instruction x64:0x10000130e, native:0x3fbcfee0bc
+[01;33m0x10000130e: 40 F6 C6 02  TEST Eb, Ib[m
+[32m0x3fbcfee0bc: 9 emitted opcodes, inst=39, barrier=0 state=3/1(1), set=3F/88, use=0, need=0/88, sm=0/0, sew@entry=7, sew@exit=7, pred=32[m
+	0ffb7593	ANDI            a1, s6_rsi, 0xff(255)
+	0020061b	ADDIW           a2, zero, 0x2(2)
+	f0a47413	ANDI            s0_flags, s0_flags, 0xffffff0a(-246)
+	03a00313	ADDI            t1, zero, 0x3a(58)
+	44652a23	SW              t1, a0, 0x454(1108)
+	00c5f333	AND             t1, a1, a2
+	46653423	SD              t1, a0, 0x468(1128)
+	00031463	BNE             t1, zero, 0x8(8)
+	04046413	ORI             s0_flags, s0_flags, 0x40(64)
+[4;32mNew instruction 40, native=0x3fbcfee0e0 (0x250)[m
+New Instruction x64:0x100001312, native:0x3fbcfee0e0
+[01;33m0x100001312: 0F 85 70 02 00 00  JNZ Id[m
+[32m0x3fbcfee0e0: 10 emitted opcodes, inst=40, barrier=0 state=0/3(0), set=0/0, use=8, need=88/80, sm=0/0, sew@entry=7, sew@exit=7, pred=39, jmp=out[m
+	04047593	ANDI            a1, s0_flags, 0x40(64)
+	02059263	BNE             a1, zero, 0x24(36)
+	00000013	ADDI            zero, zero, 0x0(0)
+Jump to next
+  Table64: 0x3fbc9cac48
+	00000697	AUIPC           a3, 0x0(0)
+	1446b683	LD              a3, a3, 0x144(324)
+  Table64: 0x100001588
+	00000397	AUIPC           t2_rip, 0x0(0)
+	1443b383	LD              t2_rip, t2_rip, 0x144(324)
+	0006b603	LD              a2, a3, 0x0(0)
+	00038593	ADDI            a1, t2_rip, 0x0(0)
+	000600e7	JALR            ra, a2, 0x0(0)
+[4;32mNew instruction 41, native=0x3fbcfee108 (0x278)[m
+New Instruction x64:0x100001318, native:0x3fbcfee108
+[01;33m0x100001318: 83 E6 04  AND Ed, Ib[m
+[32m0x3fbcfee108: 6 emitted opcodes, inst=41, barrier=0 state=3/3(0), set=3F/8, use=0, need=0/8, sm=0/0, sew@entry=7, sew@exit=7, pred=40[m
+	f0a47413	ANDI            s0_flags, s0_flags, 0xffffff0a(-246)
+	44052a23	SW              zero, a0, 0x454(1108)
+	004b7b13	ANDI            s6_rsi, s6_rsi, 0x4(4)
+	005b7b33	AND             s6_rsi, s6_rsi, t0_mask
+	000b1463	BNE             s6_rsi, zero, 0x8(8)
+	04046413	ORI             s0_flags, s0_flags, 0x40(64)
+[4;32mNew instruction 42, native=0x3fbcfee120 (0x290)[m
+New Instruction x64:0x10000131b, native:0x3fbcfee120
+[01;33m0x10000131b: 74 13  JZ ib[m
+[32m0x3fbcfee120: 3 emitted opcodes, inst=42, barrier=0 state=0/1(1), set=0/0, use=8, need=8/0, sm=0/0, sew@entry=7, sew@exit=7, pred=41, jmp=47[m
+	04047593	ANDI            a1, s0_flags, 0x40(64)
+	04059263	BNE             a1, zero, 0x44(68)
+	00000013	ADDI            zero, zero, 0x0(0)
+[4;32mNew instruction 43, native=0x3fbcfee12c (0x29c)[m
+New Instruction x64:0x10000131d, native:0x3fbcfee12c
+[01;33m0x10000131d: 0F BF 74 24 20  MOVSX Gd, Ew[m
+[32m0x3fbcfee12c: 2 emitted opcodes, inst=43, barrier=0 state=0/1(1), set=0/0, use=0, need=0/0, sm=0/0, sew@entry=7, sew@exit=7, pred=42[m
+	020a1b03	LH              s6_rsi, s4_rsp, 0x20(32)
+	005b7b33	AND             s6_rsi, s6_rsi, t0_mask
+[4;32mNew instruction 44, native=0x3fbcfee134 (0x2a4)[m
+New Instruction x64:0x100001322, native:0x3fbcfee134
+[01;33m0x100001322: 48 8B 54 24 40  MOV Gd, Ed[m
+[32m0x3fbcfee134: 1 emitted opcodes, inst=44, barrier=0 state=0/1(1), set=0/0, use=0, need=0/0, sm=1/0, sew@entry=7, sew@exit=7, pred=43[m
+	040a3903	LD              s2_rdx, s4_rsp, 0x40(64)
+[4;32mNew instruction 45, native=0x3fbcfee138 (0x2a8)[m
+New Instruction x64:0x100001327, native:0x3fbcfee138
+[01;33m0x100001327: 8B 7C 24 48  MOV Gd, Ed[m
+[32m0x3fbcfee138: 1 emitted opcodes, inst=45, barrier=0 state=0/1(1), set=0/0, use=0, need=0/0, sm=1/0, sew@entry=7, sew@exit=7, pred=44[m
+	048a6b83	LWU             s7_rdi, s4_rsp, 0x48(72)
+[4;32mNew instruction 46, native=0x3fbcfee13c (0x2ac)[m
+New Instruction x64:0x10000132b, native:0x3fbcfee13c
+[01;33m0x10000132b: E8 50 18 00 00  CALL Id (=> /home/ICT-02-02/test/coremark.exe:core_init_state)[m
+[32m0x3fbcfee13c: 11 emitted opcodes, inst=46, barrier=0 state=17/1(1), set=3F/0, use=0, need=0/0, sm=1/0, sew@entry=7, sew@exit=7, pred=45[m
+  Table64: 0x100001330
+	00000617	AUIPC           a2, 0x0(0)
+	10463603	LD              a2, a2, 0x104(260)
+	feca3c23	SD              a2, s4_rsp, 0xfffffff8(-8)
+	ff8a0a13	ADDI            s4_rsp, s4_rsp, 0xfffffff8(-8)
+Jump to next
+  Table64: 0x3fbc9e7c38
+	00000697	AUIPC           a3, 0x0(0)
+	0fc6b683	LD              a3, a3, 0xfc(252)
+  Table64: 0x100002b80
+	00000397	AUIPC           t2_rip, 0x0(0)
+	0fc3b383	LD              t2_rip, t2_rip, 0xfc(252)
+	0006b603	LD              a2, a3, 0x0(0)
+	00038593	ADDI            a1, t2_rip, 0x0(0)
+	000600e7	JALR            ra, a2, 0x0(0)
+Reset Caches with 42
+[4;32mNew instruction 47, native=0x3fbcfee168 (0x2d8)[m
+New Instruction x64:0x100001330, native:0x3fbcfee168
+[01;33m0x100001330: 44 8B 44 24 4C  MOV Gd, Ed[m
+[32m0x3fbcfee168: 1 emitted opcodes, inst=47, barrier=0 state=0/1(1), set=0/0, use=0, need=0/0, sm=0/0, sew@entry=7, sew@exit=7, pred=42[m
+	04ca6c03	LWU             s8_r8, s4_rsp, 0x4c(76)
+[4;32mNew instruction 48, native=0x3fbcfee16c (0x2dc)[m
+New Instruction x64:0x100001335, native:0x3fbcfee16c
+[01;33m0x100001335: 45 85 C0  TEST Ed, Gd[m
+[32m0x3fbcfee16c: 8 emitted opcodes, inst=48, barrier=0 state=3/1(1), set=3F/88, use=0, need=0/88, sm=0/0, sew@entry=7, sew@exit=7, pred=47[m
+	f0a47413	ANDI            s0_flags, s0_flags, 0xffffff0a(-246)
+	03c00693	ADDI            a3, zero, 0x3c(60)
+	44d52a23	SW              a3, a0, 0x454(1108)
+	018c76b3	AND             a3, s8_r8, s8_r8
+	46d52423	SW              a3, a0, 0x468(1128)
+	0056f6b3	AND             a3, a3, t0_mask
+	00069463	BNE             a3, zero, 0x8(8)
+	04046413	ORI             s0_flags, s0_flags, 0x40(64)
+[4;32mNew instruction 49, native=0x3fbcfee18c (0x2fc)[m
+New Instruction x64:0x100001338, native:0x3fbcfee18c
+[01;33m0x100001338: 75 6C  JNZ ib[m
+[32m0x3fbcfee18c: 10 emitted opcodes, inst=49, barrier=0 state=0/3(0), set=0/0, use=8, need=88/80, sm=0/0, sew@entry=7, sew@exit=7, pred=48, jmp=out[m
+	04047593	ANDI            a1, s0_flags, 0x40(64)
+	02059263	BNE             a1, zero, 0x24(36)
+	00000013	ADDI            zero, zero, 0x0(0)
+Jump to next
+  Table64: 0x3fbd20e7e0
+	00000697	AUIPC           a3, 0x0(0)
+	0c06b683	LD              a3, a3, 0xc0(192)
+  Table64: 0x1000013a6
+	00000397	AUIPC           t2_rip, 0x0(0)
+	0c03b383	LD              t2_rip, t2_rip, 0xc0(192)
+	0006b603	LD              a2, a3, 0x0(0)
+	00038593	ADDI            a1, t2_rip, 0x0(0)
+	000600e7	JALR            ra, a2, 0x0(0)
+[4;32mNew instruction 50, native=0x3fbcfee1b4 (0x324)[m
+New Instruction x64:0x10000133a, native:0x3fbcfee1b4
+[01;33m0x10000133a: C7 44 24 4C 01 00 00 00  MOV Ed, Id[m
+[32m0x3fbcfee1b4: 3 emitted opcodes, inst=50, barrier=0 state=0/3(0), set=0/0, use=0, need=0/0, sm=0/0, sew@entry=7, sew@exit=7, pred=49[m
+	04ca0613	ADDI            a2, s4_rsp, 0x4c(76)
+	0010069b	ADDIW           a3, zero, 0x1(1)
+	00d62023	SW              a3, a2, 0x0(0)
+[4;32mNew instruction 51, native=0x3fbcfee1c0 (0x330)[m
+New Instruction x64:0x100001342, native:0x3fbcfee1c0
+[01;33m0x100001342: 66 0F 1F 44 00 00  NOP (multibyte)[m
+[32m0x3fbcfee1c0: 0 emitted opcodes, inst=51, barrier=0 state=0/3(0), set=0/0, use=0, need=0/0, sm=0/1, sew@entry=7, sew@exit=7, pred=50[m
+[4;32mNew instruction 52, native=0x3fbcfee1c0 (0x330)[m
+New Instruction x64:0x100001348, native:0x3fbcfee1c0
+[01;33m0x100001348: 8B 44 24 4C  MOV Gd, Ed[m
+[32m0x3fbcfee1c0: 1 emitted opcodes, inst=52, barrier=0 state=0/3(0), set=0/0, use=0, need=0/0, sm=0/1, sew@entry=7, sew@exit=7, pred=51[m
+	04ca6803	LWU             a6_rax, s4_rsp, 0x4c(76)
+[4;32mNew instruction 53, native=0x3fbcfee1c4 (0x334)[m
+New Instruction x64:0x10000134c, native:0x3fbcfee1c4
+[01;33m0x10000134c: 8D 04 80  LEA Gd, Ed[m
+[32m0x3fbcfee1c4: 3 emitted opcodes, inst=53, barrier=0 state=0/3(0), set=0/0, use=0, need=0/0, sm=0/1, sew@entry=7, sew@exit=7, pred=52[m
+	0508160b	TH.ADDSL        a2, a6_rax, a6_rax, 0x2(2)
+	00060813	ADDI            a6_rax, a2, 0x0(0)
+	00587833	AND             a6_rax, a6_rax, t0_mask
+[4;32mNew instruction 54, native=0x3fbcfee1d0 (0x340)[m
+New Instruction x64:0x10000134f, native:0x3fbcfee1d0
+[01;33m0x10000134f: 01 C0  ADD Ed, Gd[m
+[32m0x3fbcfee1d0: 2 emitted opcodes, inst=54, barrier=0 state=3/3(0), set=3F/0, use=0, need=0/0, sm=0/1, sew@entry=7, sew@exit=7, pred=53[m
+	0108083b	ADDW            a6_rax, a6_rax, a6_rax
+	00587833	AND             a6_rax, a6_rax, t0_mask
+[4;32mNew instruction 55, native=0x3fbcfee1d8 (0x348)[m
+New Instruction x64:0x100001351, native:0x3fbcfee1d8
+[01;33m0x100001351: 89 44 24 4C  MOV Ed, Gd[m
+[32m0x3fbcfee1d8: 1 emitted opcodes, inst=55, barrier=0 state=0/1(0), set=0/0, use=0, need=0/0, sm=0/1, sew@entry=7, sew@exit=7, pred=54[m
+	050a2623	SW              a6_rax, s4_rsp, 0x4c(76)
+[4;32mNew instruction 56, native=0x3fbcfee1dc (0x34c)[m
+New Instruction x64:0x100001355, native:0x3fbcfee1dc
+[01;33m0x100001355: E8 96 21 00 00  CALL Id (=> /home/ICT-02-02/test/coremark.exe:start_time)[m
+[32m0x3fbcfee1dc: 11 emitted opcodes, inst=56, barrier=0 state=17/1(0), set=3F/0, use=0, need=0/0, sm=0/1, sew@entry=7, sew@exit=7, pred=55[m
+  Table64: 0x10000135a
+	00000617	AUIPC           a2, 0x0(0)
+	08c63603	LD              a2, a2, 0x8c(140)
+	feca3c23	SD              a2, s4_rsp, 0xfffffff8(-8)
+	ff8a0a13	ADDI            s4_rsp, s4_rsp, 0xfffffff8(-8)
+Jump to next
+  Table64: 0x3fbc9de798
+	00000697	AUIPC           a3, 0x0(0)
+	0846b683	LD              a3, a3, 0x84(132)
+  Table64: 0x1000034f0
+	00000397	AUIPC           t2_rip, 0x0(0)
+	0843b383	LD              t2_rip, t2_rip, 0x84(132)
+	0006b603	LD              a2, a3, 0x0(0)
+	00038593	ADDI            a1, t2_rip, 0x0(0)
+	000600e7	JALR            ra, a2, 0x0(0)
+---- END OF BLOCK ---- (57)
+[01;36m227481|Emitting 84 bytes for 25 x64 bytes ( => /home/ICT-02-02/test/coremark.exe:main + 0x4d0)[m
+[4;32mNew instruction 0, native=0x3fbcfee2f0 (0x0)[m
+New Instruction x64:0x100001620, native:0x3fbcfee2f0
+[01;33m0x100001620: 45 0F B7 D1  MOVZX Gd, Ew[m
+[32m0x3fbcfee2f0: 2 emitted opcodes, inst=0, barrier=0 state=0/0(0), set=0/0, use=0, need=0/0, sm=0/0, sew@entry=7, sew@exit=7, last_ip=0x100001620[m
+	030c9d13	SLLI            s10_r10, s9_r9, 0x30(48)
+	030d5d13	SRLI            s10_r10, s10_r10, 0x30(48)
+[4;32mNew instruction 1, native=0x3fbcfee2f8 (0x8)[m
+New Instruction x64:0x100001624, native:0x3fbcfee2f8
+[01;33m0x100001624: 41 83 C1 01  ADD Ed, Ib[m
+[32m0x3fbcfee2f8: 2 emitted opcodes, inst=1, barrier=0 state=3/0(0), set=3F/0, use=0, need=0/0, sm=0/0, sew@entry=7, sew@exit=7, pred=0, last_ip=0x100001620[m
+	001c8c9b	ADDIW           s9_r9, s9_r9, 0x1(1)
+	005cfcb3	AND             s9_r9, s9_r9, t0_mask
+[4;32mNew instruction 2, native=0x3fbcfee300 (0x10)[m
+New Instruction x64:0x100001628, native:0x3fbcfee300
+[01;33m0x100001628: 44 0F AF D0  IMUL Gd, Ed[m
+[32m0x3fbcfee300: 2 emitted opcodes, inst=2, barrier=0 state=2/1(0), set=3F/0, use=0, need=0/0, sm=0/0, sew@entry=7, sew@exit=7, pred=1, last_ip=0x100001620[m
+	030d0d3b	MULW            s10_r10, s10_r10, a6_rax
+	005d7d33	AND             s10_r10, s10_r10, t0_mask
+[4;32mNew instruction 3, native=0x3fbcfee308 (0x18)[m
+New Instruction x64:0x10000162c, native:0x3fbcfee308
+[01;33m0x10000162c: 49 01 FA  ADD Ed, Gd[m
+[32m0x3fbcfee308: 6 emitted opcodes, inst=3, barrier=0 state=3/1(0), set=3F/80, use=0, need=0/80, sm=0/0, sew@entry=7, sew@exit=7, pred=2, last_ip=0x100001620[m
+	45a53c23	SD              s10_r10, a0, 0x458(1112)
+	47753023	SD              s7_rdi, a0, 0x460(1120)
+	00500693	ADDI            a3, zero, 0x5(5)
+	44d52a23	SW              a3, a0, 0x454(1108)
+	017d0d33	ADD             s10_r10, s10_r10, s7_rdi
+	47a53423	SD              s10_r10, a0, 0x468(1128)
+[4;32mNew instruction 4, native=0x3fbcfee320 (0x30)[m
+New Instruction x64:0x10000162f, native:0x3fbcfee320
+[01;33m0x10000162f: 4C 89 54 CD 10  MOV Ed, Gd[m
+[32m0x3fbcfee320: 2 emitted opcodes, inst=4, barrier=0 state=0/3(0), set=0/0, use=0, need=80/80, sm=0/0, sew@entry=7, sew@exit=7, pred=3, last_ip=0x100001620[m
+	071a960b	TH.ADDSL        a2, s5_rbp, a7_rcx, 0x3(3)
+	01a63823	SD              s10_r10, a2, 0x10(16)
+[4;32mNew instruction 5, native=0x3fbcfee328 (0x38)[m
+New Instruction x64:0x100001634, native:0x3fbcfee328
+[01;33m0x100001634: E9 AC FC FF FF  JMP Id (=> /home/ICT-02-02/test/coremark.exe:main + 0x195)[m
+[32m0x3fbcfee328: 7 emitted opcodes, inst=5, barrier=0 state=0/3(0), set=0/0, use=0, need=80/80, sm=0/1, sew@entry=7, sew@exit=7, pred=4, jmp=out, last_ip=0x100001620[m
+Jump to next
+  Table64: 0x3fbd20e1d8
+	00000697	AUIPC           a3, 0x0(0)
+	0206b683	LD              a3, a3, 0x20(32)
+  Table64: 0x1000012e5
+	00000397	AUIPC           t2_rip, 0x0(0)
+	0203b383	LD              t2_rip, t2_rip, 0x20(32)
+	0006b603	LD              a2, a3, 0x0(0)
+	00038593	ADDI            a1, t2_rip, 0x0(0)
+	000600e7	JALR            ra, a2, 0x0(0)
+---- END OF BLOCK ---- (6)
+Forward extend block for 9 bytes 0x100001305 -> 0x10000130e (ninst 4 - 10)
+New x87stack=0
+Extend block 0x3fee1839c0, 0x100001330 -> 0x100001330 (ninst=19, jump from -2)
+Could not forward extend block for 76 bytes 0x10000135a -> 0x1000013a6
+[01;36m227481|Emitting 512 bytes for 117 x64 bytes ( => /home/ICT-02-02/test/coremark.exe:main + 0x195)[m
+[4;32mNew instruction 0, native=0x3fbcfee390 (0x0)[m
+New Instruction x64:0x1000012e5, native:0x3fbcfee390
+[01;33m0x1000012e5: 48 83 C1 01  ADD Ed, Ib[m
+[32m0x3fbcfee390: 1 emitted opcodes, inst=0, barrier=0 state=3/0(0), set=3F/0, use=0, need=0/0, sm=0/0, sew@entry=7, sew@exit=7, last_ip=0x1000012e5[m
+	00188893	ADDI            a7_rcx, a7_rcx, 0x1(1)
+[4;32mNew instruction 1, native=0x3fbcfee394 (0x4)[m
+New Instruction x64:0x1000012e9, native:0x3fbcfee394
+[01;33m0x1000012e9: 48 83 F9 03  CMP Ed, Ib[m
+[32m0x3fbcfee394: 10 emitted opcodes, inst=1, barrier=0 state=3/1(0), set=3F/88, use=0, need=0/88, sm=0/0, sew@entry=7, sew@exit=7, pred=0, last_ip=0x1000012e5[m
+	0030061b	ADDIW           a2, zero, 0x3(3)
+	f0a47413	ANDI            s0_flags, s0_flags, 0xffffff0a(-246)
+	45153c23	SD              a7_rcx, a0, 0x458(1112)
+	46c53023	SD              a2, a0, 0x460(1120)
+	03900713	ADDI            a4, zero, 0x39(57)
+	44e52a23	SW              a4, a0, 0x454(1108)
+	40c88333	SUB             t1, a7_rcx, a2
+	46653423	SD              t1, a0, 0x468(1128)
+	00031463	BNE             t1, zero, 0x8(8)
+	04046413	ORI             s0_flags, s0_flags, 0x40(64)
+[4;32mNew instruction 2, native=0x3fbcfee3bc (0x2c)[m
+New Instruction x64:0x1000012ed, native:0x3fbcfee3bc
+[01;33m0x1000012ed: 75 E7  JNZ ib[m
+[32m0x3fbcfee3bc: 10 emitted opcodes, inst=2, barrier=0 state=0/3(0), set=0/0, use=8, need=88/80, sm=0/0, sew@entry=7, sew@exit=7, pred=1, jmp=out, last_ip=0x1000012e5[m
+	04047593	ANDI            a1, s0_flags, 0x40(64)
+	02059263	BNE             a1, zero, 0x24(36)
+	00000013	ADDI            zero, zero, 0x0(0)
+Jump to next
+  Table64: 0x3fbd20e160
+	00000697	AUIPC           a3, 0x0(0)
+	1c86b683	LD              a3, a3, 0x1c8(456)
+  Table64: 0x1000012d6
+	00000397	AUIPC           t2_rip, 0x0(0)
+	1c83b383	LD              t2_rip, t2_rip, 0x1c8(456)
+	0006b603	LD              a2, a3, 0x0(0)
+	00038593	ADDI            a1, t2_rip, 0x0(0)
+	000600e7	JALR            ra, a2, 0x0(0)
+[4;32mNew instruction 3, native=0x3fbcfee3e4 (0x54)[m
+New Instruction x64:0x1000012ef, native:0x3fbcfee3e4
+[01;33m0x1000012ef: 45 85 C0  TEST Ed, Gd[m
+[32m0x3fbcfee3e4: 6 emitted opcodes, inst=3, barrier=0 state=3/3(0), set=3F/8, use=0, need=0/8, sm=0/0, sew@entry=7, sew@exit=7, pred=2[m
+	f0a47413	ANDI            s0_flags, s0_flags, 0xffffff0a(-246)
+	44052a23	SW              zero, a0, 0x454(1108)
+	018c76b3	AND             a3, s8_r8, s8_r8
+	0056f6b3	AND             a3, a3, t0_mask
+	00069463	BNE             a3, zero, 0x8(8)
+	04046413	ORI             s0_flags, s0_flags, 0x40(64)
+[4;32mNew instruction 4, native=0x3fbcfee3fc (0x6c)[m
+New Instruction x64:0x1000012f2, native:0x3fbcfee3fc
+[01;33m0x1000012f2: 74 1A  JZ ib[m
+[32m0x3fbcfee3fc: 3 emitted opcodes, inst=4, barrier=0 state=0/1(1), set=0/0, use=8, need=8/0, sm=0/0, sew@entry=7, sew@exit=7, pred=3, jmp=11[m
+	04047593	ANDI            a1, s0_flags, 0x40(64)
+	04059263	BNE             a1, zero, 0x44(68)
+	00000013	ADDI            zero, zero, 0x0(0)
+[4;32mNew instruction 5, native=0x3fbcfee408 (0x78)[m
+New Instruction x64:0x1000012f4, native:0x3fbcfee408
+[01;33m0x1000012f4: 48 8B 74 24 30  MOV Gd, Ed[m
+[32m0x3fbcfee408: 1 emitted opcodes, inst=5, barrier=0 state=0/1(1), set=0/0, use=0, need=0/0, sm=0/0, sew@entry=7, sew@exit=7, pred=4[m
+	030a3b03	LD              s6_rsi, s4_rsp, 0x30(48)
+[4;32mNew instruction 6, native=0x3fbcfee40c (0x7c)[m
+New Instruction x64:0x1000012f9, native:0x3fbcfee40c
+[01;33m0x1000012f9: 0F BF 54 24 20  MOVSX Gd, Ew[m
+[32m0x3fbcfee40c: 2 emitted opcodes, inst=6, barrier=0 state=0/1(1), set=0/0, use=0, need=0/0, sm=0/0, sew@entry=7, sew@exit=7, pred=5[m
+	020a1903	LH              s2_rdx, s4_rsp, 0x20(32)
+	00597933	AND             s2_rdx, s2_rdx, t0_mask
+[4;32mNew instruction 7, native=0x3fbcfee414 (0x84)[m
+New Instruction x64:0x1000012fe, native:0x3fbcfee414
+[01;33m0x1000012fe: 89 C7  MOV Ed, Gd[m
+[32m0x3fbcfee414: 1 emitted opcodes, inst=7, barrier=0 state=0/1(1), set=0/0, use=0, need=0/0, sm=1/0, sew@entry=7, sew@exit=7, pred=6[m
+	00587bb3	AND             s7_rdi, a6_rax, t0_mask
+[4;32mNew instruction 8, native=0x3fbcfee418 (0x88)[m
+New Instruction x64:0x100001300, native:0x3fbcfee418
+[01;33m0x100001300: E8 FB 0E 00 00  CALL Id (=> /home/ICT-02-02/test/coremark.exe:core_list_init)[m
+[32m0x3fbcfee418: 11 emitted opcodes, inst=8, barrier=0 state=17/1(1), set=3F/0, use=0, need=0/0, sm=1/0, sew@entry=7, sew@exit=7, pred=7[m
+  Table64: 0x100001305
+	00000617	AUIPC           a2, 0x0(0)
+	18863603	LD              a2, a2, 0x188(392)
+	feca3c23	SD              a2, s4_rsp, 0xfffffff8(-8)
+	ff8a0a13	ADDI            s4_rsp, s4_rsp, 0xfffffff8(-8)
+Jump to next
+  Table64: 0x3fbc9e5030
+	00000697	AUIPC           a3, 0x0(0)
+	1806b683	LD              a3, a3, 0x180(384)
+  Table64: 0x100002200
+	00000397	AUIPC           t2_rip, 0x0(0)
+	1803b383	LD              t2_rip, t2_rip, 0x180(384)
+	0006b603	LD              a2, a3, 0x0(0)
+	00038593	ADDI            a1, t2_rip, 0x0(0)
+	000600e7	JALR            ra, a2, 0x0(0)
+[4;32mNew instruction 9, native=0x3fbcfee444 (0xb4)[m
+Skipping unused opcode
+[01;33m0x100001305: 8B 74 24 50  Skipped opcode[m
+[32m0x3fbcfee444: 0 emitted opcodes, inst=9, barrier=0 state=0/0(0), set=0/0, use=0, need=0/0, sm=0/0, sew@entry=7, sew@exit=7[m
+[4;32mNew instruction 10, native=0x3fbcfee444 (0xb4)[m
+Skipping unused opcode
+[01;33m0x100001309: 48 89 44 24 58  Skipped opcode[m
+[32m0x3fbcfee444: 0 emitted opcodes, inst=10, barrier=0 state=0/0(0), set=0/0, use=0, need=0/0, sm=0/0, sew@entry=7, sew@exit=7[m
+Reset Caches with 4
+[4;32mNew instruction 11, native=0x3fbcfee444 (0xb4)[m
+New Instruction x64:0x10000130e, native:0x3fbcfee444
+[01;33m0x10000130e: 40 F6 C6 02  TEST Eb, Ib[m
+[32m0x3fbcfee444: 9 emitted opcodes, inst=11, barrier=0 state=3/1(1), set=3F/88, use=0, need=0/88, sm=0/0, sew@entry=7, sew@exit=7, pred=4[m
+	0ffb7593	ANDI            a1, s6_rsi, 0xff(255)
+	0020061b	ADDIW           a2, zero, 0x2(2)
+	f0a47413	ANDI            s0_flags, s0_flags, 0xffffff0a(-246)
+	03a00313	ADDI            t1, zero, 0x3a(58)
+	44652a23	SW              t1, a0, 0x454(1108)
+	00c5f333	AND             t1, a1, a2
+	46653423	SD              t1, a0, 0x468(1128)
+	00031463	BNE             t1, zero, 0x8(8)
+	04046413	ORI             s0_flags, s0_flags, 0x40(64)
+[4;32mNew instruction 12, native=0x3fbcfee468 (0xd8)[m
+New Instruction x64:0x100001312, native:0x3fbcfee468
+[01;33m0x100001312: 0F 85 70 02 00 00  JNZ Id[m
+[32m0x3fbcfee468: 10 emitted opcodes, inst=12, barrier=0 state=0/3(0), set=0/0, use=8, need=88/80, sm=0/0, sew@entry=7, sew@exit=7, pred=11, jmp=out[m
+	04047593	ANDI            a1, s0_flags, 0x40(64)
+	02059263	BNE             a1, zero, 0x24(36)
+	00000013	ADDI            zero, zero, 0x0(0)
+Jump to next
+  Table64: 0x3fbc9cac48
+	00000697	AUIPC           a3, 0x0(0)
+	1446b683	LD              a3, a3, 0x144(324)
+  Table64: 0x100001588
+	00000397	AUIPC           t2_rip, 0x0(0)
+	1443b383	LD              t2_rip, t2_rip, 0x144(324)
+	0006b603	LD              a2, a3, 0x0(0)
+	00038593	ADDI            a1, t2_rip, 0x0(0)
+	000600e7	JALR            ra, a2, 0x0(0)
+[4;32mNew instruction 13, native=0x3fbcfee490 (0x100)[m
+New Instruction x64:0x100001318, native:0x3fbcfee490
+[01;33m0x100001318: 83 E6 04  AND Ed, Ib[m
+[32m0x3fbcfee490: 6 emitted opcodes, inst=13, barrier=0 state=3/3(0), set=3F/8, use=0, need=0/8, sm=0/0, sew@entry=7, sew@exit=7, pred=12[m
+	f0a47413	ANDI            s0_flags, s0_flags, 0xffffff0a(-246)
+	44052a23	SW              zero, a0, 0x454(1108)
+	004b7b13	ANDI            s6_rsi, s6_rsi, 0x4(4)
+	005b7b33	AND             s6_rsi, s6_rsi, t0_mask
+	000b1463	BNE             s6_rsi, zero, 0x8(8)
+	04046413	ORI             s0_flags, s0_flags, 0x40(64)
+[4;32mNew instruction 14, native=0x3fbcfee4a8 (0x118)[m
+New Instruction x64:0x10000131b, native:0x3fbcfee4a8
+[01;33m0x10000131b: 74 13  JZ ib[m
+[32m0x3fbcfee4a8: 3 emitted opcodes, inst=14, barrier=0 state=0/1(1), set=0/0, use=8, need=8/0, sm=0/0, sew@entry=7, sew@exit=7, pred=13, jmp=19[m
+	04047593	ANDI            a1, s0_flags, 0x40(64)
+	04059263	BNE             a1, zero, 0x44(68)
+	00000013	ADDI            zero, zero, 0x0(0)
+[4;32mNew instruction 15, native=0x3fbcfee4b4 (0x124)[m
+New Instruction x64:0x10000131d, native:0x3fbcfee4b4
+[01;33m0x10000131d: 0F BF 74 24 20  MOVSX Gd, Ew[m
+[32m0x3fbcfee4b4: 2 emitted opcodes, inst=15, barrier=0 state=0/1(1), set=0/0, use=0, need=0/0, sm=0/0, sew@entry=7, sew@exit=7, pred=14[m
+	020a1b03	LH              s6_rsi, s4_rsp, 0x20(32)
+	005b7b33	AND             s6_rsi, s6_rsi, t0_mask
+[4;32mNew instruction 16, native=0x3fbcfee4bc (0x12c)[m
+New Instruction x64:0x100001322, native:0x3fbcfee4bc
+[01;33m0x100001322: 48 8B 54 24 40  MOV Gd, Ed[m
+[32m0x3fbcfee4bc: 1 emitted opcodes, inst=16, barrier=0 state=0/1(1), set=0/0, use=0, need=0/0, sm=1/0, sew@entry=7, sew@exit=7, pred=15[m
+	040a3903	LD              s2_rdx, s4_rsp, 0x40(64)
+[4;32mNew instruction 17, native=0x3fbcfee4c0 (0x130)[m
+New Instruction x64:0x100001327, native:0x3fbcfee4c0
+[01;33m0x100001327: 8B 7C 24 48  MOV Gd, Ed[m
+[32m0x3fbcfee4c0: 1 emitted opcodes, inst=17, barrier=0 state=0/1(1), set=0/0, use=0, need=0/0, sm=1/0, sew@entry=7, sew@exit=7, pred=16[m
+	048a6b83	LWU             s7_rdi, s4_rsp, 0x48(72)
+[4;32mNew instruction 18, native=0x3fbcfee4c4 (0x134)[m
+New Instruction x64:0x10000132b, native:0x3fbcfee4c4
+[01;33m0x10000132b: E8 50 18 00 00  CALL Id (=> /home/ICT-02-02/test/coremark.exe:core_init_state)[m
+[32m0x3fbcfee4c4: 11 emitted opcodes, inst=18, barrier=0 state=17/1(1), set=3F/0, use=0, need=0/0, sm=1/0, sew@entry=7, sew@exit=7, pred=17[m
+  Table64: 0x100001330
+	00000617	AUIPC           a2, 0x0(0)
+	10463603	LD              a2, a2, 0x104(260)
+	feca3c23	SD              a2, s4_rsp, 0xfffffff8(-8)
+	ff8a0a13	ADDI            s4_rsp, s4_rsp, 0xfffffff8(-8)
+Jump to next
+  Table64: 0x3fbc9e7c38
+	00000697	AUIPC           a3, 0x0(0)
+	0fc6b683	LD              a3, a3, 0xfc(252)
+  Table64: 0x100002b80
+	00000397	AUIPC           t2_rip, 0x0(0)
+	0fc3b383	LD              t2_rip, t2_rip, 0xfc(252)
+	0006b603	LD              a2, a3, 0x0(0)
+	00038593	ADDI            a1, t2_rip, 0x0(0)
+	000600e7	JALR            ra, a2, 0x0(0)
+Reset Caches with 14
+[4;32mNew instruction 19, native=0x3fbcfee4f0 (0x160)[m
+New Instruction x64:0x100001330, native:0x3fbcfee4f0
+[01;33m0x100001330: 44 8B 44 24 4C  MOV Gd, Ed[m
+[32m0x3fbcfee4f0: 1 emitted opcodes, inst=19, barrier=0 state=0/1(1), set=0/0, use=0, need=0/0, sm=0/0, sew@entry=7, sew@exit=7, pred=14[m
+	04ca6c03	LWU             s8_r8, s4_rsp, 0x4c(76)
+[4;32mNew instruction 20, native=0x3fbcfee4f4 (0x164)[m
+New Instruction x64:0x100001335, native:0x3fbcfee4f4
+[01;33m0x100001335: 45 85 C0  TEST Ed, Gd[m
+[32m0x3fbcfee4f4: 8 emitted opcodes, inst=20, barrier=0 state=3/1(1), set=3F/88, use=0, need=0/88, sm=0/0, sew@entry=7, sew@exit=7, pred=19[m
+	f0a47413	ANDI            s0_flags, s0_flags, 0xffffff0a(-246)
+	03c00693	ADDI            a3, zero, 0x3c(60)
+	44d52a23	SW              a3, a0, 0x454(1108)
+	018c76b3	AND             a3, s8_r8, s8_r8
+	46d52423	SW              a3, a0, 0x468(1128)
+	0056f6b3	AND             a3, a3, t0_mask
+	00069463	BNE             a3, zero, 0x8(8)
+	04046413	ORI             s0_flags, s0_flags, 0x40(64)
+[4;32mNew instruction 21, native=0x3fbcfee514 (0x184)[m
+New Instruction x64:0x100001338, native:0x3fbcfee514
+[01;33m0x100001338: 75 6C  JNZ ib[m
+[32m0x3fbcfee514: 10 emitted opcodes, inst=21, barrier=0 state=0/3(0), set=0/0, use=8, need=88/80, sm=0/0, sew@entry=7, sew@exit=7, pred=20, jmp=out[m
+	04047593	ANDI            a1, s0_flags, 0x40(64)
+	02059263	BNE             a1, zero, 0x24(36)
+	00000013	ADDI            zero, zero, 0x0(0)
+Jump to next
+  Table64: 0x3fbd20e7e0
+	00000697	AUIPC           a3, 0x0(0)
+	0c06b683	LD              a3, a3, 0xc0(192)
+  Table64: 0x1000013a6
+	00000397	AUIPC           t2_rip, 0x0(0)
+	0c03b383	LD              t2_rip, t2_rip, 0xc0(192)
+	0006b603	LD              a2, a3, 0x0(0)
+	00038593	ADDI            a1, t2_rip, 0x0(0)
+	000600e7	JALR            ra, a2, 0x0(0)
+[4;32mNew instruction 22, native=0x3fbcfee53c (0x1ac)[m
+New Instruction x64:0x10000133a, native:0x3fbcfee53c
+[01;33m0x10000133a: C7 44 24 4C 01 00 00 00  MOV Ed, Id[m
+[32m0x3fbcfee53c: 3 emitted opcodes, inst=22, barrier=0 state=0/3(0), set=0/0, use=0, need=0/0, sm=0/0, sew@entry=7, sew@exit=7, pred=21[m
+	04ca0613	ADDI            a2, s4_rsp, 0x4c(76)
+	0010069b	ADDIW           a3, zero, 0x1(1)
+	00d62023	SW              a3, a2, 0x0(0)
+[4;32mNew instruction 23, native=0x3fbcfee548 (0x1b8)[m
+New Instruction x64:0x100001342, native:0x3fbcfee548
+[01;33m0x100001342: 66 0F 1F 44 00 00  NOP (multibyte)[m
+[32m0x3fbcfee548: 0 emitted opcodes, inst=23, barrier=0 state=0/3(0), set=0/0, use=0, need=0/0, sm=0/1, sew@entry=7, sew@exit=7, pred=22[m
+[4;32mNew instruction 24, native=0x3fbcfee548 (0x1b8)[m
+New Instruction x64:0x100001348, native:0x3fbcfee548
+[01;33m0x100001348: 8B 44 24 4C  MOV Gd, Ed[m
+[32m0x3fbcfee548: 1 emitted opcodes, inst=24, barrier=0 state=0/3(0), set=0/0, use=0, need=0/0, sm=0/1, sew@entry=7, sew@exit=7, pred=23[m
+	04ca6803	LWU             a6_rax, s4_rsp, 0x4c(76)
+[4;32mNew instruction 25, native=0x3fbcfee54c (0x1bc)[m
+New Instruction x64:0x10000134c, native:0x3fbcfee54c
+[01;33m0x10000134c: 8D 04 80  LEA Gd, Ed[m
+[32m0x3fbcfee54c: 3 emitted opcodes, inst=25, barrier=0 state=0/3(0), set=0/0, use=0, need=0/0, sm=0/1, sew@entry=7, sew@exit=7, pred=24[m
+	0508160b	TH.ADDSL        a2, a6_rax, a6_rax, 0x2(2)
+	00060813	ADDI            a6_rax, a2, 0x0(0)
+	00587833	AND             a6_rax, a6_rax, t0_mask
+[4;32mNew instruction 26, native=0x3fbcfee558 (0x1c8)[m
+New Instruction x64:0x10000134f, native:0x3fbcfee558
+[01;33m0x10000134f: 01 C0  ADD Ed, Gd[m
+[32m0x3fbcfee558: 2 emitted opcodes, inst=26, barrier=0 state=3/3(0), set=3F/0, use=0, need=0/0, sm=0/1, sew@entry=7, sew@exit=7, pred=25[m
+	0108083b	ADDW            a6_rax, a6_rax, a6_rax
+	00587833	AND             a6_rax, a6_rax, t0_mask
+[4;32mNew instruction 27, native=0x3fbcfee560 (0x1d0)[m
+New Instruction x64:0x100001351, native:0x3fbcfee560
+[01;33m0x100001351: 89 44 24 4C  MOV Ed, Gd[m
+[32m0x3fbcfee560: 1 emitted opcodes, inst=27, barrier=0 state=0/1(0), set=0/0, use=0, need=0/0, sm=0/1, sew@entry=7, sew@exit=7, pred=26[m
+	050a2623	SW              a6_rax, s4_rsp, 0x4c(76)
+[4;32mNew instruction 28, native=0x3fbcfee564 (0x1d4)[m
+New Instruction x64:0x100001355, native:0x3fbcfee564
+[01;33m0x100001355: E8 96 21 00 00  CALL Id (=> /home/ICT-02-02/test/coremark.exe:start_time)[m
+[32m0x3fbcfee564: 11 emitted opcodes, inst=28, barrier=0 state=17/1(0), set=3F/0, use=0, need=0/0, sm=0/1, sew@entry=7, sew@exit=7, pred=27[m
+  Table64: 0x10000135a
+	00000617	AUIPC           a2, 0x0(0)
+	08c63603	LD              a2, a2, 0x8c(140)
+	feca3c23	SD              a2, s4_rsp, 0xfffffff8(-8)
+	ff8a0a13	ADDI            s4_rsp, s4_rsp, 0xfffffff8(-8)
+Jump to next
+  Table64: 0x3fbc9de798
+	00000697	AUIPC           a3, 0x0(0)
+	0846b683	LD              a3, a3, 0x84(132)
+  Table64: 0x1000034f0
+	00000397	AUIPC           t2_rip, 0x0(0)
+	0843b383	LD              t2_rip, t2_rip, 0x84(132)
+	0006b603	LD              a2, a3, 0x0(0)
+	00038593	ADDI            a1, t2_rip, 0x0(0)
+	000600e7	JALR            ra, a2, 0x0(0)
+---- END OF BLOCK ---- (29)
+[01;36m227481|Emitting 120 bytes for 15 x64 bytes ( => /home/ICT-02-02/test/coremark.exe:main + 0x186)[m
+[4;32mNew instruction 0, native=0x3fbcfee658 (0x0)[m
+New Instruction x64:0x1000012d6, native:0x3fbcfee658
+[01;33m0x1000012d6: 41 89 D2  MOV Ed, Gd[m
+[32m0x3fbcfee658: 1 emitted opcodes, inst=0, barrier=0 state=0/0(0), set=0/0, use=0, need=0/0, sm=0/0, sew@entry=7, sew@exit=7, last_ip=0x1000012d6[m
+	00597d33	AND             s10_r10, s2_rdx, t0_mask
+[4;32mNew instruction 1, native=0x3fbcfee65c (0x4)[m
+New Instruction x64:0x1000012d9, native:0x3fbcfee65c
+[01;33m0x1000012d9: 41 D3 E2  SHL Ed, CL[m
+[32m0x3fbcfee65c: 5 emitted opcodes, inst=1, barrier=0 state=3/0(0), set=3F/0, use=0, need=0/0, sm=0/0, sew@entry=7, sew@exit=7, pred=0, last_ip=0x1000012d6[m
+	01f8f693	ANDI            a3, a7_rcx, 0x1f(31)
+	005d7d33	AND             s10_r10, s10_r10, t0_mask
+	00068663	BEQ             a3, zero, 0xc(12)
+	00dd1d3b	SLLW            s10_r10, s10_r10, a3
+	005d7d33	AND             s10_r10, s10_r10, t0_mask
+[4;32mNew instruction 2, native=0x3fbcfee670 (0x18)[m
+New Instruction x64:0x1000012dc, native:0x3fbcfee670
+[01;33m0x1000012dc: 41 85 F2  TEST Ed, Gd[m
+[32m0x3fbcfee670: 8 emitted opcodes, inst=2, barrier=0 state=3/1(0), set=3F/88, use=0, need=0/88, sm=0/0, sew@entry=7, sew@exit=7, pred=1, last_ip=0x1000012d6[m
+	f0a47413	ANDI            s0_flags, s0_flags, 0xffffff0a(-246)
+	03c00693	ADDI            a3, zero, 0x3c(60)
+	44d52a23	SW              a3, a0, 0x454(1108)
+	016d76b3	AND             a3, s10_r10, s6_rsi
+	46d52423	SW              a3, a0, 0x468(1128)
+	0056f6b3	AND             a3, a3, t0_mask
+	00069463	BNE             a3, zero, 0x8(8)
+	04046413	ORI             s0_flags, s0_flags, 0x40(64)
+[4;32mNew instruction 3, native=0x3fbcfee690 (0x38)[m
+New Instruction x64:0x1000012df, native:0x3fbcfee690
+[01;33m0x1000012df: 0F 85 3B 03 00 00  JNZ Id[m
+[32m0x3fbcfee690: 9 emitted opcodes, inst=3, barrier=2 state=0/3(0), set=0/0, use=8, need=88/80, sm=0/0, sew@entry=7, sew@exit=7, pred=2, jmp=out, last_ip=0x1000012d6[m
+	04047593	ANDI            a1, s0_flags, 0x40(64)
+	02059063	BNE             a1, zero, 0x20(32)
+	00000013	ADDI            zero, zero, 0x0(0)
+Jump to next
+  Table64: 0x3fbc9cb108
+	00000697	AUIPC           a3, 0x0(0)
+	0346b683	LD              a3, a3, 0x34(52)
+	34a38393	ADDI            t2_rip, t2_rip, 0x34a(842)
+	0006b603	LD              a2, a3, 0x0(0)
+	00038593	ADDI            a1, t2_rip, 0x0(0)
+	000600e7	JALR            ra, a2, 0x0(0)
+Stopping block 0x1000012d6 (4 / 4)
+Jump to next
+  Table64: 0x3fbd20e1d8
+	00000697	AUIPC           a3, 0x0(0)
+	0246b683	LD              a3, a3, 0x24(36)
+  Table64: 0x1000012e5
+	00000397	AUIPC           t2_rip, 0x0(0)
+	0243b383	LD              t2_rip, t2_rip, 0x24(36)
+	0006b603	LD              a2, a3, 0x0(0)
+	00038593	ADDI            a1, t2_rip, 0x0(0)
+	000600e7	JALR            ra, a2, 0x0(0)
+---- END OF BLOCK ---- (4)
+Forward extend block for 12 bytes 0x100002307 -> 0x100002313 (ninst 75 - 77)
+New x87stack=0
+Extend block 0x3fee1839c0, 0x100002364 -> 0x100002368 (ninst=105, jump from -2)
+[01;36m227481|Emitting 932 bytes for 373 x64 bytes ( => /home/ICT-02-02/test/coremark.exe:core_list_init)[m
+[4;32mNew instruction 0, native=0x3fbcfee720 (0x0)[m
+New Instruction x64:0x100002200, native:0x3fbcfee720
+[01;33m0x100002200: F3 0F 1E FA  NOP / ENDBR32 / ENDBR64[m
+[32m0x3fbcfee720: 0 emitted opcodes, inst=0, barrier=0 state=0/0(0), set=0/0, use=0, need=0/0, sm=0/0, sew@entry=7, sew@exit=7, last_ip=0x100002200[m
+[4;32mNew instruction 1, native=0x3fbcfee720 (0x0)[m
+New Instruction x64:0x100002204, native:0x3fbcfee720
+[01;33m0x100002204: 41 89 F9  MOV Ed, Gd[m
+[32m0x3fbcfee720: 1 emitted opcodes, inst=1, barrier=0 state=0/0(0), set=0/0, use=0, need=0/0, sm=0/0, sew@entry=7, sew@exit=7, pred=0, last_ip=0x100002200[m
+	005bfcb3	AND             s9_r9, s7_rdi, t0_mask
+[4;32mNew instruction 2, native=0x3fbcfee724 (0x4)[m
+New Instruction x64:0x100002207, native:0x3fbcfee724
+[01;33m0x100002207: B8 CD CC CC CC  MOV Reg, Id[m
+[32m0x3fbcfee724: 3 emitted opcodes, inst=2, barrier=0 state=0/0(0), set=0/0, use=0, need=0/0, sm=0/0, sew@entry=7, sew@exit=7, pred=1, last_ip=0x100002200[m
+	ccccd837	LUI             a6_rax, 0xfffccccd(-209715)
+	ccd8081b	ADDIW           a6_rax, a6_rax, 0xfffffccd(-819)
+	00587833	AND             a6_rax, a6_rax, t0_mask
+[4;32mNew instruction 3, native=0x3fbcfee730 (0x10)[m
+New Instruction x64:0x10000220c, native:0x3fbcfee730
+[01;33m0x10000220c: 41 57  PUSH reg[m
+[32m0x3fbcfee730: 2 emitted opcodes, inst=3, barrier=0 state=0/0(0), set=0/0, use=0, need=0/0, sm=0/0, sew@entry=7, sew@exit=7, pred=2, last_ip=0x100002200[m
+	fffa3c23	SD              t6_r15, s4_rsp, 0xfffffff8(-8)
+	ff8a0a13	ADDI            s4_rsp, s4_rsp, 0xfffffff8(-8)
+[4;32mNew instruction 4, native=0x3fbcfee738 (0x18)[m
+New Instruction x64:0x10000220e, native:0x3fbcfee738
+[01;33m0x10000220e: 48 8D 7E 10  LEA Gd, Ed[m
+[32m0x3fbcfee738: 2 emitted opcodes, inst=4, barrier=0 state=0/0(0), set=0/0, use=0, need=0/0, sm=0/0, sew@entry=7, sew@exit=7, pred=3, last_ip=0x100002200[m
+	010b0613	ADDI            a2, s6_rsi, 0x10(16)
+	00060b93	ADDI            s7_rdi, a2, 0x0(0)
+[4;32mNew instruction 5, native=0x3fbcfee740 (0x20)[m
+New Instruction x64:0x100002212, native:0x3fbcfee740
+[01;33m0x100002212: 4C 0F AF C8  IMUL Gd, Ed[m
+[32m0x3fbcfee740: 1 emitted opcodes, inst=5, barrier=0 state=2/0(0), set=3F/0, use=0, need=0/0, sm=0/0, sew@entry=7, sew@exit=7, pred=4, last_ip=0x100002200[m
+	030c8cb3	MUL             s9_r9, s9_r9, a6_rax
+[4;32mNew instruction 6, native=0x3fbcfee744 (0x24)[m
+New Instruction x64:0x100002216, native:0x3fbcfee744
+[01;33m0x100002216: 41 56  PUSH reg[m
+[32m0x3fbcfee744: 2 emitted opcodes, inst=6, barrier=0 state=0/1(0), set=0/0, use=0, need=0/0, sm=0/0, sew@entry=7, sew@exit=7, pred=5, last_ip=0x100002200[m
+	ffea3c23	SD              t5_r14, s4_rsp, 0xfffffff8(-8)
+	ff8a0a13	ADDI            s4_rsp, s4_rsp, 0xfffffff8(-8)
+[4;32mNew instruction 7, native=0x3fbcfee74c (0x2c)[m
+New Instruction x64:0x100002218, native:0x3fbcfee74c
+[01;33m0x100002218: 41 89 D6  MOV Ed, Gd[m
+[32m0x3fbcfee74c: 1 emitted opcodes, inst=7, barrier=0 state=0/1(0), set=0/0, use=0, need=0/0, sm=0/0, sew@entry=7, sew@exit=7, pred=6, last_ip=0x100002200[m
+	00597f33	AND             t5_r14, s2_rdx, t0_mask
+[4;32mNew instruction 8, native=0x3fbcfee750 (0x30)[m
+New Instruction x64:0x10000221b, native:0x3fbcfee750
+[01;33m0x10000221b: 41 55  PUSH reg[m
+[32m0x3fbcfee750: 2 emitted opcodes, inst=8, barrier=0 state=0/1(0), set=0/0, use=0, need=0/0, sm=0/0, sew@entry=7, sew@exit=7, pred=7, last_ip=0x100002200[m
+	ffda3c23	SD              t4_r13, s4_rsp, 0xfffffff8(-8)
+	ff8a0a13	ADDI            s4_rsp, s4_rsp, 0xfffffff8(-8)
+[4;32mNew instruction 9, native=0x3fbcfee758 (0x38)[m
+New Instruction x64:0x10000221d, native:0x3fbcfee758
+[01;33m0x10000221d: 41 54  PUSH reg[m
+[32m0x3fbcfee758: 2 emitted opcodes, inst=9, barrier=0 state=0/1(0), set=0/0, use=0, need=0/0, sm=0/0, sew@entry=7, sew@exit=7, pred=8, last_ip=0x100002200[m
+	ffca3c23	SD              t3_r12, s4_rsp, 0xfffffff8(-8)
+	ff8a0a13	ADDI            s4_rsp, s4_rsp, 0xfffffff8(-8)
+[4;32mNew instruction 10, native=0x3fbcfee760 (0x40)[m
+New Instruction x64:0x10000221f, native:0x3fbcfee760
+[01;33m0x10000221f: 41 89 D4  MOV Ed, Gd[m
+[32m0x3fbcfee760: 1 emitted opcodes, inst=10, barrier=0 state=0/1(0), set=0/0, use=0, need=0/0, sm=0/0, sew@entry=7, sew@exit=7, pred=9, last_ip=0x100002200[m
+	00597e33	AND             t3_r12, s2_rdx, t0_mask
+[4;32mNew instruction 11, native=0x3fbcfee764 (0x44)[m
+New Instruction x64:0x100002222, native:0x3fbcfee764
+[01;33m0x100002222: 48 8D 56 20  LEA Gd, Ed[m
+[32m0x3fbcfee764: 2 emitted opcodes, inst=11, barrier=0 state=0/1(0), set=0/0, use=0, need=0/0, sm=0/0, sew@entry=7, sew@exit=7, pred=10, last_ip=0x100002200[m
+	020b0613	ADDI            a2, s6_rsi, 0x20(32)
+	00060913	ADDI            s2_rdx, a2, 0x0(0)
+[4;32mNew instruction 12, native=0x3fbcfee76c (0x4c)[m
+New Instruction x64:0x100002226, native:0x3fbcfee76c
+[01;33m0x100002226: 49 C1 E9 24  SHR Ed, Ib[m
+[32m0x3fbcfee76c: 1 emitted opcodes, inst=12, barrier=0 state=3/1(0), set=3F/0, use=0, need=0/0, sm=0/0, sew@entry=7, sew@exit=7, pred=11, last_ip=0x100002200[m
+	024cdc93	SRLI            s9_r9, s9_r9, 0x24(36)
+[4;32mNew instruction 13, native=0x3fbcfee770 (0x50)[m
+New Instruction x64:0x10000222a, native:0x3fbcfee770
+[01;33m0x10000222a: 55  PUSH reg[m
+[32m0x3fbcfee770: 2 emitted opcodes, inst=13, barrier=0 state=0/1(0), set=0/0, use=0, need=0/0, sm=0/0, sew@entry=7, sew@exit=7, pred=12, last_ip=0x100002200[m
+	ff5a3c23	SD              s5_rbp, s4_rsp, 0xfffffff8(-8)
+	ff8a0a13	ADDI            s4_rsp, s4_rsp, 0xfffffff8(-8)
+[4;32mNew instruction 14, native=0x3fbcfee778 (0x58)[m
+New Instruction x64:0x10000222b, native:0x3fbcfee778
+[01;33m0x10000222b: 48 89 F5  MOV Ed, Gd[m
+[32m0x3fbcfee778: 1 emitted opcodes, inst=14, barrier=0 state=0/1(0), set=0/0, use=0, need=0/0, sm=0/0, sew@entry=7, sew@exit=7, pred=13, last_ip=0x100002200[m
+	000b0a93	ADDI            s5_rbp, s6_rsi, 0x0(0)
+[4;32mNew instruction 15, native=0x3fbcfee77c (0x5c)[m
+New Instruction x64:0x10000222e, native:0x3fbcfee77c
+[01;33m0x10000222e: 53  PUSH reg[m
+[32m0x3fbcfee77c: 2 emitted opcodes, inst=15, barrier=0 state=0/1(0), set=0/0, use=0, need=0/0, sm=0/0, sew@entry=7, sew@exit=7, pred=14, last_ip=0x100002200[m
+	ff3a3c23	SD              s3_rbx, s4_rsp, 0xfffffff8(-8)
+	ff8a0a13	ADDI            s4_rsp, s4_rsp, 0xfffffff8(-8)
+[4;32mNew instruction 16, native=0x3fbcfee784 (0x64)[m
+New Instruction x64:0x10000222f, native:0x3fbcfee784
+[01;33m0x10000222f: 41 8D 59 FE  LEA Gd, Ed[m
+[32m0x3fbcfee784: 3 emitted opcodes, inst=16, barrier=0 state=0/1(0), set=0/0, use=0, need=0/0, sm=0/0, sew@entry=7, sew@exit=7, pred=15, last_ip=0x100002200[m
+	ffec8613	ADDI            a2, s9_r9, 0xfffffffe(-2)
+	00060993	ADDI            s3_rbx, a2, 0x0(0)
+	0059f9b3	AND             s3_rbx, s3_rbx, t0_mask
+[4;32mNew instruction 17, native=0x3fbcfee790 (0x70)[m
+New Instruction x64:0x100002233, native:0x3fbcfee790
+[01;33m0x100002233: 49 89 DB  MOV Ed, Gd[m
+[32m0x3fbcfee790: 1 emitted opcodes, inst=17, barrier=0 state=0/1(0), set=0/0, use=0, need=0/0, sm=0/0, sew@entry=7, sew@exit=7, pred=16, last_ip=0x100002200[m
+	00098d93	ADDI            s11_r11, s3_rbx, 0x0(0)
+[4;32mNew instruction 18, native=0x3fbcfee794 (0x74)[m
+New Instruction x64:0x100002236, native:0x3fbcfee794
+[01;33m0x100002236: 48 C7 06 00 00 00 00  MOV Ed, Id[m
+[32m0x3fbcfee794: 1 emitted opcodes, inst=18, barrier=0 state=0/1(0), set=0/0, use=0, need=0/0, sm=0/0, sew@entry=7, sew@exit=7, pred=17, last_ip=0x100002200[m
+	000b3023	SD              zero, s6_rsi, 0x0(0)
+[4;32mNew instruction 19, native=0x3fbcfee798 (0x78)[m
+New Instruction x64:0x10000223d, native:0x3fbcfee798
+[01;33m0x10000223d: 49 89 D9  MOV Ed, Gd[m
+[32m0x3fbcfee798: 1 emitted opcodes, inst=19, barrier=0 state=0/1(0), set=0/0, use=0, need=0/0, sm=0/1, sew@entry=7, sew@exit=7, pred=18, last_ip=0x100002200[m
+	00098c93	ADDI            s9_r9, s3_rbx, 0x0(0)
+[4;32mNew instruction 20, native=0x3fbcfee79c (0x7c)[m
+New Instruction x64:0x100002240, native:0x3fbcfee79c
+[01;33m0x100002240: 49 C1 E3 04  SHL Ed, Ib[m
+[32m0x3fbcfee79c: 1 emitted opcodes, inst=20, barrier=0 state=3/1(0), set=3F/0, use=0, need=0/0, sm=0/1, sew@entry=7, sew@exit=7, pred=19, last_ip=0x100002200[m
+	004d9d93	SLLI            s11_r11, s11_r11, 0x4(4)
+[4;32mNew instruction 21, native=0x3fbcfee7a0 (0x80)[m
+New Instruction x64:0x100002244, native:0x3fbcfee7a0
+[01;33m0x100002244: 49 01 F3  ADD Ed, Gd[m
+[32m0x3fbcfee7a0: 1 emitted opcodes, inst=21, barrier=0 state=3/1(0), set=3F/0, use=0, need=0/0, sm=0/1, sew@entry=7, sew@exit=7, pred=20, last_ip=0x100002200[m
+	016d8db3	ADD             s11_r11, s11_r11, s6_rsi
+[4;32mNew instruction 22, native=0x3fbcfee7a4 (0x84)[m
+New Instruction x64:0x100002247, native:0x3fbcfee7a4
+[01;33m0x100002247: 4C 89 5E 08  MOV Ed, Gd[m
+[32m0x3fbcfee7a4: 1 emitted opcodes, inst=22, barrier=0 state=0/1(0), set=0/0, use=0, need=0/0, sm=0/1, sew@entry=7, sew@exit=7, pred=21, last_ip=0x100002200[m
+	01bb3423	SD              s11_r11, s6_rsi, 0x8(8)
+[4;32mNew instruction 23, native=0x3fbcfee7a8 (0x88)[m
+New Instruction x64:0x10000224b, native:0x3fbcfee7a8
+[01;33m0x10000224b: 4D 8D 2C 9B  LEA Gd, Ed[m
+[32m0x3fbcfee7a8: 2 emitted opcodes, inst=23, barrier=0 state=0/1(0), set=0/0, use=0, need=0/0, sm=0/1, sew@entry=7, sew@exit=7, pred=22, last_ip=0x100002200[m
+	053d960b	TH.ADDSL        a2, s11_r11, s3_rbx, 0x2(2)
+	00060e93	ADDI            t4_r13, a2, 0x0(0)
+[4;32mNew instruction 24, native=0x3fbcfee7b0 (0x90)[m
+New Instruction x64:0x10000224f, native:0x3fbcfee7b0
+[01;33m0x10000224f: 49 8D 43 04  LEA Gd, Ed[m
+[32m0x3fbcfee7b0: 2 emitted opcodes, inst=24, barrier=0 state=0/1(0), set=0/0, use=0, need=0/0, sm=0/1, sew@entry=7, sew@exit=7, pred=23, last_ip=0x100002200[m
+	004d8613	ADDI            a2, s11_r11, 0x4(4)
+	00060813	ADDI            a6_rax, a2, 0x0(0)
+[4;32mNew instruction 25, native=0x3fbcfee7b8 (0x98)[m
+New Instruction x64:0x100002253, native:0x3fbcfee7b8
+[01;33m0x100002253: 41 C7 03 80 80 00 00  MOV Ed, Id[m
+[32m0x3fbcfee7b8: 3 emitted opcodes, inst=25, barrier=0 state=0/1(0), set=0/0, use=0, need=0/0, sm=0/1, sew@entry=7, sew@exit=7, pred=24, last_ip=0x100002200[m
+	000086b7	LUI             a3, 0x8(8)
+	0806869b	ADDIW           a3, a3, 0x80(128)
+	00dda023	SW              a3, s11_r11, 0x0(0)
+[4;32mNew instruction 26, native=0x3fbcfee7c4 (0xa4)[m
+New Instruction x64:0x10000225a, native:0x3fbcfee7c4
+[01;33m0x10000225a: 49 39 D3  CMP Ed, Gd[m
+[32m0x3fbcfee7c4: 13 emitted opcodes, inst=26, barrier=0 state=3/1(0), set=3F/9, use=0, need=0/9, sm=0/1, sew@entry=7, sew@exit=7, pred=25, last_ip=0x100002200[m
+	f0a47413	ANDI            s0_flags, s0_flags, 0xffffff0a(-246)
+	44052a23	SW              zero, a0, 0x454(1108)
+	fffdc793	XORI            a5, s11_r11, 0xffffffff(-1)
+	412d8333	SUB             t1, s11_r11, s2_rdx
+	0127e6b3	OR              a3, a5, s2_rdx
+	00d37733	AND             a4, t1, a3
+	0127f7b3	AND             a5, a5, s2_rdx
+	00f76733	OR              a4, a4, a5
+	03f75693	SRLI            a3, a4, 0x3f(63)
+	00068463	BEQ             a3, zero, 0x8(8)
+	00146413	ORI             s0_flags, s0_flags, 0x1(1)
+	00031463	BNE             t1, zero, 0x8(8)
+	04046413	ORI             s0_flags, s0_flags, 0x40(64)
+[4;32mNew instruction 27, native=0x3fbcfee7f8 (0xd8)[m
+New Instruction x64:0x10000225d, native:0x3fbcfee7f8
+[01;33m0x10000225d: 0F 86 05 01 00 00  JBE Id[m
+[32m0x3fbcfee7f8: 3 emitted opcodes, inst=27, barrier=0 state=0/1(1), set=0/0, use=9, need=9/0, sm=0/1, sew@entry=7, sew@exit=7, pred=26, jmp=106, last_ip=0x100002200[m
+	04147593	ANDI            a1, s0_flags, 0x41(65)
+	2a059c63	BNE             a1, zero, 0x2b8(696)
+	00000013	ADDI            zero, zero, 0x0(0)
+[4;32mNew instruction 28, native=0x3fbcfee804 (0xe4)[m
+New Instruction x64:0x100002263, native:0x3fbcfee804
+[01;33m0x100002263: 49 8D 73 08  LEA Gd, Ed[m
+[32m0x3fbcfee804: 2 emitted opcodes, inst=28, barrier=0 state=0/1(1), set=0/0, use=0, need=0/0, sm=0/1, sew@entry=7, sew@exit=7, pred=27, last_ip=0x100002200[m
+	008d8613	ADDI            a2, s11_r11, 0x8(8)
+	00060b13	ADDI            s6_rsi, a2, 0x0(0)
+[4;32mNew instruction 29, native=0x3fbcfee80c (0xec)[m
+New Instruction x64:0x100002267, native:0x3fbcfee80c
+[01;33m0x100002267: 49 39 F5  CMP Ed, Gd[m
+[32m0x3fbcfee80c: 12 emitted opcodes, inst=29, barrier=0 state=3/1(1), set=3F/9, use=0, need=0/9, sm=0/1, sew@entry=7, sew@exit=7, pred=28, last_ip=0x100002200[m
+	f0a47413	ANDI            s0_flags, s0_flags, 0xffffff0a(-246)
+	fffec793	XORI            a5, t4_r13, 0xffffffff(-1)
+	416e8333	SUB             t1, t4_r13, s6_rsi
+	0167e6b3	OR              a3, a5, s6_rsi
+	00d37733	AND             a4, t1, a3
+	0167f7b3	AND             a5, a5, s6_rsi
+	00f76733	OR              a4, a4, a5
+	03f75693	SRLI            a3, a4, 0x3f(63)
+	00068463	BEQ             a3, zero, 0x8(8)
+	00146413	ORI             s0_flags, s0_flags, 0x1(1)
+	00031463	BNE             t1, zero, 0x8(8)
+	04046413	ORI             s0_flags, s0_flags, 0x40(64)
+[4;32mNew instruction 30, native=0x3fbcfee83c (0x11c)[m
+New Instruction x64:0x10000226a, native:0x3fbcfee83c
+[01;33m0x10000226a: 0F 86 F8 00 00 00  JBE Id[m
+[32m0x3fbcfee83c: 3 emitted opcodes, inst=30, barrier=0 state=0/1(1), set=0/0, use=9, need=9/0, sm=0/1, sew@entry=7, sew@exit=7, pred=29, jmp=106, last_ip=0x100002200[m
+	04147593	ANDI            a1, s0_flags, 0x41(65)
+	26059a63	BNE             a1, zero, 0x274(628)
+	00000013	ADDI            zero, zero, 0x0(0)
+[4;32mNew instruction 31, native=0x3fbcfee848 (0x128)[m
+New Instruction x64:0x100002270, native:0x3fbcfee848
+[01;33m0x100002270: 48 C7 45 10 00 00 00 00  MOV Ed, Id[m
+[32m0x3fbcfee848: 2 emitted opcodes, inst=31, barrier=0 state=0/1(1), set=0/0, use=0, need=0/0, sm=0/1, sew@entry=7, sew@exit=7, pred=30, last_ip=0x100002200[m
+	010a8613	ADDI            a2, s5_rbp, 0x10(16)
+	00063023	SD              zero, a2, 0x0(0)
+[4;32mNew instruction 32, native=0x3fbcfee850 (0x130)[m
+New Instruction x64:0x100002278, native:0x3fbcfee850
+[01;33m0x100002278: 48 89 7D 00  MOV Ed, Gd[m
+[32m0x3fbcfee850: 1 emitted opcodes, inst=32, barrier=0 state=0/1(1), set=0/0, use=0, need=0/0, sm=0/1, sew@entry=7, sew@exit=7, pred=31, last_ip=0x100002200[m
+	017ab023	SD              s7_rdi, s5_rbp, 0x0(0)
+[4;32mNew instruction 33, native=0x3fbcfee854 (0x134)[m
+New Instruction x64:0x10000227c, native:0x3fbcfee854
+[01;33m0x10000227c: 48 89 45 18  MOV Ed, Gd[m
+[32m0x3fbcfee854: 1 emitted opcodes, inst=33, barrier=0 state=0/1(1), set=0/0, use=0, need=0/0, sm=0/1, sew@entry=7, sew@exit=7, pred=32, last_ip=0x100002200[m
+	010abc23	SD              a6_rax, s5_rbp, 0x18(24)
+[4;32mNew instruction 34, native=0x3fbcfee858 (0x138)[m
+New Instruction x64:0x100002280, native:0x3fbcfee858
+[01;33m0x100002280: 41 C7 43 04 FF FF FF 7F  MOV Ed, Id[m
+[32m0x3fbcfee858: 4 emitted opcodes, inst=34, barrier=0 state=0/1(1), set=0/0, use=0, need=0/0, sm=0/1, sew@entry=7, sew@exit=7, pred=33, last_ip=0x100002200[m
+	004d8613	ADDI            a2, s11_r11, 0x4(4)
+	800006b7	LUI             a3, 0xfff80000(-524288)
+	fff6869b	ADDIW           a3, a3, 0xffffffff(-1)
+	00d62023	SW              a3, a2, 0x0(0)
+[4;32mNew instruction 35, native=0x3fbcfee868 (0x148)[m
+New Instruction x64:0x100002288, native:0x3fbcfee868
+[01;33m0x100002288: 45 85 C9  TEST Ed, Gd[m
+[32m0x3fbcfee868: 5 emitted opcodes, inst=35, barrier=0 state=3/1(1), set=3F/8, use=0, need=0/8, sm=0/0, sew@entry=7, sew@exit=7, pred=34/109[m
+	f0a47413	ANDI            s0_flags, s0_flags, 0xffffff0a(-246)
+	019cf6b3	AND             a3, s9_r9, s9_r9
+	0056f6b3	AND             a3, a3, t0_mask
+	00069463	BNE             a3, zero, 0x8(8)
+	04046413	ORI             s0_flags, s0_flags, 0x40(64)
+[4;32mNew instruction 36, native=0x3fbcfee87c (0x15c)[m
+New Instruction x64:0x10000228b, native:0x3fbcfee87c
+[01;33m0x10000228b: 74 59  JZ ib[m
+[32m0x3fbcfee87c: 3 emitted opcodes, inst=36, barrier=0 state=0/1(1), set=0/0, use=8, need=8/0, sm=0/0, sew@entry=7, sew@exit=7, pred=35, jmp=67[m
+	04047593	ANDI            a1, s0_flags, 0x40(64)
+	0c059063	BNE             a1, zero, 0xc0(192)
+	00000013	ADDI            zero, zero, 0x0(0)
+[4;32mNew instruction 37, native=0x3fbcfee888 (0x168)[m
+New Instruction x64:0x10000228d, native:0x3fbcfee888
+[01;33m0x10000228d: 31 C9  XOR Ed, Gd[m
+[32m0x3fbcfee888: 1 emitted opcodes, inst=37, barrier=0 state=3/1(1), set=3F/0, use=0, need=0/0, sm=0/0, sew@entry=7, sew@exit=7, pred=36[m
+	0118c8b3	XOR             a7_rcx, a7_rcx, a7_rcx
+[4;32mNew instruction 38, native=0x3fbcfee88c (0x16c)[m
+New Instruction x64:0x10000228f, native:0x3fbcfee88c
+[01;33m0x10000228f: 90  NOP[m
+[32m0x3fbcfee88c: 0 emitted opcodes, inst=38, barrier=0 state=0/1(1), set=0/0, use=0, need=0/0, sm=0/0, sew@entry=7, sew@exit=7, pred=37[m
+[4;32mNew instruction 39, native=0x3fbcfee88c (0x16c)[m
+New Instruction x64:0x100002290, native:0x3fbcfee88c
+[01;33m0x100002290: 4C 8D 42 10  LEA Gd, Ed[m
+[32m0x3fbcfee88c: 2 emitted opcodes, inst=39, barrier=0 state=0/1(1), set=0/0, use=0, need=0/0, sm=0/0, sew@entry=7, sew@exit=7, pred=38/66[m
+	01090613	ADDI            a2, s2_rdx, 0x10(16)
+	00060c13	ADDI            s8_r8, a2, 0x0(0)
+[4;32mNew instruction 40, native=0x3fbcfee894 (0x174)[m
+New Instruction x64:0x100002294, native:0x3fbcfee894
+[01;33m0x100002294: 4D 39 C3  CMP Ed, Gd[m
+[32m0x3fbcfee894: 1 emitted opcodes, inst=40, barrier=0 state=3/1(1), set=3F/9, use=0, need=0/9, sm=0/0, sew@entry=7, sew@exit=7, pred=39[m
+	f0a47413	ANDI            s0_flags, s0_flags, 0xffffff0a(-246)
+[4;32mNew instruction 41, native=0x3fbcfee898 (0x178)[m
+New Instruction x64:0x100002297, native:0x3fbcfee898
+[01;33m0x100002297: 76 45  JBE ib[m
+[32m0x3fbcfee898: 3 emitted opcodes, inst=41, barrier=0 state=0/1(1), set=0/0, use=9, need=9/0, sm=0/0, sew@entry=7, sew@exit=7, pred=40, jmp=64[m
+	04147593	ANDI            a1, s0_flags, 0x41(65)
+	08059663	BNE             a1, zero, 0x8c(140)
+	00000013	ADDI            zero, zero, 0x0(0)
+[4;32mNew instruction 42, native=0x3fbcfee8a4 (0x184)[m
+New Instruction x64:0x100002299, native:0x3fbcfee8a4
+[01;33m0x100002299: 4C 8D 56 04  LEA Gd, Ed[m
+[32m0x3fbcfee8a4: 2 emitted opcodes, inst=42, barrier=0 state=0/1(1), set=0/0, use=0, need=0/0, sm=0/0, sew@entry=7, sew@exit=7, pred=41[m
+	004b0613	ADDI            a2, s6_rsi, 0x4(4)
+	00060d13	ADDI            s10_r10, a2, 0x0(0)
+[4;32mNew instruction 43, native=0x3fbcfee8ac (0x18c)[m
+New Instruction x64:0x10000229d, native:0x3fbcfee8ac
+[01;33m0x10000229d: 4D 39 D5  CMP Ed, Gd[m
+[32m0x3fbcfee8ac: 1 emitted opcodes, inst=43, barrier=0 state=3/1(1), set=3F/9, use=0, need=0/9, sm=0/0, sew@entry=7, sew@exit=7, pred=42[m
+	f0a47413	ANDI            s0_flags, s0_flags, 0xffffff0a(-246)
+[4;32mNew instruction 44, native=0x3fbcfee8b0 (0x190)[m
+New Instruction x64:0x1000022a0, native:0x3fbcfee8b0
+[01;33m0x1000022a0: 76 3C  JBE ib[m
+[32m0x3fbcfee8b0: 3 emitted opcodes, inst=44, barrier=0 state=0/1(1), set=0/0, use=9, need=9/0, sm=0/0, sew@entry=7, sew@exit=7, pred=43, jmp=64[m
+	04147593	ANDI            a1, s0_flags, 0x41(65)
+	06059a63	BNE             a1, zero, 0x74(116)
+	00000013	ADDI            zero, zero, 0x0(0)
+[4;32mNew instruction 45, native=0x3fbcfee8bc (0x19c)[m
+New Instruction x64:0x1000022a2, native:0x3fbcfee8bc
+[01;33m0x1000022a2: 44 89 E0  MOV Ed, Gd[m
+[32m0x3fbcfee8bc: 1 emitted opcodes, inst=45, barrier=0 state=0/1(1), set=0/0, use=0, need=0/0, sm=0/0, sew@entry=7, sew@exit=7, pred=44[m
+	005e7833	AND             a6_rax, t3_r12, t0_mask
+[4;32mNew instruction 46, native=0x3fbcfee8c0 (0x1a0)[m
+New Instruction x64:0x1000022a5, native:0x3fbcfee8c0
+[01;33m0x1000022a5: 41 89 CF  MOV Ed, Gd[m
+[32m0x3fbcfee8c0: 1 emitted opcodes, inst=46, barrier=0 state=0/1(1), set=0/0, use=0, need=0/0, sm=0/0, sew@entry=7, sew@exit=7, pred=45[m
+	0058ffb3	AND             t6_r15, a7_rcx, t0_mask
+[4;32mNew instruction 47, native=0x3fbcfee8c4 (0x1a4)[m
+New Instruction x64:0x1000022a8, native:0x3fbcfee8c4
+[01;33m0x1000022a8: 48 89 3A  MOV Ed, Gd[m
+[32m0x3fbcfee8c4: 1 emitted opcodes, inst=47, barrier=0 state=0/1(1), set=0/0, use=0, need=0/0, sm=0/0, sew@entry=7, sew@exit=7, pred=46[m
+	01793023	SD              s7_rdi, s2_rdx, 0x0(0)
+[4;32mNew instruction 48, native=0x3fbcfee8c8 (0x1a8)[m
+New Instruction x64:0x1000022ab, native:0x3fbcfee8c8
+[01;33m0x1000022ab: 31 C8  XOR Ed, Gd[m
+[32m0x3fbcfee8c8: 2 emitted opcodes, inst=48, barrier=0 state=3/1(1), set=3F/0, use=0, need=0/0, sm=0/1, sew@entry=7, sew@exit=7, pred=47[m
+	01184833	XOR             a6_rax, a6_rax, a7_rcx
+	00587833	AND             a6_rax, a6_rax, t0_mask
+[4;32mNew instruction 49, native=0x3fbcfee8d0 (0x1b0)[m
+New Instruction x64:0x1000022ad, native:0x3fbcfee8d0
+[01;33m0x1000022ad: 41 83 E7 07  AND Ed, Ib[m
+[32m0x3fbcfee8d0: 2 emitted opcodes, inst=49, barrier=0 state=3/1(1), set=3F/0, use=0, need=0/0, sm=0/1, sew@entry=7, sew@exit=7, pred=48[m
+	007fff93	ANDI            t6_r15, t6_r15, 0x7(7)
+	005fffb3	AND             t6_r15, t6_r15, t0_mask
+[4;32mNew instruction 50, native=0x3fbcfee8d8 (0x1b8)[m
+New Instruction x64:0x1000022b1, native:0x3fbcfee8d8
+[01;33m0x1000022b1: 48 89 55 00  MOV Ed, Gd[m
+[32m0x3fbcfee8d8: 1 emitted opcodes, inst=50, barrier=0 state=0/1(1), set=0/0, use=0, need=0/0, sm=0/1, sew@entry=7, sew@exit=7, pred=49[m
+	012ab023	SD              s2_rdx, s5_rbp, 0x0(0)
+[4;32mNew instruction 51, native=0x3fbcfee8dc (0x1bc)[m
+New Instruction x64:0x1000022b5, native:0x3fbcfee8dc
+[01;33m0x1000022b5: C1 E0 03  SHL Ed, Ib[m
+[32m0x3fbcfee8dc: 2 emitted opcodes, inst=51, barrier=0 state=3/1(1), set=3F/0, use=0, need=0/0, sm=0/1, sew@entry=7, sew@exit=7, pred=50[m
+	0038181b	SLLIW           a6_rax, a6_rax, 0x3(3)
+	00587833	AND             a6_rax, a6_rax, t0_mask
+[4;32mNew instruction 52, native=0x3fbcfee8e4 (0x1c4)[m
+New Instruction x64:0x1000022b8, native:0x3fbcfee8e4
+[01;33m0x1000022b8: 48 89 72 08  MOV Ed, Gd[m
+[32m0x3fbcfee8e4: 1 emitted opcodes, inst=52, barrier=0 state=0/1(1), set=0/0, use=0, need=0/0, sm=0/1, sew@entry=7, sew@exit=7, pred=51[m
+	01693423	SD              s6_rsi, s2_rdx, 0x8(8)
+[4;32mNew instruction 53, native=0x3fbcfee8e8 (0x1c8)[m
+New Instruction x64:0x1000022bc, native:0x3fbcfee8e8
+[01;33m0x1000022bc: 83 E0 78  AND Ed, Ib[m
+[32m0x3fbcfee8e8: 2 emitted opcodes, inst=53, barrier=0 state=3/1(1), set=3F/0, use=0, need=0/0, sm=0/1, sew@entry=7, sew@exit=7, pred=52[m
+	07887813	ANDI            a6_rax, a6_rax, 0x78(120)
+	00587833	AND             a6_rax, a6_rax, t0_mask
+[4;32mNew instruction 54, native=0x3fbcfee8f0 (0x1d0)[m
+New Instruction x64:0x1000022bf, native:0x3fbcfee8f0
+[01;33m0x1000022bf: 44 09 F8  OR Ed, Gd[m
+[32m0x3fbcfee8f0: 2 emitted opcodes, inst=54, barrier=0 state=3/1(1), set=3F/0, use=0, need=0/0, sm=0/1, sew@entry=7, sew@exit=7, pred=53[m
+	01f86833	OR              a6_rax, a6_rax, t6_r15
+	00587833	AND             a6_rax, a6_rax, t0_mask
+[4;32mNew instruction 55, native=0x3fbcfee8f8 (0x1d8)[m
+New Instruction x64:0x1000022c2, native:0x3fbcfee8f8
+[01;33m0x1000022c2: 89 C7  MOV Ed, Gd[m
+[32m0x3fbcfee8f8: 1 emitted opcodes, inst=55, barrier=0 state=0/1(1), set=0/0, use=0, need=0/0, sm=0/1, sew@entry=7, sew@exit=7, pred=54[m
+	00587bb3	AND             s7_rdi, a6_rax, t0_mask
+[4;32mNew instruction 56, native=0x3fbcfee8fc (0x1dc)[m
+New Instruction x64:0x1000022c4, native:0x3fbcfee8fc
+[01;33m0x1000022c4: C1 E7 08  SHL Ed, Ib[m
+[32m0x3fbcfee8fc: 2 emitted opcodes, inst=56, barrier=0 state=3/1(1), set=3F/0, use=0, need=0/0, sm=0/1, sew@entry=7, sew@exit=7, pred=55[m
+	008b9b9b	SLLIW           s7_rdi, s7_rdi, 0x8(8)
+	005bfbb3	AND             s7_rdi, s7_rdi, t0_mask
+[4;32mNew instruction 57, native=0x3fbcfee904 (0x1e4)[m
+New Instruction x64:0x1000022c7, native:0x3fbcfee904
+[01;33m0x1000022c7: 09 F8  OR Ed, Gd[m
+[32m0x3fbcfee904: 2 emitted opcodes, inst=57, barrier=0 state=3/1(1), set=3F/0, use=0, need=0/0, sm=0/1, sew@entry=7, sew@exit=7, pred=56[m
+	01786833	OR              a6_rax, a6_rax, s7_rdi
+	00587833	AND             a6_rax, a6_rax, t0_mask
+[4;32mNew instruction 58, native=0x3fbcfee90c (0x1ec)[m
+New Instruction x64:0x1000022c9, native:0x3fbcfee90c
+[01;33m0x1000022c9: 48 89 D7  MOV Ed, Gd[m
+[32m0x3fbcfee90c: 1 emitted opcodes, inst=58, barrier=0 state=0/1(1), set=0/0, use=0, need=0/0, sm=0/1, sew@entry=7, sew@exit=7, pred=57[m
+	00090b93	ADDI            s7_rdi, s2_rdx, 0x0(0)
+[4;32mNew instruction 59, native=0x3fbcfee910 (0x1f0)[m
+New Instruction x64:0x1000022cc, native:0x3fbcfee910
+[01;33m0x1000022cc: 4C 89 C2  MOV Ed, Gd[m
+[32m0x3fbcfee910: 1 emitted opcodes, inst=59, barrier=0 state=0/1(1), set=0/0, use=0, need=0/0, sm=0/1, sew@entry=7, sew@exit=7, pred=58[m
+	000c0913	ADDI            s2_rdx, s8_r8, 0x0(0)
+[4;32mNew instruction 60, native=0x3fbcfee914 (0x1f4)[m
+New Instruction x64:0x1000022cf, native:0x3fbcfee914
+[01;33m0x1000022cf: 66 89 06  MOV Ew, Gw[m
+[32m0x3fbcfee914: 1 emitted opcodes, inst=60, barrier=0 state=0/1(1), set=0/0, use=0, need=0/0, sm=0/1, sew@entry=7, sew@exit=7, pred=59[m
+	010b1023	SH              a6_rax, s6_rsi, 0x0(0)
+[4;32mNew instruction 61, native=0x3fbcfee918 (0x1f8)[m
+New Instruction x64:0x1000022d2, native:0x3fbcfee918
+[01;33m0x1000022d2: B8 FF 7F 00 00  MOV Reg, Id[m
+[32m0x3fbcfee918: 2 emitted opcodes, inst=61, barrier=0 state=0/1(1), set=0/0, use=0, need=0/0, sm=0/1, sew@entry=7, sew@exit=7, pred=60[m
+	00008837	LUI             a6_rax, 0x8(8)
+	fff8081b	ADDIW           a6_rax, a6_rax, 0xffffffff(-1)
+[4;32mNew instruction 62, native=0x3fbcfee920 (0x200)[m
+New Instruction x64:0x1000022d7, native:0x3fbcfee920
+[01;33m0x1000022d7: 66 89 46 02  MOV Ew, Gw[m
+[32m0x3fbcfee920: 1 emitted opcodes, inst=62, barrier=0 state=0/1(1), set=0/0, use=0, need=0/0, sm=0/1, sew@entry=7, sew@exit=7, pred=61[m
+	010b1123	SH              a6_rax, s6_rsi, 0x2(2)
+[4;32mNew instruction 63, native=0x3fbcfee924 (0x204)[m
+New Instruction x64:0x1000022db, native:0x3fbcfee924
+[01;33m0x1000022db: 4C 89 D6  MOV Ed, Gd[m
+[32m0x3fbcfee924: 1 emitted opcodes, inst=63, barrier=0 state=0/1(1), set=0/0, use=0, need=0/0, sm=0/1, sew@entry=7, sew@exit=7, pred=62[m
+	000d0b13	ADDI            s6_rsi, s10_r10, 0x0(0)
+[4;32mNew instruction 64, native=0x3fbcfee928 (0x208)[m
+New Instruction x64:0x1000022de, native:0x3fbcfee928
+[01;33m0x1000022de: 83 C1 01  ADD Ed, Ib[m
+[32m0x3fbcfee928: 2 emitted opcodes, inst=64, barrier=0 state=3/1(1), set=3F/0, use=0, need=0/0, sm=0/0, sew@entry=7, sew@exit=7, pred=41/44/63[m
+	0018889b	ADDIW           a7_rcx, a7_rcx, 0x1(1)
+	0058f8b3	AND             a7_rcx, a7_rcx, t0_mask
+[4;32mNew instruction 65, native=0x3fbcfee930 (0x210)[m
+New Instruction x64:0x1000022e1, native:0x3fbcfee930
+[01;33m0x1000022e1: 41 39 C9  CMP Ed, Gd[m
+[32m0x3fbcfee930: 1 emitted opcodes, inst=65, barrier=0 state=3/1(1), set=3F/8, use=0, need=0/8, sm=0/0, sew@entry=7, sew@exit=7, pred=64[m
+	f0a47413	ANDI            s0_flags, s0_flags, 0xffffff0a(-246)
+[4;32mNew instruction 66, native=0x3fbcfee934 (0x214)[m
+New Instruction x64:0x1000022e4, native:0x3fbcfee934
+[01;33m0x1000022e4: 75 AA  JNZ ib[m
+[32m0x3fbcfee934: 3 emitted opcodes, inst=66, barrier=0 state=0/1(1), set=0/0, use=8, need=8/0, sm=0/0, sew@entry=7, sew@exit=7, pred=65, jmp=39[m
+	04047593	ANDI            a1, s0_flags, 0x40(64)
+	f4058ae3	BEQ             a1, zero, 0xffffff54(-172)
+	00000013	ADDI            zero, zero, 0x0(0)
+[4;32mNew instruction 67, native=0x3fbcfee940 (0x220)[m
+New Instruction x64:0x1000022e6, native:0x3fbcfee940
+[01;33m0x1000022e6: 48 8B 0F  MOV Gd, Ed[m
+[32m0x3fbcfee940: 1 emitted opcodes, inst=67, barrier=0 state=0/1(1), set=0/0, use=0, need=0/0, sm=0/0, sew@entry=7, sew@exit=7, pred=36/66[m
+	000bb883	LD              a7_rcx, s7_rdi, 0x0(0)
+[4;32mNew instruction 68, native=0x3fbcfee944 (0x224)[m
+New Instruction x64:0x1000022e9, native:0x3fbcfee944
+[01;33m0x1000022e9: 48 85 C9  TEST Ed, Gd[m
+[32m0x3fbcfee944: 4 emitted opcodes, inst=68, barrier=0 state=3/1(1), set=3F/8, use=0, need=0/8, sm=0/0, sew@entry=7, sew@exit=7, pred=67[m
+	f0a47413	ANDI            s0_flags, s0_flags, 0xffffff0a(-246)
+	0118f6b3	AND             a3, a7_rcx, a7_rcx
+	00069463	BNE             a3, zero, 0x8(8)
+	04046413	ORI             s0_flags, s0_flags, 0x40(64)
+[4;32mNew instruction 69, native=0x3fbcfee954 (0x234)[m
+New Instruction x64:0x1000022ec, native:0x3fbcfee954
+[01;33m0x1000022ec: 74 5B  JZ ib[m
+[32m0x3fbcfee954: 3 emitted opcodes, inst=69, barrier=0 state=0/1(1), set=0/0, use=8, need=8/0, sm=0/0, sew@entry=7, sew@exit=7, pred=68, jmp=95[m
+	04047593	ANDI            a1, s0_flags, 0x40(64)
+	0e059663	BNE             a1, zero, 0xec(236)
+	00000013	ADDI            zero, zero, 0x0(0)
+[4;32mNew instruction 70, native=0x3fbcfee960 (0x240)[m
+New Instruction x64:0x1000022ee, native:0x3fbcfee960
+[01;33m0x1000022ee: B8 CD CC CC CC  MOV Reg, Id[m
+[32m0x3fbcfee960: 3 emitted opcodes, inst=70, barrier=0 state=0/1(1), set=0/0, use=0, need=0/0, sm=0/0, sew@entry=7, sew@exit=7, pred=69[m
+	ccccd837	LUI             a6_rax, 0xfffccccd(-209715)
+	ccd8081b	ADDIW           a6_rax, a6_rax, 0xfffffccd(-819)
+	00587833	AND             a6_rax, a6_rax, t0_mask
+[4;32mNew instruction 71, native=0x3fbcfee96c (0x24c)[m
+New Instruction x64:0x1000022f3, native:0x3fbcfee96c
+[01;33m0x1000022f3: BE 00 02 00 00  MOV Reg, Id[m
+[32m0x3fbcfee96c: 1 emitted opcodes, inst=71, barrier=0 state=0/1(1), set=0/0, use=0, need=0/0, sm=0/0, sew@entry=7, sew@exit=7, pred=70[m
+	20000b1b	ADDIW           s6_rsi, zero, 0x200(512)
+[4;32mNew instruction 72, native=0x3fbcfee970 (0x250)[m
+New Instruction x64:0x1000022f8, native:0x3fbcfee970
+[01;33m0x1000022f8: 48 0F AF D8  IMUL Gd, Ed[m
+[32m0x3fbcfee970: 1 emitted opcodes, inst=72, barrier=0 state=2/1(1), set=3F/0, use=0, need=0/0, sm=0/0, sew@entry=7, sew@exit=7, pred=71[m
+	030989b3	MUL             s3_rbx, s3_rbx, a6_rax
+[4;32mNew instruction 73, native=0x3fbcfee974 (0x254)[m
+New Instruction x64:0x1000022fc, native:0x3fbcfee974
+[01;33m0x1000022fc: B8 01 00 00 00  MOV Reg, Id[m
+[32m0x3fbcfee974: 1 emitted opcodes, inst=73, barrier=0 state=0/1(1), set=0/0, use=0, need=0/0, sm=0/0, sew@entry=7, sew@exit=7, pred=72[m
+	0010081b	ADDIW           a6_rax, zero, 0x1(1)
+[4;32mNew instruction 74, native=0x3fbcfee978 (0x258)[m
+New Instruction x64:0x100002301, native:0x3fbcfee978
+[01;33m0x100002301: 48 C1 EB 22  SHR Ed, Ib[m
+[32m0x3fbcfee978: 1 emitted opcodes, inst=74, barrier=0 state=3/1(1), set=3F/0, use=0, need=0/0, sm=0/0, sew@entry=7, sew@exit=7, pred=73[m
+	0229d993	SRLI            s3_rbx, s3_rbx, 0x22(34)
+[4;32mNew instruction 75, native=0x3fbcfee97c (0x25c)[m
+New Instruction x64:0x100002305, native:0x3fbcfee97c
+[01;33m0x100002305: EB 0C  JMP Ib[m
+[32m0x3fbcfee97c: 1 emitted opcodes, inst=75, barrier=0 state=0/1(1), set=0/0, use=0, need=0/0, sm=0/0, sew@entry=7, sew@exit=7, pred=74, jmp=78[m
+Jump to 8 / 0x8
+	0080006f	JAL             zero, 0x8(8)
+[4;32mNew instruction 76, native=0x3fbcfee980 (0x260)[m
+Skipping unused opcode
+[01;33m0x100002307: 66 0F 1F 84 00 00 00 00 00  Skipped opcode[m
+[32m0x3fbcfee980: 0 emitted opcodes, inst=76, barrier=0 state=0/0(0), set=0/0, use=0, need=0/0, sm=0/0, sew@entry=7, sew@exit=7[m
+Reset Caches with 94
+[4;32mNew instruction 77, native=0x3fbcfee980 (0x260)[m
+New Instruction x64:0x100002310, native:0x3fbcfee980
+[01;33m0x100002310: 48 89 D1  MOV Ed, Gd[m
+[32m0x3fbcfee980: 1 emitted opcodes, inst=77, barrier=0 state=0/1(1), set=0/0, use=0, need=0/0, sm=0/0, sew@entry=7, sew@exit=7, pred=94[m
+	00090893	ADDI            a7_rcx, s2_rdx, 0x0(0)
+[4;32mNew instruction 78, native=0x3fbcfee984 (0x264)[m
+New Instruction x64:0x100002313, native:0x3fbcfee984
+[01;33m0x100002313: 48 8B 7F 08  MOV Gd, Ed[m
+[32m0x3fbcfee984: 1 emitted opcodes, inst=78, barrier=0 state=0/1(1), set=0/0, use=0, need=0/0, sm=0/0, sew@entry=7, sew@exit=7, pred=75/77[m
+	008bbb83	LD              s7_rdi, s7_rdi, 0x8(8)
+[4;32mNew instruction 79, native=0x3fbcfee988 (0x268)[m
+New Instruction x64:0x100002317, native:0x3fbcfee988
+[01;33m0x100002317: 89 C2  MOV Ed, Gd[m
+[32m0x3fbcfee988: 1 emitted opcodes, inst=79, barrier=0 state=0/1(1), set=0/0, use=0, need=0/0, sm=0/0, sew@entry=7, sew@exit=7, pred=78[m
+	00587933	AND             s2_rdx, a6_rax, t0_mask
+[4;32mNew instruction 80, native=0x3fbcfee98c (0x26c)[m
+New Instruction x64:0x100002319, native:0x3fbcfee98c
+[01;33m0x100002319: 39 C3  CMP Ed, Gd[m
+[32m0x3fbcfee98c: 1 emitted opcodes, inst=80, barrier=0 state=3/1(1), set=3F/9, use=0, need=0/9, sm=0/0, sew@entry=7, sew@exit=7, pred=79[m
+	f0a47413	ANDI            s0_flags, s0_flags, 0xffffff0a(-246)
+[4;32mNew instruction 81, native=0x3fbcfee990 (0x270)[m
+New Instruction x64:0x10000231b, native:0x3fbcfee990
+[01;33m0x10000231b: 77 15  JNBE ib[m
+[32m0x3fbcfee990: 3 emitted opcodes, inst=81, barrier=0 state=0/1(1), set=0/0, use=9, need=9/0, sm=0/0, sew@entry=7, sew@exit=7, pred=80, jmp=88[m
+	04147593	ANDI            a1, s0_flags, 0x41(65)
+	04058e63	BEQ             a1, zero, 0x5c(92)
+	00000013	ADDI            zero, zero, 0x0(0)
+[4;32mNew instruction 82, native=0x3fbcfee99c (0x27c)[m
+New Instruction x64:0x10000231d, native:0x3fbcfee99c
+[01;33m0x10000231d: 89 F2  MOV Ed, Gd[m
+[32m0x3fbcfee99c: 1 emitted opcodes, inst=82, barrier=0 state=0/1(1), set=0/0, use=0, need=0/0, sm=0/0, sew@entry=7, sew@exit=7, pred=81[m
+	005b7933	AND             s2_rdx, s6_rsi, t0_mask
+[4;32mNew instruction 83, native=0x3fbcfee9a0 (0x280)[m
+New Instruction x64:0x10000231f, native:0x3fbcfee9a0
+[01;33m0x10000231f: 45 89 F0  MOV Ed, Gd[m
+[32m0x3fbcfee9a0: 1 emitted opcodes, inst=83, barrier=0 state=0/1(1), set=0/0, use=0, need=0/0, sm=0/0, sew@entry=7, sew@exit=7, pred=82[m
+	005f7c33	AND             s8_r8, t5_r14, t0_mask
+[4;32mNew instruction 84, native=0x3fbcfee9a4 (0x284)[m
+New Instruction x64:0x100002322, native:0x3fbcfee9a4
+[01;33m0x100002322: 66 81 E2 00 07  AND Ew, Iw[m
+[32m0x3fbcfee9a4: 7 emitted opcodes, inst=84, barrier=0 state=3/1(1), set=3F/0, use=0, need=0/0, sm=0/0, sew@entry=7, sew@exit=7, pred=83[m
+	03091593	SLLI            a1, s2_rdx, 0x30(48)
+	0305d593	SRLI            a1, a1, 0x30(48)
+	7000079b	ADDIW           a5, zero, 0x700(1792)
+	00f5f5b3	AND             a1, a1, a5
+	01095913	SRLI            s2_rdx, s2_rdx, 0x10(16)
+	01091913	SLLI            s2_rdx, s2_rdx, 0x10(16)
+	00b96933	OR              s2_rdx, s2_rdx, a1
+[4;32mNew instruction 85, native=0x3fbcfee9c0 (0x2a0)[m
+New Instruction x64:0x100002327, native:0x3fbcfee9c0
+[01;33m0x100002327: 41 31 C0  XOR Ed, Gd[m
+[32m0x3fbcfee9c0: 2 emitted opcodes, inst=85, barrier=0 state=3/1(1), set=3F/0, use=0, need=0/0, sm=0/0, sew@entry=7, sew@exit=7, pred=84[m
+	010c4c33	XOR             s8_r8, s8_r8, a6_rax
+	005c7c33	AND             s8_r8, s8_r8, t0_mask
+[4;32mNew instruction 86, native=0x3fbcfee9c8 (0x2a8)[m
+New Instruction x64:0x10000232a, native:0x3fbcfee9c8
+[01;33m0x10000232a: 44 09 C2  OR Ed, Gd[m
+[32m0x3fbcfee9c8: 2 emitted opcodes, inst=86, barrier=0 state=3/1(1), set=3F/0, use=0, need=0/0, sm=0/0, sew@entry=7, sew@exit=7, pred=85[m
+	01896933	OR              s2_rdx, s2_rdx, s8_r8
+	00597933	AND             s2_rdx, s2_rdx, t0_mask
+[4;32mNew instruction 87, native=0x3fbcfee9d0 (0x2b0)[m
+New Instruction x64:0x10000232d, native:0x3fbcfee9d0
+[01;33m0x10000232d: 66 81 E2 FF 3F  AND Ew, Iw[m
+[32m0x3fbcfee9d0: 8 emitted opcodes, inst=87, barrier=0 state=3/1(1), set=3F/0, use=0, need=0/0, sm=0/0, sew@entry=7, sew@exit=7, pred=86[m
+	03091593	SLLI            a1, s2_rdx, 0x30(48)
+	0305d593	SRLI            a1, a1, 0x30(48)
+	000047b7	LUI             a5, 0x4(4)
+	fff7879b	ADDIW           a5, a5, 0xffffffff(-1)
+	00f5f5b3	AND             a1, a1, a5
+	01095913	SRLI            s2_rdx, s2_rdx, 0x10(16)
+	01091913	SLLI            s2_rdx, s2_rdx, 0x10(16)
+	00b96933	OR              s2_rdx, s2_rdx, a1
+[4;32mNew instruction 88, native=0x3fbcfee9f0 (0x2d0)[m
+New Instruction x64:0x100002332, native:0x3fbcfee9f0
+[01;33m0x100002332: 66 89 57 02  MOV Ew, Gw[m
+[32m0x3fbcfee9f0: 1 emitted opcodes, inst=88, barrier=0 state=0/1(1), set=0/0, use=0, need=0/0, sm=0/0, sew@entry=7, sew@exit=7, pred=81/87[m
+	012b9123	SH              s2_rdx, s7_rdi, 0x2(2)
+[4;32mNew instruction 89, native=0x3fbcfee9f4 (0x2d4)[m
+New Instruction x64:0x100002336, native:0x3fbcfee9f4
+[01;33m0x100002336: 48 8B 11  MOV Gd, Ed[m
+[32m0x3fbcfee9f4: 1 emitted opcodes, inst=89, barrier=0 state=0/1(1), set=0/0, use=0, need=0/0, sm=0/1, sew@entry=7, sew@exit=7, pred=88[m
+	0008b903	LD              s2_rdx, a7_rcx, 0x0(0)
+[4;32mNew instruction 90, native=0x3fbcfee9f8 (0x2d8)[m
+New Instruction x64:0x100002339, native:0x3fbcfee9f8
+[01;33m0x100002339: 83 C0 01  ADD Ed, Ib[m
+[32m0x3fbcfee9f8: 2 emitted opcodes, inst=90, barrier=0 state=3/1(1), set=3F/0, use=0, need=0/0, sm=0/1, sew@entry=7, sew@exit=7, pred=89[m
+	0018081b	ADDIW           a6_rax, a6_rax, 0x1(1)
+	00587833	AND             a6_rax, a6_rax, t0_mask
+[4;32mNew instruction 91, native=0x3fbcfeea00 (0x2e0)[m
+New Instruction x64:0x10000233c, native:0x3fbcfeea00
+[01;33m0x10000233c: 66 81 C6 00 01  ADD Ew, Iw[m
+[32m0x3fbcfeea00: 9 emitted opcodes, inst=91, barrier=0 state=3/1(1), set=3F/0, use=0, need=0/0, sm=0/1, sew@entry=7, sew@exit=7, pred=90[m
+	030b1593	SLLI            a1, s6_rsi, 0x30(48)
+	0305d593	SRLI            a1, a1, 0x30(48)
+	1000079b	ADDIW           a5, zero, 0x100(256)
+	00f585b3	ADD             a1, a1, a5
+	03059593	SLLI            a1, a1, 0x30(48)
+	0305d593	SRLI            a1, a1, 0x30(48)
+	010b5b13	SRLI            s6_rsi, s6_rsi, 0x10(16)
+	010b1b13	SLLI            s6_rsi, s6_rsi, 0x10(16)
+	00bb6b33	OR              s6_rsi, s6_rsi, a1
+[4;32mNew instruction 92, native=0x3fbcfeea24 (0x304)[m
+New Instruction x64:0x100002341, native:0x3fbcfeea24
+[01;33m0x100002341: 48 89 CF  MOV Ed, Gd[m
+[32m0x3fbcfeea24: 1 emitted opcodes, inst=92, barrier=0 state=0/1(1), set=0/0, use=0, need=0/0, sm=0/1, sew@entry=7, sew@exit=7, pred=91[m
+	00088b93	ADDI            s7_rdi, a7_rcx, 0x0(0)
+[4;32mNew instruction 93, native=0x3fbcfeea28 (0x308)[m
+New Instruction x64:0x100002344, native:0x3fbcfeea28
+[01;33m0x100002344: 48 85 D2  TEST Ed, Gd[m
+[32m0x3fbcfeea28: 4 emitted opcodes, inst=93, barrier=0 state=3/1(1), set=3F/8, use=0, need=0/8, sm=0/1, sew@entry=7, sew@exit=7, pred=92[m
+	f0a47413	ANDI            s0_flags, s0_flags, 0xffffff0a(-246)
+	012976b3	AND             a3, s2_rdx, s2_rdx
+	00069463	BNE             a3, zero, 0x8(8)
+	04046413	ORI             s0_flags, s0_flags, 0x40(64)
+[4;32mNew instruction 94, native=0x3fbcfeea38 (0x318)[m
+New Instruction x64:0x100002347, native:0x3fbcfeea38
+[01;33m0x100002347: 75 C7  JNZ ib[m
+[32m0x3fbcfeea38: 3 emitted opcodes, inst=94, barrier=0 state=0/1(1), set=0/0, use=8, need=8/0, sm=0/1, sew@entry=7, sew@exit=7, pred=93, jmp=77[m
+	04047593	ANDI            a1, s0_flags, 0x40(64)
+	f40582e3	BEQ             a1, zero, 0xffffff44(-188)
+	00000013	ADDI            zero, zero, 0x0(0)
+[4;32mNew instruction 95, native=0x3fbcfeea44 (0x324)[m
+New Instruction x64:0x100002349, native:0x3fbcfeea44
+[01;33m0x100002349: 5B  POP reg[m
+[32m0x3fbcfeea44: 2 emitted opcodes, inst=95, barrier=0 state=0/1(1), set=0/0, use=0, need=0/0, sm=0/0, sew@entry=7, sew@exit=7, pred=69/94[m
+	000a3983	LD              s3_rbx, s4_rsp, 0x0(0)
+	008a0a13	ADDI            s4_rsp, s4_rsp, 0x8(8)
+[4;32mNew instruction 96, native=0x3fbcfeea4c (0x32c)[m
+New Instruction x64:0x10000234a, native:0x3fbcfeea4c
+[01;33m0x10000234a: 48 89 EF  MOV Ed, Gd[m
+[32m0x3fbcfeea4c: 1 emitted opcodes, inst=96, barrier=0 state=0/1(1), set=0/0, use=0, need=0/0, sm=0/0, sew@entry=7, sew@exit=7, pred=95[m
+	000a8b93	ADDI            s7_rdi, s5_rbp, 0x0(0)
+[4;32mNew instruction 97, native=0x3fbcfeea50 (0x330)[m
+New Instruction x64:0x10000234d, native:0x3fbcfeea50
+[01;33m0x10000234d: 31 D2  XOR Ed, Gd[m
+[32m0x3fbcfeea50: 4 emitted opcodes, inst=97, barrier=0 state=3/1(1), set=3F/80, use=0, need=0/80, sm=0/0, sew@entry=7, sew@exit=7, pred=96[m
+	03400713	ADDI            a4, zero, 0x34(52)
+	44e52a23	SW              a4, a0, 0x454(1108)
+	01294933	XOR             s2_rdx, s2_rdx, s2_rdx
+	47252423	SW              s2_rdx, a0, 0x468(1128)
+[4;32mNew instruction 98, native=0x3fbcfeea60 (0x340)[m
+New Instruction x64:0x10000234f, native:0x3fbcfeea60
+[01;33m0x10000234f: 5D  POP reg[m
+[32m0x3fbcfeea60: 2 emitted opcodes, inst=98, barrier=0 state=0/3(0), set=0/0, use=0, need=80/80, sm=0/0, sew@entry=7, sew@exit=7, pred=97[m
+	000a3a83	LD              s5_rbp, s4_rsp, 0x0(0)
+	008a0a13	ADDI            s4_rsp, s4_rsp, 0x8(8)
+[4;32mNew instruction 99, native=0x3fbcfeea68 (0x348)[m
+New Instruction x64:0x100002350, native:0x3fbcfeea68
+[01;33m0x100002350: 48 8D 35 19 F8 FF FF  LEA Gd, Ed[m
+[32m0x3fbcfeea68: 4 emitted opcodes, inst=99, barrier=0 state=0/3(0), set=0/0, use=0, need=80/80, sm=0/0, sew@entry=7, sew@exit=7, pred=98[m
+  Table64: 0x100002357
+	00000397	AUIPC           t2_rip, 0x0(0)
+	0603b383	LD              t2_rip, t2_rip, 0x60(96)
+	81938613	ADDI            a2, t2_rip, 0xfffff819(-2023)
+	00060b13	ADDI            s6_rsi, a2, 0x0(0)
+[4;32mNew instruction 100, native=0x3fbcfeea78 (0x358)[m
+New Instruction x64:0x100002357, native:0x3fbcfeea78
+[01;33m0x100002357: 41 5C  POP reg[m
+[32m0x3fbcfeea78: 2 emitted opcodes, inst=100, barrier=0 state=0/3(0), set=0/0, use=0, need=80/80, sm=0/0, sew@entry=7, sew@exit=7, pred=99, last_ip=0x100002357[m
+	000a3e03	LD              t3_r12, s4_rsp, 0x0(0)
+	008a0a13	ADDI            s4_rsp, s4_rsp, 0x8(8)
+[4;32mNew instruction 101, native=0x3fbcfeea80 (0x360)[m
+New Instruction x64:0x100002359, native:0x3fbcfeea80
+[01;33m0x100002359: 41 5D  POP reg[m
+[32m0x3fbcfeea80: 2 emitted opcodes, inst=101, barrier=0 state=0/3(0), set=0/0, use=0, need=80/80, sm=0/0, sew@entry=7, sew@exit=7, pred=100, last_ip=0x100002357[m
+	000a3e83	LD              t4_r13, s4_rsp, 0x0(0)
+	008a0a13	ADDI            s4_rsp, s4_rsp, 0x8(8)
+[4;32mNew instruction 102, native=0x3fbcfeea88 (0x368)[m
+New Instruction x64:0x10000235b, native:0x3fbcfeea88
+[01;33m0x10000235b: 41 5E  POP reg[m
+[32m0x3fbcfeea88: 2 emitted opcodes, inst=102, barrier=0 state=0/3(0), set=0/0, use=0, need=80/80, sm=0/0, sew@entry=7, sew@exit=7, pred=101, last_ip=0x100002357[m
+	000a3f03	LD              t5_r14, s4_rsp, 0x0(0)
+	008a0a13	ADDI            s4_rsp, s4_rsp, 0x8(8)
+[4;32mNew instruction 103, native=0x3fbcfeea90 (0x370)[m
+New Instruction x64:0x10000235d, native:0x3fbcfeea90
+[01;33m0x10000235d: 41 5F  POP reg[m
+[32m0x3fbcfeea90: 2 emitted opcodes, inst=103, barrier=0 state=0/3(0), set=0/0, use=0, need=80/80, sm=0/0, sew@entry=7, sew@exit=7, pred=102, last_ip=0x100002357[m
+	000a3f83	LD              t6_r15, s4_rsp, 0x0(0)
+	008a0a13	ADDI            s4_rsp, s4_rsp, 0x8(8)
+[4;32mNew instruction 104, native=0x3fbcfeea98 (0x378)[m
+New Instruction x64:0x10000235f, native:0x3fbcfeea98
+[01;33m0x10000235f: E9 DC FA FF FF  JMP Id (=> /home/ICT-02-02/test/coremark.exe:core_list_mergesort)[m
+[32m0x3fbcfeea98: 7 emitted opcodes, inst=104, barrier=0 state=0/3(0), set=0/0, use=0, need=80/80, sm=0/0, sew@entry=7, sew@exit=7, pred=103, jmp=out, last_ip=0x100002357[m
+Jump to next
+  Table64: 0x3fbc9cd210
+	00000697	AUIPC           a3, 0x0(0)
+	0386b683	LD              a3, a3, 0x38(56)
+  Table64: 0x100001e40
+	00000397	AUIPC           t2_rip, 0x0(0)
+	0383b383	LD              t2_rip, t2_rip, 0x38(56)
+	0006b603	LD              a2, a3, 0x0(0)
+	00038593	ADDI            a1, t2_rip, 0x0(0)
+	000600e7	JALR            ra, a2, 0x0(0)
+[4;32mNew instruction 105, native=0x3fbcfeeab4 (0x394)[m
+Skipping unused opcode
+[01;33m0x100002364: 0F 1F 40 00  Skipped opcode[m
+[32m0x3fbcfeeab4: 0 emitted opcodes, inst=105, barrier=0 state=0/0(0), set=0/0, use=0, need=0/0, sm=0/0, sew@entry=7, sew@exit=7[m
+Reset Caches with 27
+[4;32mNew instruction 106, native=0x3fbcfeeab4 (0x394)[m
+New Instruction x64:0x100002368, native:0x3fbcfeeab4
+[01;33m0x100002368: 48 89 FA  MOV Ed, Gd[m
+[32m0x3fbcfeeab4: 1 emitted opcodes, inst=106, barrier=0 state=0/1(1), set=0/0, use=0, need=0/0, sm=0/0, sew@entry=7, sew@exit=7, pred=27/30[m
+	000b8913	ADDI            s2_rdx, s7_rdi, 0x0(0)
+[4;32mNew instruction 107, native=0x3fbcfeeab8 (0x398)[m
+New Instruction x64:0x10000236b, native:0x3fbcfeeab8
+[01;33m0x10000236b: 48 89 C6  MOV Ed, Gd[m
+[32m0x3fbcfeeab8: 1 emitted opcodes, inst=107, barrier=0 state=0/1(1), set=0/0, use=0, need=0/0, sm=0/0, sew@entry=7, sew@exit=7, pred=106[m
+	00080b13	ADDI            s6_rsi, a6_rax, 0x0(0)
+[4;32mNew instruction 108, native=0x3fbcfeeabc (0x39c)[m
+New Instruction x64:0x10000236e, native:0x3fbcfeeabc
+[01;33m0x10000236e: 31 FF  XOR Ed, Gd[m
+[32m0x3fbcfeeabc: 1 emitted opcodes, inst=108, barrier=0 state=3/1(1), set=3F/0, use=0, need=0/0, sm=0/0, sew@entry=7, sew@exit=7, pred=107[m
+	017bcbb3	XOR             s7_rdi, s7_rdi, s7_rdi
+[4;32mNew instruction 109, native=0x3fbcfeeac0 (0x3a0)[m
+New Instruction x64:0x100002370, native:0x3fbcfeeac0
+[01;33m0x100002370: E9 13 FF FF FF  JMP Id (=> /home/ICT-02-02/test/coremark.exe:core_list_init + 0x88)[m
+[32m0x3fbcfeeac0: 1 emitted opcodes, inst=109, barrier=0 state=0/1(1), set=0/0, use=0, need=0/0, sm=0/0, sew@entry=7, sew@exit=7, pred=108, jmp=35[m
+Jump to -600 / 0xfffffda8
+	da9ff06f	JAL             zero, 0xfffffda8(-600)
+---- END OF BLOCK ---- (110)
+227481|SIGSEGV @0x3fbcfee8c4 (???(0x3fbcfee8c4)) (x64pc=0x1000022a8/"/home/ICT-02-02/test/coremark.exe/core_list_init + 0xa8", rsp=0x3fbdb1f448, stack=0x3fbd320000:0x3fbdb20000 own=(nil) fp=0x3fbdb1f4a0), for accessing 0x626ce000 (code=1/prot=0), db=0x3fbc9e80c0(0x3fbcfee720:0x3fbcfeeb78/0x100002200:0x100002375//home/ICT-02-02/test/coremark.exe/core_list_init:clean, hash:5773b14c/5773b14c) handler=(nil)
+RAX:0x0000000000000000 RCX:0x00000000000006b8 RDX:0x00000000626ce000 RBX:0x000000000000001f 
+RSP:0x0000003fbdb1f448 RBP:0x00000000626c7460 RSI:0x00000000626c9138 RDI:0x00000000626cdff0 
+ R8:0x00000000626ce010  R9:0x000000000000001f R10:0x00000000626c913c R11:0x00000000626c7650 
+R12:0x0000000000000000 R13:0x00000000626c76cc R14:0x0000000000000000 R15:0x00000000000006b8 
+ES:0x002b CS:0x0033 SS:0x002b DS:0x002b FS:0x0043 GS:0x0053 
+RSP-0x20:0x0000000000000000 RSP-0x18:0x0000000000000000 RSP-0x10:0x0000000000000000 RSP-0x08:0x0000000000000000
+RSP+0x00:0x0000000000000000 RSP+0x08:0x0000003fbdb1f4a0 RSP+0x10:0x0000003fbdb1f50a RSP+0x18:0x0000003fbdb1f580 x64opcode=48 89 3A 31 C8 41 83 E7 (opcode=01793023)
