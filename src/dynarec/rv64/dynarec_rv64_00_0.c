@@ -537,7 +537,15 @@ uintptr_t dynarec64_00_0(dynarec_rv64_t* dyn, uintptr_t addr, uintptr_t ip, int 
             nextop = F8;
             GETEB(x1, 0);
             GETGB(x2);
-            if (dyn->insts[ninst].pattern_code == 5 || dyn->insts[ninst].pattern_code == 45){
+            if (dyn->insts[ninst].pattern_code == 0 || dyn->insts[ninst].pattern_code == 40 ||
+                dyn->insts[ninst].pattern_code == 1 || dyn->insts[ninst].pattern_code == 41 ||
+                dyn->insts[ninst].pattern_code == 2 || dyn->insts[ninst].pattern_code == 42 ||
+                dyn->insts[ninst].pattern_code == 3 || dyn->insts[ninst].pattern_code == 43 ||
+                dyn->insts[ninst].pattern_code == 4 || dyn->insts[ninst].pattern_code == 44 ||
+                dyn->insts[ninst].pattern_code == 5 || dyn->insts[ninst].pattern_code == 45 ||
+                dyn->insts[ninst].pattern_code == 6 || dyn->insts[ninst].pattern_code == 46 ||
+                dyn->insts[ninst].pattern_code == 7 || dyn->insts[ninst].pattern_code == 47 ||
+                dyn->insts[ninst].pattern_code == 8 || dyn->insts[ninst].pattern_code == 48) {
                 dyn->insts[ninst].op1 = x1;
                 dyn->insts[ninst].op2 = x2;
                 dyn->insts[ninst+1].op1 = x1;
@@ -552,7 +560,14 @@ uintptr_t dynarec64_00_0(dynarec_rv64_t* dyn, uintptr_t addr, uintptr_t ip, int 
             nextop = F8;
             GETGD;
             GETED(0);
-            if (dyn->insts[ninst].pattern_code == 13 || dyn->insts[ninst].pattern_code == 53){
+            if (dyn->insts[ninst].pattern_code == 8 || dyn->insts[ninst].pattern_code == 48 ||
+                dyn->insts[ninst].pattern_code == 9 || dyn->insts[ninst].pattern_code == 49 ||
+                dyn->insts[ninst].pattern_code == 10 || dyn->insts[ninst].pattern_code == 50 ||
+                dyn->insts[ninst].pattern_code == 11 || dyn->insts[ninst].pattern_code == 51 ||
+                dyn->insts[ninst].pattern_code == 12 || dyn->insts[ninst].pattern_code == 52 ||
+                dyn->insts[ninst].pattern_code == 13 || dyn->insts[ninst].pattern_code == 53 ||
+                dyn->insts[ninst].pattern_code == 14 || dyn->insts[ninst].pattern_code == 54 ||
+                dyn->insts[ninst].pattern_code == 15 || dyn->insts[ninst].pattern_code == 55) {
                 dyn->insts[ninst].op1 = ed;
                 dyn->insts[ninst].op2 = gd;
                 dyn->insts[ninst+1].op1 = ed;
@@ -568,7 +583,14 @@ uintptr_t dynarec64_00_0(dynarec_rv64_t* dyn, uintptr_t addr, uintptr_t ip, int 
             nextop = F8;
             GETEB(x1, 0);
             GETGB(x2);
-            if (dyn->insts[ninst].pattern_code == 21 || dyn->insts[ninst].pattern_code == 61){
+            if (dyn->insts[ninst].pattern_code == 16 || dyn->insts[ninst].pattern_code == 56 ||
+                dyn->insts[ninst].pattern_code == 17 || dyn->insts[ninst].pattern_code == 57 ||
+                dyn->insts[ninst].pattern_code == 18 || dyn->insts[ninst].pattern_code == 58 ||
+                dyn->insts[ninst].pattern_code == 19 || dyn->insts[ninst].pattern_code == 59 ||
+                dyn->insts[ninst].pattern_code == 20 || dyn->insts[ninst].pattern_code == 60 ||
+                dyn->insts[ninst].pattern_code == 21 || dyn->insts[ninst].pattern_code == 61 ||
+                dyn->insts[ninst].pattern_code == 22 || dyn->insts[ninst].pattern_code == 62 ||
+                dyn->insts[ninst].pattern_code == 23 || dyn->insts[ninst].pattern_code == 63) {
                 dyn->insts[ninst].op1 = x2;
                 dyn->insts[ninst].op2 = x1;
                 dyn->insts[ninst+1].op1 = x2;
@@ -583,7 +605,14 @@ uintptr_t dynarec64_00_0(dynarec_rv64_t* dyn, uintptr_t addr, uintptr_t ip, int 
             nextop = F8;
             GETGD;
             GETED(0);
-            if (dyn->insts[ninst].pattern_code == 29 || dyn->insts[ninst].pattern_code == 69){
+            if (dyn->insts[ninst].pattern_code == 24 || dyn->insts[ninst].pattern_code == 64 ||
+                dyn->insts[ninst].pattern_code == 25 || dyn->insts[ninst].pattern_code == 65 ||
+                dyn->insts[ninst].pattern_code == 26 || dyn->insts[ninst].pattern_code == 66 ||
+                dyn->insts[ninst].pattern_code == 27 || dyn->insts[ninst].pattern_code == 67 ||
+                dyn->insts[ninst].pattern_code == 28 || dyn->insts[ninst].pattern_code == 68 ||
+                dyn->insts[ninst].pattern_code == 29 || dyn->insts[ninst].pattern_code == 69 ||
+                dyn->insts[ninst].pattern_code == 30 || dyn->insts[ninst].pattern_code == 70 ||
+                dyn->insts[ninst].pattern_code == 31 || dyn->insts[ninst].pattern_code == 71) {
                 dyn->insts[ninst].op1 = gd;
                 dyn->insts[ninst].op2 = ed;
                 dyn->insts[ninst+1].op1 = gd;
@@ -598,14 +627,28 @@ uintptr_t dynarec64_00_0(dynarec_rv64_t* dyn, uintptr_t addr, uintptr_t ip, int 
             ANDI(x1, xRAX, 0xff);
             if(u8) {
                 MOV32w(x2, u8);
-                if (dyn->insts[ninst].pattern_code == 37 || dyn->insts[ninst].pattern_code == 77){
+                if (dyn->insts[ninst].pattern_code == 32 || dyn->insts[ninst].pattern_code == 72 ||
+                    dyn->insts[ninst].pattern_code == 33 || dyn->insts[ninst].pattern_code == 73 ||
+                    dyn->insts[ninst].pattern_code == 34 || dyn->insts[ninst].pattern_code == 74 ||
+                    dyn->insts[ninst].pattern_code == 35 || dyn->insts[ninst].pattern_code == 75 ||
+                    dyn->insts[ninst].pattern_code == 36 || dyn->insts[ninst].pattern_code == 76 ||
+                    dyn->insts[ninst].pattern_code == 37 || dyn->insts[ninst].pattern_code == 77 ||
+                    dyn->insts[ninst].pattern_code == 38 || dyn->insts[ninst].pattern_code == 78 ||
+                    dyn->insts[ninst].pattern_code == 39 || dyn->insts[ninst].pattern_code == 79) {
                     dyn->insts[ninst].op1 = x1;
                     dyn->insts[ninst].op2 = x2;
                     break;
                 }
                 emit_cmp8(dyn, ninst, x1, x2, x3, x4, x5, x6);
             } else {
-                if (dyn->insts[ninst].pattern_code == 37 || dyn->insts[ninst].pattern_code == 77){
+                if (dyn->insts[ninst].pattern_code == 32 || dyn->insts[ninst].pattern_code == 72 ||
+                    dyn->insts[ninst].pattern_code == 33 || dyn->insts[ninst].pattern_code == 73 ||
+                    dyn->insts[ninst].pattern_code == 34 || dyn->insts[ninst].pattern_code == 74 ||
+                    dyn->insts[ninst].pattern_code == 35 || dyn->insts[ninst].pattern_code == 75 ||
+                    dyn->insts[ninst].pattern_code == 36 || dyn->insts[ninst].pattern_code == 76 ||
+                    dyn->insts[ninst].pattern_code == 37 || dyn->insts[ninst].pattern_code == 77 ||
+                    dyn->insts[ninst].pattern_code == 38 || dyn->insts[ninst].pattern_code == 78 ||
+                    dyn->insts[ninst].pattern_code == 39 || dyn->insts[ninst].pattern_code == 79) {
                     dyn->insts[ninst].op1 = x1;
                     dyn->insts[ninst].op2 = xZR;
                     break;
