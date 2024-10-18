@@ -1708,7 +1708,7 @@ uintptr_t dynarec64_0F(dynarec_rv64_t* dyn, uintptr_t addr, uintptr_t ip, int ni
                     //GO(NO,YES)
                     //NEZ=1  EQZ=0
                     //op1=op2 then jmp -> x1==0 -> YES -> GO(NEZ,EQZ)
-                GO(SUB(x1, dyn->insts[ninst].op1, dyn->insts[ninst].op2), EQZ, NEZ, X_ZF)
+                GO(SUB(x1, dyn->insts[ninst].op1, dyn->insts[ninst].op2), NEZ, EQZ, X_ZF)
             }
             else{
                 GO(ANDI(x1, xFlags, 1 << F_ZF), EQZ, NEZ, X_ZF)
@@ -1724,7 +1724,7 @@ uintptr_t dynarec64_0F(dynarec_rv64_t* dyn, uintptr_t addr, uintptr_t ip, int ni
                     //GO(NO,YES)
                     //NEZ=1  EQZ=0
                     //op1!=op2 then jmp -> x1!=0 -> YES -> GO(EQZ,NEZ)
-                GO(SUB(x1, dyn->insts[ninst].op1, dyn->insts[ninst].op2), NEZ, EQZ, X_ZF)
+                GO(SUB(x1, dyn->insts[ninst].op1, dyn->insts[ninst].op2), EQZ, NEZ, X_ZF)
             }
             else{
                 GO(ANDI(x1, xFlags, 1 << F_ZF), NEZ, EQZ, X_ZF)
