@@ -538,7 +538,7 @@ uintptr_t dynarec64_00_0(dynarec_rv64_t* dyn, uintptr_t addr, uintptr_t ip, int 
             GETEB(x1, 0);
             GETGB(x2);
             if (dyn->insts[ninst].pattern_code == 0 || dyn->insts[ninst].pattern_code == 40 ||
-                dyn->insts[ninst].pattern_code == 1 || dyn->insts[ninst].pattern_code == 41 ||
+                // dyn->insts[ninst].pattern_code == 1 || dyn->insts[ninst].pattern_code == 41 ||
                 dyn->insts[ninst].pattern_code == 2 || dyn->insts[ninst].pattern_code == 42 ||
                 dyn->insts[ninst].pattern_code == 3 || dyn->insts[ninst].pattern_code == 43 ||
                 dyn->insts[ninst].pattern_code == 4 || dyn->insts[ninst].pattern_code == 44 ||
@@ -562,7 +562,7 @@ uintptr_t dynarec64_00_0(dynarec_rv64_t* dyn, uintptr_t addr, uintptr_t ip, int 
             GETGD;
             GETED(0);
             if (dyn->insts[ninst].pattern_code == 8 || dyn->insts[ninst].pattern_code == 48 ||
-                dyn->insts[ninst].pattern_code == 9 || dyn->insts[ninst].pattern_code == 49 ||
+                // dyn->insts[ninst].pattern_code == 9 || dyn->insts[ninst].pattern_code == 49 ||
                 dyn->insts[ninst].pattern_code == 10 || dyn->insts[ninst].pattern_code == 50 ||
                 dyn->insts[ninst].pattern_code == 11 || dyn->insts[ninst].pattern_code == 51 ||
                 dyn->insts[ninst].pattern_code == 12 || dyn->insts[ninst].pattern_code == 52 ||
@@ -585,7 +585,7 @@ uintptr_t dynarec64_00_0(dynarec_rv64_t* dyn, uintptr_t addr, uintptr_t ip, int 
             GETEB(x1, 0);
             GETGB(x2);
             if (dyn->insts[ninst].pattern_code == 16 || dyn->insts[ninst].pattern_code == 56 ||
-                dyn->insts[ninst].pattern_code == 17 || dyn->insts[ninst].pattern_code == 57 ||
+                // dyn->insts[ninst].pattern_code == 17 || dyn->insts[ninst].pattern_code == 57 ||
                 dyn->insts[ninst].pattern_code == 18 || dyn->insts[ninst].pattern_code == 58 ||
                 dyn->insts[ninst].pattern_code == 19 || dyn->insts[ninst].pattern_code == 59 ||
                 dyn->insts[ninst].pattern_code == 20 || dyn->insts[ninst].pattern_code == 60 ||
@@ -608,7 +608,7 @@ uintptr_t dynarec64_00_0(dynarec_rv64_t* dyn, uintptr_t addr, uintptr_t ip, int 
             GETGD;
             GETED(0);
             if (dyn->insts[ninst].pattern_code == 24 || dyn->insts[ninst].pattern_code == 64 ||
-                dyn->insts[ninst].pattern_code == 25 || dyn->insts[ninst].pattern_code == 65 ||
+                // dyn->insts[ninst].pattern_code == 25 || dyn->insts[ninst].pattern_code == 65 ||
                 dyn->insts[ninst].pattern_code == 26 || dyn->insts[ninst].pattern_code == 66 ||
                 dyn->insts[ninst].pattern_code == 27 || dyn->insts[ninst].pattern_code == 67 ||
                 dyn->insts[ninst].pattern_code == 28 || dyn->insts[ninst].pattern_code == 68 ||
@@ -631,7 +631,7 @@ uintptr_t dynarec64_00_0(dynarec_rv64_t* dyn, uintptr_t addr, uintptr_t ip, int 
             if(u8) {
                 MOV32w(x2, u8);
                 if (dyn->insts[ninst].pattern_code == 32 || dyn->insts[ninst].pattern_code == 72 ||
-                    dyn->insts[ninst].pattern_code == 33 || dyn->insts[ninst].pattern_code == 73 ||
+                    // dyn->insts[ninst].pattern_code == 33 || dyn->insts[ninst].pattern_code == 73 ||
                     dyn->insts[ninst].pattern_code == 34 || dyn->insts[ninst].pattern_code == 74 ||
                     dyn->insts[ninst].pattern_code == 35 || dyn->insts[ninst].pattern_code == 75 ||
                     dyn->insts[ninst].pattern_code == 36 || dyn->insts[ninst].pattern_code == 76 ||
@@ -646,7 +646,7 @@ uintptr_t dynarec64_00_0(dynarec_rv64_t* dyn, uintptr_t addr, uintptr_t ip, int 
                 emit_cmp8(dyn, ninst, x1, x2, x3, x4, x5, x6);
             } else {
                 if (dyn->insts[ninst].pattern_code == 32 || dyn->insts[ninst].pattern_code == 72 ||
-                    dyn->insts[ninst].pattern_code == 33 || dyn->insts[ninst].pattern_code == 73 ||
+                    // dyn->insts[ninst].pattern_code == 33 || dyn->insts[ninst].pattern_code == 73 ||
                     dyn->insts[ninst].pattern_code == 34 || dyn->insts[ninst].pattern_code == 74 ||
                     dyn->insts[ninst].pattern_code == 35 || dyn->insts[ninst].pattern_code == 75 ||
                     dyn->insts[ninst].pattern_code == 36 || dyn->insts[ninst].pattern_code == 76 ||
