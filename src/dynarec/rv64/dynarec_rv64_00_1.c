@@ -431,8 +431,8 @@ uintptr_t dynarec64_00_1(dynarec_rv64_t* dyn, uintptr_t addr, uintptr_t ip, int 
                     //NEZ=1  EQZ=0
                     //op1<op2 then jmp -> x1==1 -> YES -> GO(EQZ,NEZ)
                 GO(SLT(x1, dyn->insts[ninst].op1, dyn->insts[ninst].op2);
-                    NOP;
-                    NOP, EQZ, NEZ, X_SF | X_OF)
+                    NOP();
+                    NOP(), EQZ, NEZ, X_SF | X_OF)
             }
             else{
                 GO(SRLI(x1, xFlags, F_SF - F_OF2);
@@ -450,8 +450,8 @@ uintptr_t dynarec64_00_1(dynarec_rv64_t* dyn, uintptr_t addr, uintptr_t ip, int 
                     //op1>=op2 then jmp -> op1<op2 then not jmp
                     //op1<op2 -> x1 == 1 -> NO -> GO(NEZ,EQZ)
                 GO(SLT(x1, dyn->insts[ninst].op1, dyn->insts[ninst].op2);
-                    NOP;
-                    NOP, NEZ, EQZ, X_SF | X_OF)
+                    NOP();
+                    NOP(), NEZ, EQZ, X_SF | X_OF)
             }
             else{
                 GO(SRLI(x1, xFlags, F_SF - F_OF2);
@@ -469,11 +469,11 @@ uintptr_t dynarec64_00_1(dynarec_rv64_t* dyn, uintptr_t addr, uintptr_t ip, int 
                     //op1<=op2 then jmp -> op2<op1 then not jmp
                     //op2<op1 -> x1 == 1 -> NO -> GO(NEZ,EQZ)
                 GO(SLT(x1, dyn->insts[ninst].op2, dyn->insts[ninst].op1);
-                    NOP;
-                    NOP;
-                    NOP;
-                    NOP;
-                    NOP, NEZ, EQZ, X_SF | X_OF | X_ZF)
+                    NOP();
+                    NOP();
+                    NOP();
+                    NOP();
+                    NOP(), NEZ, EQZ, X_SF | X_OF | X_ZF)
             }
             else{
                 GO(SRLI(x1, xFlags, F_SF - F_OF2);
@@ -494,11 +494,11 @@ uintptr_t dynarec64_00_1(dynarec_rv64_t* dyn, uintptr_t addr, uintptr_t ip, int 
                     //op1>op2 then jmp -> op2<op1 then jmp
                     //op2<op1 -> x1 == 1 -> YES -> GO(EQZ,NEZ)
                 GO(SLT(x1, dyn->insts[ninst].op2, dyn->insts[ninst].op1);
-                    NOP;
-                    NOP;
-                    NOP;
-                    NOP;
-                    NOP, EQZ, NEZ, X_SF | X_OF | X_ZF)
+                    NOP();
+                    NOP();
+                    NOP();
+                    NOP();
+                    NOP(), EQZ, NEZ, X_SF | X_OF | X_ZF)
             }
             else{
                 GO(SRLI(x1, xFlags, F_SF - F_OF2);
