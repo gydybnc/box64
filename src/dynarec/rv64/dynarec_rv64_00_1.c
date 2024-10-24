@@ -430,7 +430,9 @@ uintptr_t dynarec64_00_1(dynarec_rv64_t* dyn, uintptr_t addr, uintptr_t ip, int 
                     //GO(NO,YES)
                     //NEZ=1  EQZ=0
                     //op1<op2 then jmp -> x1==1 -> YES -> GO(EQZ,NEZ)
-                GO(SLT(x1, dyn->insts[ninst].op1, dyn->insts[ninst].op2), EQZ, NEZ, X_SF | X_OF)
+                GO(SLT(x1, dyn->insts[ninst].op1, dyn->insts[ninst].op2);
+                    NOP;
+                    NOP, EQZ, NEZ, X_SF | X_OF)
             }
             else{
                 GO(SRLI(x1, xFlags, F_SF - F_OF2);
@@ -447,7 +449,9 @@ uintptr_t dynarec64_00_1(dynarec_rv64_t* dyn, uintptr_t addr, uintptr_t ip, int 
                 dyn->insts[ninst].pattern_code == 35) {
                     //op1>=op2 then jmp -> op1<op2 then not jmp
                     //op1<op2 -> x1 == 1 -> NO -> GO(NEZ,EQZ)
-                GO(SLT(x1, dyn->insts[ninst].op1, dyn->insts[ninst].op2), NEZ, EQZ, X_SF | X_OF)
+                GO(SLT(x1, dyn->insts[ninst].op1, dyn->insts[ninst].op2);
+                    NOP;
+                    NOP, NEZ, EQZ, X_SF | X_OF)
             }
             else{
                 GO(SRLI(x1, xFlags, F_SF - F_OF2);
@@ -464,7 +468,12 @@ uintptr_t dynarec64_00_1(dynarec_rv64_t* dyn, uintptr_t addr, uintptr_t ip, int 
                 dyn->insts[ninst].pattern_code == 36) {
                     //op1<=op2 then jmp -> op2<op1 then not jmp
                     //op2<op1 -> x1 == 1 -> NO -> GO(NEZ,EQZ)
-                GO(SLT(x1, dyn->insts[ninst].op2, dyn->insts[ninst].op1), NEZ, EQZ, X_SF | X_OF | X_ZF)
+                GO(SLT(x1, dyn->insts[ninst].op2, dyn->insts[ninst].op1);
+                    NOP;
+                    NOP;
+                    NOP;
+                    NOP;
+                    NOP, NEZ, EQZ, X_SF | X_OF | X_ZF)
             }
             else{
                 GO(SRLI(x1, xFlags, F_SF - F_OF2);
@@ -484,7 +493,12 @@ uintptr_t dynarec64_00_1(dynarec_rv64_t* dyn, uintptr_t addr, uintptr_t ip, int 
                 dyn->insts[ninst].pattern_code == 37){
                     //op1>op2 then jmp -> op2<op1 then jmp
                     //op2<op1 -> x1 == 1 -> YES -> GO(EQZ,NEZ)
-                GO(SLT(x1, dyn->insts[ninst].op2, dyn->insts[ninst].op1), EQZ, NEZ, X_SF | X_OF | X_ZF)
+                GO(SLT(x1, dyn->insts[ninst].op2, dyn->insts[ninst].op1);
+                    NOP;
+                    NOP;
+                    NOP;
+                    NOP;
+                    NOP, EQZ, NEZ, X_SF | X_OF | X_ZF)
             }
             else{
                 GO(SRLI(x1, xFlags, F_SF - F_OF2);
