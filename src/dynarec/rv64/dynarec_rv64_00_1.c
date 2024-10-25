@@ -430,7 +430,7 @@ uintptr_t dynarec64_00_1(dynarec_rv64_t* dyn, uintptr_t addr, uintptr_t ip, int 
                     //GO(NO,YES)
                     //NEZ=1  EQZ=0
                     //op1<op2 then jmp -> x1==1 -> YES -> GO(EQZ,NEZ)
-                GO(SLT(x1, dyn->insts[ninst].op1, dyn->insts[ninst].op2);
+                GO(SLT(x6, dyn->insts[ninst].op1, dyn->insts[ninst].op2);
                     NOP();
                     NOP(), EQZ, NEZ, X_SF | X_OF)
             }
