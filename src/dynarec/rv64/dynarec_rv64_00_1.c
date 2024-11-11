@@ -344,19 +344,19 @@ uintptr_t dynarec64_00_1(dynarec_rv64_t* dyn, uintptr_t addr, uintptr_t ip, int 
             break;
         case 0x70 + 0x4:
             INST_NAME("JZ ib");
-            // if (dyn->insts[ninst].pattern_code == 0 || 
-            //     dyn->insts[ninst].pattern_code == 8 || 
-            //     dyn->insts[ninst].pattern_code == 16 ||
-            //     dyn->insts[ninst].pattern_code == 24 ||
-            //     dyn->insts[ninst].pattern_code == 32){
-            //         //GO(NO,YES)
-            //         //NEZ=1  EQZ=0
-            //         //op1=op2 then jmp -> x1==0 -> YES -> GO(NEZ,EQZ)
-            //     GO(SUB(x1, dyn->insts[ninst].op1, dyn->insts[ninst].op2), NEZ, EQZ, X_ZF)
-            // }
-            // else{
+            if (dyn->insts[ninst].pattern_code == 0 || 
+                dyn->insts[ninst].pattern_code == 8 || 
+                dyn->insts[ninst].pattern_code == 16 ||
+                dyn->insts[ninst].pattern_code == 24 ||
+                dyn->insts[ninst].pattern_code == 32){
+                    //GO(NO,YES)
+                    //NEZ=1  EQZ=0
+                    //op1=op2 then jmp -> x1==0 -> YES -> GO(NEZ,EQZ)
+                GO(SUB(x1, dyn->insts[ninst].op1, dyn->insts[ninst].op2), NEZ, EQZ, X_ZF)
+            }
+            else{
                 GO(ANDI(x1, xFlags, 1 << F_ZF), EQZ, NEZ, X_ZF)
-            // }
+            }
             break;
         case 0x70 + 0x5:
             INST_NAME("JNZ ib");
