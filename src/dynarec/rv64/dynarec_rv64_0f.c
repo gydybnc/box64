@@ -1842,28 +1842,28 @@ uintptr_t dynarec64_0F(dynarec_rv64_t* dyn, uintptr_t addr, uintptr_t ip, int ni
             break;
         case 0x80 + 0xF:
             INST_NAME("JG Id");
-            // if (dyn->insts[ninst].pattern_code == 45 || 
-            //     dyn->insts[ninst].pattern_code == 53 || 
-            //     dyn->insts[ninst].pattern_code == 61 ||
-            //     dyn->insts[ninst].pattern_code == 69 ||
-            //     dyn->insts[ninst].pattern_code == 77){
-            //         //op1>op2 then jmp -> op2<op1 then jmp
-            //         //op2<op1 -> x1 == 1 -> YES -> GO(EQZ,NEZ)
-            //     GO(SLT(x1, dyn->insts[ninst].op2, dyn->insts[ninst].op1);
-            //         NOP();
-            //         NOP();
-            //         NOP();
-            //         NOP();
-            //         NOP(), EQZ, NEZ, X_SF | X_OF | X_ZF)
-            // }
-            // else{
+            if (dyn->insts[ninst].pattern_code == 45 || 
+                dyn->insts[ninst].pattern_code == 53 || 
+                dyn->insts[ninst].pattern_code == 61 ||
+                dyn->insts[ninst].pattern_code == 69 ||
+                dyn->insts[ninst].pattern_code == 77){
+                    //op1>op2 then jmp -> op2<op1 then jmp
+                    //op2<op1 -> x1 == 1 -> YES -> GO(EQZ,NEZ)
+                GO(SLT(x1, dyn->insts[ninst].op2, dyn->insts[ninst].op1);
+                    NOP();
+                    NOP();
+                    NOP();
+                    NOP();
+                    NOP(), EQZ, NEZ, X_SF | X_OF | X_ZF)
+            }
+            else{
                 GO(SRLI(x1, xFlags, F_SF - F_OF2);
                     XOR(x1, x1, xFlags);
                     ANDI(x1, x1, 1 << F_OF2);
                     ANDI(x3, xFlags, 1 << F_ZF);
                     OR(x1, x1, x3);
                     ANDI(x1, x1, (1 << F_OF2) | (1 << F_ZF)), NEZ, EQZ, X_SF | X_OF | X_ZF)
-            // }
+            }
             break;
 #undef GO
 
