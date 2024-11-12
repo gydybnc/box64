@@ -422,42 +422,42 @@ uintptr_t dynarec64_00_1(dynarec_rv64_t* dyn, uintptr_t addr, uintptr_t ip, int 
             break;
         case 0x70 + 0xC:
             INST_NAME("JL ib");
-            if (dyn->insts[ninst].pattern_code == 2 || 
-                dyn->insts[ninst].pattern_code == 10 || 
-                dyn->insts[ninst].pattern_code == 18 ||
-                dyn->insts[ninst].pattern_code == 26 ||
-                dyn->insts[ninst].pattern_code == 34){
-                    //GO(NO,YES)
-                    //NEZ=1  EQZ=0
-                    //op1<op2 then jmp -> x1==1 -> YES -> GO(EQZ,NEZ)
-                GO(SLT(x1, dyn->insts[ninst].op1, dyn->insts[ninst].op2);
-                    NOP();
-                    NOP(), EQZ, NEZ, X_SF | X_OF)
-            }
-            else{
-                GO(SRLI(x1, xFlags, F_SF - F_OF2);
-                    XOR(x1, x1, xFlags);
-                    ANDI(x1, x1, 1 << F_OF2), EQZ, NEZ, X_SF | X_OF)
-            }
-            break;
-        case 0x70 + 0xD:
-            INST_NAME("JGE ib");
-            // if (dyn->insts[ninst].pattern_code == 3 || 
-            //     dyn->insts[ninst].pattern_code == 11 || 
-            //     dyn->insts[ninst].pattern_code == 19 ||
-            //     dyn->insts[ninst].pattern_code == 27 ||
-            //     dyn->insts[ninst].pattern_code == 35) {
-            //         //op1>=op2 then jmp -> op1<op2 then not jmp
-            //         //op1<op2 -> x1 == 1 -> NO -> GO(NEZ,EQZ)
+            // if (dyn->insts[ninst].pattern_code == 2 || 
+            //     dyn->insts[ninst].pattern_code == 10 || 
+            //     dyn->insts[ninst].pattern_code == 18 ||
+            //     dyn->insts[ninst].pattern_code == 26 ||
+            //     dyn->insts[ninst].pattern_code == 34){
+            //         //GO(NO,YES)
+            //         //NEZ=1  EQZ=0
+            //         //op1<op2 then jmp -> x1==1 -> YES -> GO(EQZ,NEZ)
             //     GO(SLT(x1, dyn->insts[ninst].op1, dyn->insts[ninst].op2);
             //         NOP();
-            //         NOP(), NEZ, EQZ, X_SF | X_OF)
+            //         NOP(), EQZ, NEZ, X_SF | X_OF)
             // }
             // else{
                 GO(SRLI(x1, xFlags, F_SF - F_OF2);
                     XOR(x1, x1, xFlags);
-                    ANDI(x1, x1, 1 << F_OF2), NEZ, EQZ, X_SF | X_OF)
+                    ANDI(x1, x1, 1 << F_OF2), EQZ, NEZ, X_SF | X_OF)
             // }
+            break;
+        case 0x70 + 0xD:
+            INST_NAME("JGE ib");
+            if (dyn->insts[ninst].pattern_code == 3 || 
+                dyn->insts[ninst].pattern_code == 11 || 
+                dyn->insts[ninst].pattern_code == 19 ||
+                dyn->insts[ninst].pattern_code == 27 ||
+                dyn->insts[ninst].pattern_code == 35) {
+                    //op1>=op2 then jmp -> op1<op2 then not jmp
+                    //op1<op2 -> x1 == 1 -> NO -> GO(NEZ,EQZ)
+                GO(SLT(x1, dyn->insts[ninst].op1, dyn->insts[ninst].op2);
+                    NOP();
+                    NOP(), NEZ, EQZ, X_SF | X_OF)
+            }
+            else{
+                GO(SRLI(x1, xFlags, F_SF - F_OF2);
+                    XOR(x1, x1, xFlags);
+                    ANDI(x1, x1, 1 << F_OF2), NEZ, EQZ, X_SF | X_OF)
+            }
             break;
         case 0x70 + 0xE:
             INST_NAME("JLE ib");
