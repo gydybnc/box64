@@ -376,18 +376,18 @@ uintptr_t dynarec64_00_1(dynarec_rv64_t* dyn, uintptr_t addr, uintptr_t ip, int 
             break;
         case 0x70 + 0x6:
             INST_NAME("JBE ib");
-            // if (dyn->insts[ninst].pattern_code == 6 || 
-            //     dyn->insts[ninst].pattern_code == 14 || 
-            //     dyn->insts[ninst].pattern_code == 22 ||
-            //     dyn->insts[ninst].pattern_code == 30 ||
-            //     dyn->insts[ninst].pattern_code == 38){
-            //         //op1<=op2 then jmp -> op2<op1 then not jmp
-            //         //op2<op1 -> x1==1 -> NO -> GO(NEZ,EQZ)
-            //     GO(SLTU(x1, dyn->insts[ninst].op2, dyn->insts[ninst].op1), NEZ, EQZ, X_CF | X_ZF)
-            // }
-            // else{
+            if (dyn->insts[ninst].pattern_code == 6 || 
+                dyn->insts[ninst].pattern_code == 14 || 
+                dyn->insts[ninst].pattern_code == 22 ||
+                dyn->insts[ninst].pattern_code == 30 ||
+                dyn->insts[ninst].pattern_code == 38){
+                    //op1<=op2 then jmp -> op2<op1 then not jmp
+                    //op2<op1 -> x1==1 -> NO -> GO(NEZ,EQZ)
+                GO(SLTU(x1, dyn->insts[ninst].op2, dyn->insts[ninst].op1), NEZ, EQZ, X_CF | X_ZF)
+            }
+            else{
                 GO(ANDI(x1, xFlags, (1 << F_CF) | (1 << F_ZF)), EQZ, NEZ, X_CF | X_ZF)
-            // }
+            }
             break;
         case 0x70 + 0x7:
             INST_NAME("JNBE ib");
