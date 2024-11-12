@@ -1817,28 +1817,28 @@ uintptr_t dynarec64_0F(dynarec_rv64_t* dyn, uintptr_t addr, uintptr_t ip, int ni
             break;
         case 0x80 + 0xE:
             INST_NAME("JLE Id");
-            // if (dyn->insts[ninst].pattern_code == 44 || 
-            //     dyn->insts[ninst].pattern_code == 52 || 
-            //     dyn->insts[ninst].pattern_code == 60 ||
-            //     dyn->insts[ninst].pattern_code == 68 ||
-            //     dyn->insts[ninst].pattern_code == 76) {
-            //         //op1<=op2 then jmp -> op2<op1 then not jmp
-            //         //op2<op1 -> x1 == 1 -> NO -> GO(NEZ,EQZ)
-            //     GO(SLT(x1, dyn->insts[ninst].op2, dyn->insts[ninst].op1);
-            //         NOP();
-            //         NOP();
-            //         NOP();
-            //         NOP();
-            //         NOP(), NEZ, EQZ, X_SF | X_OF | X_ZF)
-            // }
-            // else{
+            if (dyn->insts[ninst].pattern_code == 44 || 
+                dyn->insts[ninst].pattern_code == 52 || 
+                dyn->insts[ninst].pattern_code == 60 ||
+                dyn->insts[ninst].pattern_code == 68 ||
+                dyn->insts[ninst].pattern_code == 76) {
+                    //op1<=op2 then jmp -> op2<op1 then not jmp
+                    //op2<op1 -> x1 == 1 -> NO -> GO(NEZ,EQZ)
+                GO(SLT(x1, dyn->insts[ninst].op2, dyn->insts[ninst].op1);
+                    NOP();
+                    NOP();
+                    NOP();
+                    NOP();
+                    NOP(), NEZ, EQZ, X_SF | X_OF | X_ZF)
+            }
+            else{
                 GO(SRLI(x1, xFlags, F_SF - F_OF2);
                     XOR(x1, x1, xFlags);
                     ANDI(x1, x1, 1 << F_OF2);
                     ANDI(x3, xFlags, 1 << F_ZF);
                     OR(x1, x1, x3);
                     ANDI(x1, x1, (1 << F_OF2) | (1 << F_ZF)), EQZ, NEZ, X_SF | X_OF | X_ZF)
-            // }
+            }
             break;
         case 0x80 + 0xF:
             INST_NAME("JG Id");
