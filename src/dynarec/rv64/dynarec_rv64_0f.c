@@ -1778,23 +1778,23 @@ uintptr_t dynarec64_0F(dynarec_rv64_t* dyn, uintptr_t addr, uintptr_t ip, int ni
             break;
         case 0x80 + 0xC:
             INST_NAME("JL Id");
-            // if (dyn->insts[ninst].pattern_code == 42 || 
-            //     dyn->insts[ninst].pattern_code == 50 || 
-            //     dyn->insts[ninst].pattern_code == 58 ||
-            //     dyn->insts[ninst].pattern_code == 66 ||
-            //     dyn->insts[ninst].pattern_code == 74){
-            //         //GO(NO,YES)
-            //         //NEZ=1  EQZ=0
-            //         //op1<op2 then jmp -> x1==1 -> YES -> GO(EQZ,NEZ)
-            //     GO(SLT(x1, dyn->insts[ninst].op1, dyn->insts[ninst].op2);
-            //         NOP();
-            //         NOP(), EQZ, NEZ, X_SF | X_OF)
-            // }
-            // else{
+            if (dyn->insts[ninst].pattern_code == 42 || 
+                dyn->insts[ninst].pattern_code == 50 || 
+                dyn->insts[ninst].pattern_code == 58 ||
+                dyn->insts[ninst].pattern_code == 66 ||
+                dyn->insts[ninst].pattern_code == 74){
+                    //GO(NO,YES)
+                    //NEZ=1  EQZ=0
+                    //op1<op2 then jmp -> x1==1 -> YES -> GO(EQZ,NEZ)
+                GO(SLT(x1, dyn->insts[ninst].op1, dyn->insts[ninst].op2);
+                    NOP();
+                    NOP(), EQZ, NEZ, X_SF | X_OF)
+            }
+            else{
                 GO(SRLI(x1, xFlags, F_SF - F_OF2);
                     XOR(x1, x1, xFlags);
                     ANDI(x1, x1, 1 << F_OF2), EQZ, NEZ, X_SF | X_OF)
-            // }
+            }
             break;
         case 0x80 + 0xD:
             INST_NAME("JGE Id");
