@@ -572,7 +572,7 @@ uintptr_t dynarec64_00_0(dynarec_rv64_t* dyn, uintptr_t addr, uintptr_t ip, int 
             //     dyn->insts[ninst].pattern_code == 14 || dyn->insts[ninst].pattern_code == 54 ||
             //     dyn->insts[ninst].pattern_code == 15 || dyn->insts[ninst].pattern_code == 55)
             if ((dyn->insts[ninst].pattern_code >= 8  && dyn->insts[ninst].pattern_code <= 15) ||
-                (dyn->insts[ninst].pattern_code >= 48 || dyn->insts[ninst].pattern_code <= 55)) {
+                (dyn->insts[ninst].pattern_code >= 48 && dyn->insts[ninst].pattern_code <= 55)) {
                 dyn->insts[ninst].op1 = ed;
                 dyn->insts[ninst].op2 = gd;
                 dyn->insts[ninst+1].op1 = ed;
@@ -597,7 +597,7 @@ uintptr_t dynarec64_00_0(dynarec_rv64_t* dyn, uintptr_t addr, uintptr_t ip, int 
             //     dyn->insts[ninst].pattern_code == 22 || dyn->insts[ninst].pattern_code == 62 ||
             //     dyn->insts[ninst].pattern_code == 23 || dyn->insts[ninst].pattern_code == 63) 
             if ((dyn->insts[ninst].pattern_code >= 16  && dyn->insts[ninst].pattern_code <= 23) ||
-                (dyn->insts[ninst].pattern_code >= 56 || dyn->insts[ninst].pattern_code <= 63)){
+                (dyn->insts[ninst].pattern_code >= 56 && dyn->insts[ninst].pattern_code <= 63)){
                 dyn->insts[ninst].op1 = x2;
                 dyn->insts[ninst].op2 = x1;
                 dyn->insts[ninst+1].op1 = x2;
@@ -622,7 +622,7 @@ uintptr_t dynarec64_00_0(dynarec_rv64_t* dyn, uintptr_t addr, uintptr_t ip, int 
             //     dyn->insts[ninst].pattern_code == 30 || dyn->insts[ninst].pattern_code == 70 ||
             //     dyn->insts[ninst].pattern_code == 31 || dyn->insts[ninst].pattern_code == 71) 
             if ((dyn->insts[ninst].pattern_code >= 24  && dyn->insts[ninst].pattern_code <= 31) ||
-                (dyn->insts[ninst].pattern_code >= 64 || dyn->insts[ninst].pattern_code <= 71)){
+                (dyn->insts[ninst].pattern_code >= 64 && dyn->insts[ninst].pattern_code <= 71)){
                 dyn->insts[ninst].op1 = gd;
                 dyn->insts[ninst].op2 = ed;
                 dyn->insts[ninst+1].op1 = gd;
@@ -647,7 +647,7 @@ uintptr_t dynarec64_00_0(dynarec_rv64_t* dyn, uintptr_t addr, uintptr_t ip, int 
                 //     dyn->insts[ninst].pattern_code == 38 || dyn->insts[ninst].pattern_code == 78 ||
                 //     dyn->insts[ninst].pattern_code == 39 || dyn->insts[ninst].pattern_code == 79) 
                 if ((dyn->insts[ninst].pattern_code >= 32  && dyn->insts[ninst].pattern_code <= 39) ||
-                    (dyn->insts[ninst].pattern_code >= 72 || dyn->insts[ninst].pattern_code <= 79)) {
+                    (dyn->insts[ninst].pattern_code >= 72 && dyn->insts[ninst].pattern_code <= 79)) {
                     dyn->insts[ninst].op1 = x1;
                     dyn->insts[ninst].op2 = x2;
                     emit_cmp8(dyn, ninst, x1, x2, x3, x4, x5, x6);
@@ -664,7 +664,7 @@ uintptr_t dynarec64_00_0(dynarec_rv64_t* dyn, uintptr_t addr, uintptr_t ip, int 
                 //     dyn->insts[ninst].pattern_code == 38 || dyn->insts[ninst].pattern_code == 78 ||
                 //     dyn->insts[ninst].pattern_code == 39 || dyn->insts[ninst].pattern_code == 79) 
                 if ((dyn->insts[ninst].pattern_code >= 32  && dyn->insts[ninst].pattern_code <= 39) ||
-                    (dyn->insts[ninst].pattern_code >= 72 || dyn->insts[ninst].pattern_code <= 79)) {
+                    (dyn->insts[ninst].pattern_code >= 72 && dyn->insts[ninst].pattern_code <= 79)) {
                     dyn->insts[ninst].op1 = x1;
                     dyn->insts[ninst].op2 = xZR;
                     emit_cmp8_0(dyn, ninst, x1, x3, x4);
