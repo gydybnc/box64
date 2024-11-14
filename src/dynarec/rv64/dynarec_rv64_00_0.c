@@ -552,7 +552,7 @@ uintptr_t dynarec64_00_0(dynarec_rv64_t* dyn, uintptr_t addr, uintptr_t ip, int 
                 dyn->insts[ninst].op2 = x2;
                 dyn->insts[ninst+1].op1 = x1;
                 dyn->insts[ninst+1].op2 = x2;
-                emit_cmp8(dyn, ninst, x1, x2, x9, x4, x5, x6);
+                emit_cmp8_noflag(dyn, ninst, x1, x2, x9, x4, x5, x6);
                 break;
             }
             emit_cmp8(dyn, ninst, x1, x2, x9, x4, x5, x6);
@@ -577,7 +577,7 @@ uintptr_t dynarec64_00_0(dynarec_rv64_t* dyn, uintptr_t addr, uintptr_t ip, int 
                 dyn->insts[ninst].op2 = gd;
                 dyn->insts[ninst+1].op1 = ed;
                 dyn->insts[ninst+1].op2 = gd;
-		        emit_cmp32(dyn, ninst, rex, ed, gd, x3, x4, x5, x6);
+		        emit_cmp32_noflag(dyn, ninst, rex, ed, gd, x3, x4, x5, x6);
                 break;
             }
             emit_cmp32(dyn, ninst, rex, ed, gd, x3, x4, x5, x6);
@@ -602,7 +602,7 @@ uintptr_t dynarec64_00_0(dynarec_rv64_t* dyn, uintptr_t addr, uintptr_t ip, int 
                 dyn->insts[ninst].op2 = x1;
                 dyn->insts[ninst+1].op1 = x2;
                 dyn->insts[ninst+1].op2 = x1;
-                emit_cmp8(dyn, ninst, x2, x1, x9, x4, x5, x6);
+                emit_cmp8_noflag(dyn, ninst, x2, x1, x9, x4, x5, x6);
                 break;
             }
             emit_cmp8(dyn, ninst, x2, x1, x9, x4, x5, x6);
@@ -627,7 +627,7 @@ uintptr_t dynarec64_00_0(dynarec_rv64_t* dyn, uintptr_t addr, uintptr_t ip, int 
                 dyn->insts[ninst].op2 = ed;
                 dyn->insts[ninst+1].op1 = gd;
                 dyn->insts[ninst+1].op2 = ed;
-                emit_cmp32(dyn, ninst, rex, gd, ed, x3, x4, x5, x6);
+                emit_cmp32_noflag(dyn, ninst, rex, gd, ed, x3, x4, x5, x6);
             }
             emit_cmp32(dyn, ninst, rex, gd, ed, x3, x4, x5, x6);
             break;
@@ -650,7 +650,7 @@ uintptr_t dynarec64_00_0(dynarec_rv64_t* dyn, uintptr_t addr, uintptr_t ip, int 
                     (dyn->insts[ninst].pattern_code >= 72 && dyn->insts[ninst].pattern_code <= 79)) {
                     dyn->insts[ninst].op1 = x1;
                     dyn->insts[ninst].op2 = x2;
-                    emit_cmp8(dyn, ninst, x1, x2, x3, x4, x5, x6);
+                    emit_cmp8_noflag(dyn, ninst, x1, x2, x3, x4, x5, x6);
                     break;
                 }
                 emit_cmp8(dyn, ninst, x1, x2, x3, x4, x5, x6);
@@ -667,7 +667,7 @@ uintptr_t dynarec64_00_0(dynarec_rv64_t* dyn, uintptr_t addr, uintptr_t ip, int 
                     (dyn->insts[ninst].pattern_code >= 72 && dyn->insts[ninst].pattern_code <= 79)) {
                     dyn->insts[ninst].op1 = x1;
                     dyn->insts[ninst].op2 = xZR;
-                    emit_cmp8_0(dyn, ninst, x1, x3, x4);
+                    emit_cmp8_0_noflag(dyn, ninst, x1, x3, x4);
                     break;
                 }
                 emit_cmp8_0(dyn, ninst, x1, x3, x4);
