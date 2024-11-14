@@ -547,7 +547,7 @@ uintptr_t dynarec64_00_0(dynarec_rv64_t* dyn, uintptr_t addr, uintptr_t ip, int 
             //     dyn->insts[ninst].pattern_code == 7 || dyn->insts[ninst].pattern_code == 47 ||
             //     dyn->insts[ninst].pattern_code == 8 || dyn->insts[ninst].pattern_code == 48)
             if ((dyn->insts[ninst].pattern_code >= 0  && dyn->insts[ninst].pattern_code <= 7) ||
-                (dyn->insts[ninst].pattern_code >= 40 || dyn->insts[ninst].pattern_code <= 47)) {
+                (dyn->insts[ninst].pattern_code >= 40 && dyn->insts[ninst].pattern_code <= 47)) {
                 dyn->insts[ninst].op1 = x1;
                 dyn->insts[ninst].op2 = x2;
                 dyn->insts[ninst+1].op1 = x1;
