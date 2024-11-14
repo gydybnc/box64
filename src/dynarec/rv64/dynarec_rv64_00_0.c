@@ -647,13 +647,13 @@ uintptr_t dynarec64_00_0(dynarec_rv64_t* dyn, uintptr_t addr, uintptr_t ip, int 
                 //     dyn->insts[ninst].pattern_code == 37 || dyn->insts[ninst].pattern_code == 77 ||
                 //     dyn->insts[ninst].pattern_code == 38 || dyn->insts[ninst].pattern_code == 78 ||
                 //     dyn->insts[ninst].pattern_code == 39 || dyn->insts[ninst].pattern_code == 79) 
-                if ((dyn->insts[ninst].pattern_code >= 32  && dyn->insts[ninst].pattern_code <= 39) ||
-                    (dyn->insts[ninst].pattern_code >= 72 && dyn->insts[ninst].pattern_code <= 79)) {
-                    dyn->insts[ninst].op1 = x1;
-                    dyn->insts[ninst].op2 = x2;
-                    emit_cmp8_noflag(dyn, ninst, x1, x2, x3, x4, x5, x6);
-                    break;
-                }
+                // if ((dyn->insts[ninst].pattern_code >= 32  && dyn->insts[ninst].pattern_code <= 39) ||
+                //     (dyn->insts[ninst].pattern_code >= 72 && dyn->insts[ninst].pattern_code <= 79)) {
+                //     dyn->insts[ninst].op1 = x1;
+                //     dyn->insts[ninst].op2 = x2;
+                //     emit_cmp8_noflag(dyn, ninst, x1, x2, x3, x4, x5, x6);
+                //     break;
+                // }
                 emit_cmp8(dyn, ninst, x1, x2, x3, x4, x5, x6);
             } else {
                 // if (dyn->insts[ninst].pattern_code == 32 || dyn->insts[ninst].pattern_code == 72 ||
@@ -664,13 +664,13 @@ uintptr_t dynarec64_00_0(dynarec_rv64_t* dyn, uintptr_t addr, uintptr_t ip, int 
                 //     dyn->insts[ninst].pattern_code == 37 || dyn->insts[ninst].pattern_code == 77 ||
                 //     dyn->insts[ninst].pattern_code == 38 || dyn->insts[ninst].pattern_code == 78 ||
                 //     dyn->insts[ninst].pattern_code == 39 || dyn->insts[ninst].pattern_code == 79) 
-                if ((dyn->insts[ninst].pattern_code >= 32  && dyn->insts[ninst].pattern_code <= 39) ||
-                    (dyn->insts[ninst].pattern_code >= 72 && dyn->insts[ninst].pattern_code <= 79)) {
-                    dyn->insts[ninst].op1 = x1;
-                    dyn->insts[ninst].op2 = xZR;
-                    emit_cmp8_0_noflag(dyn, ninst, x1, x3, x4);
-                    break;
-                }
+                // if ((dyn->insts[ninst].pattern_code >= 32  && dyn->insts[ninst].pattern_code <= 39) ||
+                //     (dyn->insts[ninst].pattern_code >= 72 && dyn->insts[ninst].pattern_code <= 79)) {
+                //     dyn->insts[ninst].op1 = x1;
+                //     dyn->insts[ninst].op2 = xZR;
+                //     emit_cmp8_0_noflag(dyn, ninst, x1, x3, x4);
+                //     break;
+                // }
                 emit_cmp8_0(dyn, ninst, x1, x3, x4);
             }
             break;
