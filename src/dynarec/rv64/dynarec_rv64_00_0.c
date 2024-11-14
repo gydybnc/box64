@@ -628,6 +628,7 @@ uintptr_t dynarec64_00_0(dynarec_rv64_t* dyn, uintptr_t addr, uintptr_t ip, int 
                 dyn->insts[ninst+1].op1 = gd;
                 dyn->insts[ninst+1].op2 = ed;
                 emit_cmp32_noflag(dyn, ninst, rex, gd, ed, x3, x4, x5, x6);
+                break;
             }
             emit_cmp32(dyn, ninst, rex, gd, ed, x3, x4, x5, x6);
             break;
