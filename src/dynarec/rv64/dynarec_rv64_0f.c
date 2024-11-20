@@ -1710,35 +1710,35 @@ uintptr_t dynarec64_0F(dynarec_rv64_t* dyn, uintptr_t addr, uintptr_t ip, int ni
             break;
         case 0x80 + 0x4:
             INST_NAME("JZ Id");
-            if (dyn->insts[ninst].pattern_code == 40 || 
-                dyn->insts[ninst].pattern_code == 48 || 
-                dyn->insts[ninst].pattern_code == 56 ||
-                dyn->insts[ninst].pattern_code == 64 ||
-                dyn->insts[ninst].pattern_code == 72){
-                    //GO(NO,YES)
-                    //NEZ=1  EQZ=0
-                    //op1=op2 then jmp -> x1==0 -> YES -> GO(NEZ,EQZ)
-                GO(SUB(x1, dyn->insts[ninst].op1, dyn->insts[ninst].op2), NEZ, EQZ, X_ZF)
-            }
-            else{
+            // if (dyn->insts[ninst].pattern_code == 40 || 
+            //     dyn->insts[ninst].pattern_code == 48 || 
+            //     dyn->insts[ninst].pattern_code == 56 ||
+            //     dyn->insts[ninst].pattern_code == 64 ||
+            //     dyn->insts[ninst].pattern_code == 72){
+            //         //GO(NO,YES)
+            //         //NEZ=1  EQZ=0
+            //         //op1=op2 then jmp -> x1==0 -> YES -> GO(NEZ,EQZ)
+            //     GO(SUB(x1, dyn->insts[ninst].op1, dyn->insts[ninst].op2), NEZ, EQZ, X_ZF)
+            // }
+            // else{
                 GO(ANDI(x1, xFlags, 1 << F_ZF), EQZ, NEZ, X_ZF)
-            }
+            // }
             break;
         case 0x80 + 0x5:
             INST_NAME("JNZ Id");
-            // if (dyn->insts[ninst].pattern_code == 41 || 
-            //     dyn->insts[ninst].pattern_code == 49 || 
-            //     dyn->insts[ninst].pattern_code == 57 ||
-            //     dyn->insts[ninst].pattern_code == 65 ||
-            //     dyn->insts[ninst].pattern_code == 73){
-            //         //GO(NO,YES)
-            //         //NEZ=1  EQZ=0
-            //         //op1!=op2 then jmp -> x1!=0 -> YES -> GO(EQZ,NEZ)
-            //     GO(SUB(x1, dyn->insts[ninst].op1, dyn->insts[ninst].op2), EQZ, NEZ, X_ZF)
-            // }
-            // else{
+            if (dyn->insts[ninst].pattern_code == 41 || 
+                dyn->insts[ninst].pattern_code == 49 || 
+                dyn->insts[ninst].pattern_code == 57 ||
+                dyn->insts[ninst].pattern_code == 65 ||
+                dyn->insts[ninst].pattern_code == 73){
+                    //GO(NO,YES)
+                    //NEZ=1  EQZ=0
+                    //op1!=op2 then jmp -> x1!=0 -> YES -> GO(EQZ,NEZ)
+                GO(SUB(x1, dyn->insts[ninst].op1, dyn->insts[ninst].op2), EQZ, NEZ, X_ZF)
+            }
+            else{
                 GO(ANDI(x1, xFlags, 1 << F_ZF), NEZ, EQZ, X_ZF)
-            // }
+            }
             break;
         case 0x80 + 0x6:
             INST_NAME("JBE Id");
