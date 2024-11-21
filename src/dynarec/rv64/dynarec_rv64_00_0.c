@@ -575,7 +575,7 @@ uintptr_t dynarec64_00_0(dynarec_rv64_t* dyn, uintptr_t addr, uintptr_t ip, int 
             nextop = F8;
             GETEB(x1, 0);
             GETGB(x2);
-            if ((dyn->insts[ninst].pattern_code >= 16  && dyn->insts[ninst].pattern_code <= 23) ||
+            if ((dyn->insts[ninst].pattern_code >= 16 && dyn->insts[ninst].pattern_code <= 23) ||
                 (dyn->insts[ninst].pattern_code >= 56 && dyn->insts[ninst].pattern_code <= 63)){
                 dyn->insts[ninst].op1 = x2;
                 dyn->insts[ninst].op2 = x1;
@@ -592,7 +592,7 @@ uintptr_t dynarec64_00_0(dynarec_rv64_t* dyn, uintptr_t addr, uintptr_t ip, int 
             nextop = F8;
             GETGD;
             GETED(0);
-            if ((dyn->insts[ninst].pattern_code >= 24  && dyn->insts[ninst].pattern_code <= 31) ||
+            if ((dyn->insts[ninst].pattern_code >= 24 && dyn->insts[ninst].pattern_code <= 31) ||
                 (dyn->insts[ninst].pattern_code >= 64 && dyn->insts[ninst].pattern_code <= 71)){
                 dyn->insts[ninst].op1 = gd;
                 dyn->insts[ninst].op2 = ed;
@@ -609,7 +609,7 @@ uintptr_t dynarec64_00_0(dynarec_rv64_t* dyn, uintptr_t addr, uintptr_t ip, int 
             ANDI(x1, xRAX, 0xff);
             if(u8) {
                 MOV32w(x2, u8);
-                if ((dyn->insts[ninst].pattern_code >= 32  && dyn->insts[ninst].pattern_code <= 39) ||
+                if ((dyn->insts[ninst].pattern_code >= 32 && dyn->insts[ninst].pattern_code <= 39) ||
                     (dyn->insts[ninst].pattern_code >= 72 && dyn->insts[ninst].pattern_code <= 79)) {
                     dyn->insts[ninst].op1 = x1;
                     dyn->insts[ninst].op2 = x2;
@@ -618,7 +618,7 @@ uintptr_t dynarec64_00_0(dynarec_rv64_t* dyn, uintptr_t addr, uintptr_t ip, int 
                 }
                 emit_cmp8(dyn, ninst, x1, x2, x3, x4, x5, x6);
             } else {
-                if ((dyn->insts[ninst].pattern_code >= 32  && dyn->insts[ninst].pattern_code <= 39) ||
+                if ((dyn->insts[ninst].pattern_code >= 32 && dyn->insts[ninst].pattern_code <= 39) ||
                     (dyn->insts[ninst].pattern_code >= 72 && dyn->insts[ninst].pattern_code <= 79)) {
                     dyn->insts[ninst].op1 = x1;
                     dyn->insts[ninst].op2 = xZR;
