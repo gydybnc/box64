@@ -392,14 +392,14 @@ uintptr_t dynarec64_00_1(dynarec_rv64_t* dyn, uintptr_t addr, uintptr_t ip, int 
             //     GO(ANDI(x1, xFlags, 1 << F_ZF), NEZ, EQZ, X_ZF)
             // }
 
-            if (box64_dynarec_patternflags)
-                if (dyn->insts[ninst].pattern_code == 9){
-                        //GO(NO,YES)
-                        //NEZ=1  EQZ=0
-                        //op1!=op2 then jmp -> x1!=0 -> YES -> GO(EQZ,NEZ)
-                    GO(SUB(x1, dyn->insts[ninst].op1, dyn->insts[ninst].op2), EQZ, NEZ, X_ZF)
-                    break;
-                }
+            // if (box64_dynarec_patternflags)
+            //     if (dyn->insts[ninst].pattern_code == 9){
+            //             //GO(NO,YES)
+            //             //NEZ=1  EQZ=0
+            //             //op1!=op2 then jmp -> x1!=0 -> YES -> GO(EQZ,NEZ)
+            //         GO(SUB(x1, dyn->insts[ninst].op1, dyn->insts[ninst].op2), EQZ, NEZ, X_ZF)
+            //         break;
+            //     }
             GO(ANDI(x1, xFlags, 1 << F_ZF), NEZ, EQZ, X_ZF)
             break;
         case 0x70 + 0x6:
@@ -417,13 +417,13 @@ uintptr_t dynarec64_00_1(dynarec_rv64_t* dyn, uintptr_t addr, uintptr_t ip, int 
             //     GO(ANDI(x1, xFlags, (1 << F_CF) | (1 << F_ZF)), EQZ, NEZ, X_CF | X_ZF)
             // }
 
-            // if (box64_dynarec_patternflags)
-            //     if (dyn->insts[ninst].pattern_code == 14){
-            //             //op1<=op2 then jmp -> op2<op1 then not jmp
-            //             //op2<op1 -> x1==1 -> NO -> GO(NEZ,EQZ)
-            //         GO(SLTU(x1, dyn->insts[ninst].op2, dyn->insts[ninst].op1), NEZ, EQZ, X_CF | X_ZF)
-            //         break;
-            //     }
+            if (box64_dynarec_patternflags)
+                if (dyn->insts[ninst].pattern_code == 14){
+                        //op1<=op2 then jmp -> op2<op1 then not jmp
+                        //op2<op1 -> x1==1 -> NO -> GO(NEZ,EQZ)
+                    GO(SLTU(x1, dyn->insts[ninst].op2, dyn->insts[ninst].op1), NEZ, EQZ, X_CF | X_ZF)
+                    break;
+                }
             GO(ANDI(x1, xFlags, (1 << F_CF) | (1 << F_ZF)), EQZ, NEZ, X_CF | X_ZF)
             break;
         case 0x70 + 0x7:
