@@ -292,7 +292,8 @@ uintptr_t native_pass(dynarec_native_t* dyn, uintptr_t addr, int alternate, int 
         if(old_opcode){
             int id = get_pattern_identifier(old_opcode, current_opcode);
             if (id != -1) {
-                printf("pattern: %p CMP 0x%x | Jxx 0x%x, code: %d\n",(void*)addr, old_opcode, current_opcode, id);
+                if (box64_dynarec_patternflags)
+                    printf("pattern: %p CMP 0x%x | Jxx 0x%x, code: %d\n",(void*)addr, old_opcode, current_opcode, id);
                 dyn->insts[ninst-1].pattern_code = id;
                 dyn->insts[ninst].pattern_code = id;
                 //printf("%d %d\n", dyn->insts[ninst].pattern_code,dyn->insts[ninst+1].pattern_code);
