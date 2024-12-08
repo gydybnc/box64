@@ -818,7 +818,7 @@
     BNEZ(reg, j64);
 
 #define IFX(A)      if ((dyn->insts[ninst].x64.gen_flags & (A)))
-#define IFX_PENDOR0 if ((dyn->insts[ninst].x64.gen_flags & (X_PEND) || !dyn->insts[ninst].x64.gen_flags))
+// #define IFX_PENDOR0 if ((dyn->insts[ninst].x64.gen_flags & (X_PEND) || !dyn->insts[ninst].x64.gen_flags))
 #define IFXX(A)     if ((dyn->insts[ninst].x64.gen_flags == (A)))
 #define IFX2X(A, B) if ((dyn->insts[ninst].x64.gen_flags == (A) || dyn->insts[ninst].x64.gen_flags == (B) || dyn->insts[ninst].x64.gen_flags == ((A) | (B))))
 #define IFXN(A, B)  if ((dyn->insts[ninst].x64.gen_flags & (A) && !(dyn->insts[ninst].x64.gen_flags & (B))))
@@ -1766,7 +1766,7 @@ uintptr_t dynarec64_AVX_F3_0F(dynarec_rv64_t* dyn, uintptr_t addr, uintptr_t ip,
     B##COND##_safe(dyn->insts[ninst].nat_flags_op1, dyn->insts[ninst].nat_flags_op2, val);
 #define NATIVEJUMP(COND, val) \
     B##COND(dyn->insts[ninst].nat_flags_op1, dyn->insts[ninst].nat_flags_op2, val);
-    
+
 #define NOTEST(s1)                                     \
     if (box64_dynarec_test) {                          \
         SW(xZR, xEmu, offsetof(x64emu_t, test.test));  \
