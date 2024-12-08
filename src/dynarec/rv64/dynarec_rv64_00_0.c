@@ -536,7 +536,7 @@ uintptr_t dynarec64_00_0(dynarec_rv64_t* dyn, uintptr_t addr, uintptr_t ip, int 
             INST_NAME("SS:");
             break;
 
-#define SETFLAGS(A, B, FUSION)                                           \
+#define SETFLAGS_PATTERN(A, B, FUSION)                                           \
     dyn->insts[ninst].x64.set_flags = A;                                 \
     dyn->insts[ninst].x64.state_flags = (B) & ~SF_DF;                    \
     dyn->f.pending = (B) & SF_SET_PENDING;                               \
@@ -544,7 +544,7 @@ uintptr_t dynarec64_00_0(dynarec_rv64_t* dyn, uintptr_t addr, uintptr_t ip, int 
     dyn->insts[ninst].nat_flags_nofusion = (FUSION)
         case 0x38:
             INST_NAME("CMP Eb, Gb");
-            SETFLAGS(X_ALL, SF_SET_PENDING, NAT_FLAGS_FUSION);
+            SETFLAGS_PATTERN(X_ALL, SF_SET_PENDING, NAT_FLAGS_FUSION);
             nextop = F8;
             GETEB(x1, 0);
             GETGB(x2);
@@ -553,7 +553,7 @@ uintptr_t dynarec64_00_0(dynarec_rv64_t* dyn, uintptr_t addr, uintptr_t ip, int 
             break;
         case 0x39:
             INST_NAME("CMP Ed, Gd");
-            SETFLAGS(X_ALL, SF_SET_PENDING, NAT_FLAGS_FUSION);
+            SETFLAGS_PATTERN(X_ALL, SF_SET_PENDING, NAT_FLAGS_FUSION);
             nextop = F8;
             GETGD;
             GETED(0);
@@ -562,7 +562,7 @@ uintptr_t dynarec64_00_0(dynarec_rv64_t* dyn, uintptr_t addr, uintptr_t ip, int 
             break;
         case 0x3A:
             INST_NAME("CMP Gb, Eb");
-            SETFLAGS(X_ALL, SF_SET_PENDING, NAT_FLAGS_FUSION);
+            SETFLAGS_PATTERN(X_ALL, SF_SET_PENDING, NAT_FLAGS_FUSION);
             nextop = F8;
             GETEB(x1, 0);
             GETGB(x2);
@@ -571,7 +571,7 @@ uintptr_t dynarec64_00_0(dynarec_rv64_t* dyn, uintptr_t addr, uintptr_t ip, int 
             break;
         case 0x3B:
             INST_NAME("CMP Gd, Ed");
-            SETFLAGS(X_ALL, SF_SET_PENDING, NAT_FLAGS_FUSION);
+            SETFLAGS_PATTERN(X_ALL, SF_SET_PENDING, NAT_FLAGS_FUSION);
             nextop = F8;
             GETGD;
             GETED(0);
@@ -580,7 +580,7 @@ uintptr_t dynarec64_00_0(dynarec_rv64_t* dyn, uintptr_t addr, uintptr_t ip, int 
             break;
         case 0x3C:
             INST_NAME("CMP AL, Ib");
-            SETFLAGS(X_ALL, SF_SET_PENDING, NAT_FLAGS_FUSION);
+            SETFLAGS_PATTERN(X_ALL, SF_SET_PENDING, NAT_FLAGS_FUSION);
             u8 = F8;
             ANDI(x1, xRAX, 0xff);
             if(u8) {
@@ -594,7 +594,7 @@ uintptr_t dynarec64_00_0(dynarec_rv64_t* dyn, uintptr_t addr, uintptr_t ip, int 
             break;
         case 0x3D:
             INST_NAME("CMP EAX, Id");
-            SETFLAGS(X_ALL, SF_SET_PENDING, NAT_FLAGS_FUSION);
+            SETFLAGS_PATTERN(X_ALL, SF_SET_PENDING, NAT_FLAGS_FUSION);
             i64 = F32S;
             if(i64) {
                 MOV64xw(x2, i64);
@@ -602,7 +602,7 @@ uintptr_t dynarec64_00_0(dynarec_rv64_t* dyn, uintptr_t addr, uintptr_t ip, int 
             } else
                 emit_cmp32_0(dyn, ninst, rex, xRAX, x3, x4);
             break;
-#undef SETFLAGS
+#undef SETFLAGS_PATTERN
         default:
             DEFAULT;
     }
