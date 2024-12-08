@@ -1034,6 +1034,17 @@
     }
 #endif
 
+#ifndef READFLAGS_FUSION
+#define READFLAGS_FUSION(A, checkbarrier) READFLAGS(A)
+#endif
+#define NAT_FLAGS_OPS(op1, op2)                    \
+    do {                                           \
+        dyn->insts[ninst + 1].nat_flags_op1 = op1; \
+        dyn->insts[ninst + 1].nat_flags_op2 = op2; \
+    } while (0)
+#define NAT_FLAGS_ENABLE_CARRY() dyn->insts[ninst].nat_flags_carry = 1
+#define NAT_FLAGS_ENABLE_SIGN()  dyn->insts[ninst].nat_flags_sign = 1
+
 #ifndef SETFLAGS
 #define SETFLAGS(A, B)                                                                                              \
     if (dyn->f.pending != SF_SET                                                                                    \
@@ -1357,6 +1368,7 @@ void* rv64_next(x64emu_t* emu, uintptr_t addr);
 #define fpu_reset_cache     STEPNAME(fpu_reset_cache)
 #define fpu_propagate_stack STEPNAME(fpu_propagate_stack)
 #define fpu_purgecache      STEPNAME(fpu_purgecache)
+#define fpu_needpurgecache  STEPNAME(fpu_needpurgecache)
 #define mmx_purgecache      STEPNAME(mmx_purgecache)
 #define x87_purgecache      STEPNAME(x87_purgecache)
 #define sse_purgecache      STEPNAME(sse_purgecache)
@@ -1611,6 +1623,8 @@ void fpu_reset_cache(dynarec_rv64_t* dyn, int ninst, int reset_n);
 void fpu_propagate_stack(dynarec_rv64_t* dyn, int ninst);
 // purge the FPU cache (needs 3 scratch registers)
 void fpu_purgecache(dynarec_rv64_t* dyn, int ninst, int next, int s1, int s2, int s3);
+// check if the fpu cache need to be purged
+int fpu_needpurgecache(dynarec_rv64_t* dyn, int ninst);
 // purge MMX cache
 void mmx_purgecache(dynarec_rv64_t* dyn, int ninst, int next, int s1);
 // purge x87 cache
