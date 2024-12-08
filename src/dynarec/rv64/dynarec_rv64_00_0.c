@@ -535,6 +535,13 @@ uintptr_t dynarec64_00_0(dynarec_rv64_t* dyn, uintptr_t addr, uintptr_t ip, int 
         case 0x36:
             INST_NAME("SS:");
             break;
+
+#define SETFLAGS(A, B, FUSION)                                           \
+    dyn->insts[ninst].x64.set_flags = A;                                 \
+    dyn->insts[ninst].x64.state_flags = (B) & ~SF_DF;                    \
+    dyn->f.pending = (B) & SF_SET_PENDING;                               \
+    dyn->f.dfnone = ((B) & SF_SET) ? (((B) == SF_SET_NODF) ? 0 : 1) : 0; \
+    dyn->insts[ninst].nat_flags_nofusion = (FUSION)
         case 0x38:
             INST_NAME("CMP Eb, Gb");
             SETFLAGS(X_ALL, SF_SET_PENDING, NAT_FLAGS_FUSION);
@@ -595,7 +602,7 @@ uintptr_t dynarec64_00_0(dynarec_rv64_t* dyn, uintptr_t addr, uintptr_t ip, int 
             } else
                 emit_cmp32_0(dyn, ninst, rex, xRAX, x3, x4);
             break;
-
+#undef SETFLAGS
         default:
             DEFAULT;
     }

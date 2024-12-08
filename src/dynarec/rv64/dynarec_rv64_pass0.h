@@ -29,12 +29,12 @@
         dyn->f.pending=(B)&SF_SET_PENDING;      \
         dyn->f.dfnone=((B)&SF_SET)?(((B)==SF_SET_NODF)?0:1):0;
 
-#define SETFLAGS(A, B, FUSION)                                           \
-    dyn->insts[ninst].x64.set_flags = A;                                 \
-    dyn->insts[ninst].x64.state_flags = (B) & ~SF_DF;                    \
-    dyn->f.pending = (B) & SF_SET_PENDING;                               \
-    dyn->f.dfnone = ((B) & SF_SET) ? (((B) == SF_SET_NODF) ? 0 : 1) : 0; \
-    dyn->insts[ninst].nat_flags_nofusion = (FUSION)
+// #define SETFLAGS(A, B, FUSION)                                           \
+//     dyn->insts[ninst].x64.set_flags = A;                                 \
+//     dyn->insts[ninst].x64.state_flags = (B) & ~SF_DF;                    \
+//     dyn->f.pending = (B) & SF_SET_PENDING;                               \
+//     dyn->f.dfnone = ((B) & SF_SET) ? (((B) == SF_SET_NODF) ? 0 : 1) : 0; \
+//     dyn->insts[ninst].nat_flags_nofusion = (FUSION)
 
 #define EMIT(A)         dyn->native_size+=4
 #define JUMP(A, C)         add_jump(dyn, ninst); add_next(dyn, (uintptr_t)A); SMEND(); dyn->insts[ninst].x64.jmp = A; dyn->insts[ninst].x64.jmp_cond = C; dyn->insts[ninst].x64.jmp_insts = 0

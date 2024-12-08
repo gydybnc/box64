@@ -224,6 +224,12 @@ uintptr_t dynarec64_64(dynarec_rv64_t* dyn, uintptr_t addr, uintptr_t ip, int ni
                     emit_xor8c(dyn, ninst, x1, u8, x2, x4);
                     EBBACK(x5, 0);
                     break;
+#define SETFLAGS(A, B, FUSION)                                           \
+    dyn->insts[ninst].x64.set_flags = A;                                 \
+    dyn->insts[ninst].x64.state_flags = (B) & ~SF_DF;                    \
+    dyn->f.pending = (B) & SF_SET_PENDING;                               \
+    dyn->f.dfnone = ((B) & SF_SET) ? (((B) == SF_SET_NODF) ? 0 : 1) : 0; \
+    dyn->insts[ninst].nat_flags_nofusion = (FUSION)
                 case 7: // CMP
                     INST_NAME("CMP Eb, Ib");
                     grab_segdata(dyn, addr, ninst, x1, seg);
@@ -237,6 +243,7 @@ uintptr_t dynarec64_64(dynarec_rv64_t* dyn, uintptr_t addr, uintptr_t ip, int ni
                         emit_cmp8_0(dyn, ninst, x1, x3, x4);
                     }
                     break;
+#undef SETFLAGS
                 default:
                     DEFAULT;
             }
@@ -308,6 +315,12 @@ uintptr_t dynarec64_64(dynarec_rv64_t* dyn, uintptr_t addr, uintptr_t ip, int ni
                     emit_xor32c(dyn, ninst, rex, ed, i64, x3, x4);
                     WBACKO(x6);
                     break;
+#define SETFLAGS(A, B, FUSION)                                           \
+    dyn->insts[ninst].x64.set_flags = A;                                 \
+    dyn->insts[ninst].x64.state_flags = (B) & ~SF_DF;                    \
+    dyn->f.pending = (B) & SF_SET_PENDING;                               \
+    dyn->f.dfnone = ((B) & SF_SET) ? (((B) == SF_SET_NODF) ? 0 : 1) : 0; \
+    dyn->insts[ninst].nat_flags_nofusion = (FUSION)
                 case 7: // CMP
                     if(opcode==0x81) {INST_NAME("CMP Ed, Id");} else {INST_NAME("CMP Ed, Ib");}
                     SETFLAGS(X_ALL, SF_SET_PENDING, NAT_FLAGS_FUSION);
@@ -319,6 +332,7 @@ uintptr_t dynarec64_64(dynarec_rv64_t* dyn, uintptr_t addr, uintptr_t ip, int ni
                     } else
                         emit_cmp32_0(dyn, ninst, rex, ed, x3, x4);
                     break;
+#undef SETFLAGS
             }
             break;
         case 0x88:
