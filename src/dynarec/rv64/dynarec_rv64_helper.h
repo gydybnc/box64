@@ -822,6 +822,8 @@
 #define IFXX(A)     if ((dyn->insts[ninst].x64.gen_flags == (A)))
 #define IFX2X(A, B) if ((dyn->insts[ninst].x64.gen_flags == (A) || dyn->insts[ninst].x64.gen_flags == (B) || dyn->insts[ninst].x64.gen_flags == ((A) | (B))))
 #define IFXN(A, B)  if ((dyn->insts[ninst].x64.gen_flags & (A) && !(dyn->insts[ninst].x64.gen_flags & (B))))
+#define IFXORNAT(A) if ((dyn->insts[ninst].x64.gen_flags & (A)) || dyn->insts[ninst].nat_flags_fusion)
+#define IFX_PENDOR0 if ((dyn->insts[ninst].x64.gen_flags & (X_PEND) || (!dyn->insts[ninst].x64.gen_flags && !dyn->insts[ninst].nat_flags_fusion)))
 
 #define STORE_REG(A) SD(x##A, xEmu, offsetof(x64emu_t, regs[_##A]))
 #define LOAD_REG(A)  LD(x##A, xEmu, offsetof(x64emu_t, regs[_##A]))

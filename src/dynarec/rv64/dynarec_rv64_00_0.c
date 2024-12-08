@@ -537,109 +537,57 @@ uintptr_t dynarec64_00_0(dynarec_rv64_t* dyn, uintptr_t addr, uintptr_t ip, int 
             break;
         case 0x38:
             INST_NAME("CMP Eb, Gb");
-            SETFLAGS(X_ALL, SF_SET_PENDING);
+            SETFLAGS(X_ALL, SF_SET_PENDING, NAT_FLAGS_FUSION);
             nextop = F8;
             GETEB(x1, 0);
             GETGB(x2);
-            if (box64_dynarec_patternflags)
-                if ((dyn->insts[ninst].pattern_code >= 0  && dyn->insts[ninst].pattern_code <= 7) ||
-                    (dyn->insts[ninst].pattern_code >= 40 && dyn->insts[ninst].pattern_code <= 47)) {
-                    dyn->insts[ninst].op1 = x1;
-                    dyn->insts[ninst].op2 = x2;
-                    dyn->insts[ninst+1].op1 = x1;
-                    dyn->insts[ninst+1].op2 = x2;
-                    emit_cmp8(dyn, ninst, x1, x2, x9, x4, x5, x6);
-                    break;
-                }
+
             emit_cmp8(dyn, ninst, x1, x2, x9, x4, x5, x6);
             break;
         case 0x39:
             INST_NAME("CMP Ed, Gd");
-            SETFLAGS(X_ALL, SF_SET_PENDING);
+            SETFLAGS(X_ALL, SF_SET_PENDING, NAT_FLAGS_FUSION);
             nextop = F8;
             GETGD;
             GETED(0);
-            if (box64_dynarec_patternflags)
-                // if ((dyn->insts[ninst].pattern_code >= 8  && dyn->insts[ninst].pattern_code <= 15) ||
-                //     (dyn->insts[ninst].pattern_code >= 48 && dyn->insts[ninst].pattern_code <= 55)) {
-                // if ((dyn->insts[ninst].pattern_code == 9 || dyn->insts[ninst].pattern_code == 8 ||
-                //     dyn->insts[ninst].pattern_code == 14 || dyn->insts[ninst].pattern_code == 15))
-                if ((dyn->insts[ninst].pattern_code == 14 || dyn->insts[ninst].pattern_code == 8)) {
-                    dyn->insts[ninst].op1 = ed;
-                    dyn->insts[ninst].op2 = gd;
-                    dyn->insts[ninst+1].op1 = ed;
-                    dyn->insts[ninst+1].op2 = gd;
-                    emit_cmp32_noflag(dyn, ninst, rex, ed, gd, x3, x4, x5, x6);
-                    break;
-                }
+
             emit_cmp32(dyn, ninst, rex, ed, gd, x3, x4, x5, x6);
             break;
         case 0x3A:
             INST_NAME("CMP Gb, Eb");
-            SETFLAGS(X_ALL, SF_SET_PENDING);
+            SETFLAGS(X_ALL, SF_SET_PENDING, NAT_FLAGS_FUSION);
             nextop = F8;
             GETEB(x1, 0);
             GETGB(x2);
-            if (box64_dynarec_patternflags)
-                if ((dyn->insts[ninst].pattern_code >= 16 && dyn->insts[ninst].pattern_code <= 23) ||
-                    (dyn->insts[ninst].pattern_code >= 56 && dyn->insts[ninst].pattern_code <= 63)){
-                    dyn->insts[ninst].op1 = x2;
-                    dyn->insts[ninst].op2 = x1;
-                    dyn->insts[ninst+1].op1 = x2;
-                    dyn->insts[ninst+1].op2 = x1;
-                    emit_cmp8(dyn, ninst, x2, x1, x9, x4, x5, x6);
-                    break;
-                }
+
             emit_cmp8(dyn, ninst, x2, x1, x9, x4, x5, x6);
             break;
         case 0x3B:
             INST_NAME("CMP Gd, Ed");
-            SETFLAGS(X_ALL, SF_SET_PENDING);
+            SETFLAGS(X_ALL, SF_SET_PENDING, NAT_FLAGS_FUSION);
             nextop = F8;
             GETGD;
             GETED(0);
-            if (box64_dynarec_patternflags)
-                if ((dyn->insts[ninst].pattern_code >= 24 && dyn->insts[ninst].pattern_code <= 31) ||
-                    (dyn->insts[ninst].pattern_code >= 64 && dyn->insts[ninst].pattern_code <= 71)){
-                    dyn->insts[ninst].op1 = gd;
-                    dyn->insts[ninst].op2 = ed;
-                    dyn->insts[ninst+1].op1 = gd;
-                    dyn->insts[ninst+1].op2 = ed;
-                    emit_cmp32(dyn, ninst, rex, gd, ed, x3, x4, x5, x6);
-                }
+
             emit_cmp32(dyn, ninst, rex, gd, ed, x3, x4, x5, x6);
             break;
         case 0x3C:
             INST_NAME("CMP AL, Ib");
-            SETFLAGS(X_ALL, SF_SET_PENDING);
+            SETFLAGS(X_ALL, SF_SET_PENDING, NAT_FLAGS_FUSION);
             u8 = F8;
             ANDI(x1, xRAX, 0xff);
             if(u8) {
                 MOV32w(x2, u8);
-                if (box64_dynarec_patternflags)
-                    if ((dyn->insts[ninst].pattern_code >= 32 && dyn->insts[ninst].pattern_code <= 39) ||
-                        (dyn->insts[ninst].pattern_code >= 72 && dyn->insts[ninst].pattern_code <= 79)) {
-                        dyn->insts[ninst].op1 = x1;
-                        dyn->insts[ninst].op2 = x2;
-                        emit_cmp8(dyn, ninst, x1, x2, x3, x4, x5, x6);
-                        break;
-                    }
+
                 emit_cmp8(dyn, ninst, x1, x2, x3, x4, x5, x6);
             } else {
-                if (box64_dynarec_patternflags)
-                    if ((dyn->insts[ninst].pattern_code >= 32 && dyn->insts[ninst].pattern_code <= 39) ||
-                        (dyn->insts[ninst].pattern_code >= 72 && dyn->insts[ninst].pattern_code <= 79)) {
-                        dyn->insts[ninst].op1 = x1;
-                        dyn->insts[ninst].op2 = xZR;
-                        emit_cmp8_0(dyn, ninst, x1, x3, x4);
-                        break;
-                    }
+
                 emit_cmp8_0(dyn, ninst, x1, x3, x4);
             }
             break;
         case 0x3D:
             INST_NAME("CMP EAX, Id");
-            SETFLAGS(X_ALL, SF_SET_PENDING);
+            SETFLAGS(X_ALL, SF_SET_PENDING, NAT_FLAGS_FUSION);
             i64 = F32S;
             if(i64) {
                 MOV64xw(x2, i64);

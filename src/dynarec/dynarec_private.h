@@ -28,6 +28,8 @@
 #define SF_SET_DF   (SF_SET|SF_DF)
 #define SF_NODF     16
 #define SF_SET_NODF (SF_SET|SF_NODF)
+#define NAT_FLAGS_FUSION   0
+#define NAT_FLAGS_NOFUSION 1
 
 typedef struct instruction_x64_s {
     uintptr_t   addr;       //address of the instruction

@@ -653,7 +653,8 @@ void* FillBlock64(dynablock_t* block, uintptr_t addr, int alternate, int is32bit
     int alloc_size = sizePredecessors(&helper);
     helper.predecessor = (int*)alloca(alloc_size*sizeof(int));
     fillPredecessors(&helper);
-
+    PREUPDATE_SPECIFICS(&helper);
+    
     int pos = helper.size;
     while (pos>=0)
         pos = updateNeed(&helper, pos, 0);

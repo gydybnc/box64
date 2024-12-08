@@ -113,7 +113,7 @@ uintptr_t dynarec64_00_2(dynarec_rv64_t* dyn, uintptr_t addr, uintptr_t ip, int 
                     break;
                 case 7: // CMP
                     INST_NAME("CMP Eb, Ib");
-                    SETFLAGS(X_ALL, SF_SET_PENDING);
+                    SETFLAGS(X_ALL, SF_SET_PENDING, NAT_FLAGS_FUSION);
                     GETEB(x1, 1);
                     u8 = F8;
                     if(u8) {
@@ -193,7 +193,7 @@ uintptr_t dynarec64_00_2(dynarec_rv64_t* dyn, uintptr_t addr, uintptr_t ip, int 
                     break;
                 case 7: // CMP
                     if(opcode==0x81) {INST_NAME("CMP Ed, Id");} else {INST_NAME("CMP Ed, Ib");}
-                    SETFLAGS(X_ALL, SF_SET_PENDING);
+                    SETFLAGS(X_ALL, SF_SET_PENDING, NAT_FLAGS_FUSION);
                     GETED((opcode==0x81)?4:1);
                     if(opcode==0x81) i64 = F32S; else i64 = F8S;
                     if(i64) {
