@@ -262,28 +262,28 @@ uintptr_t dynarec64_660F(dynarec_rv64_t* dyn, uintptr_t addr, uintptr_t ip, int 
         case 0x3A: // these are some more SSSE3+ opcodes
             addr = dynarec64_660F38(dyn, addr, opcode, ip, ninst, rex, ok, need_epilog);
             break;
-        #define GO(GETFLAGS, NO, YES, F)                                                             \
-            READFLAGS(F);                                                                            \
-            GETFLAGS;                                                                                \
-            nextop = F8;                                                                             \
-            GETGD;                                                                                   \
-            if (MODREG) {                                                                            \
-                ed = xRAX + (nextop & 7) + (rex.b << 3);                                             \
-                ZEXTH(x4, ed);                                                                       \
-                ed = x4;                                                                             \
-            } else {                                                                                 \
-                SMREAD();                                                                            \
-                addr = geted(dyn, addr, ninst, nextop, &ed, x2, x4, &fixedaddress, rex, NULL, 1, 0); \
-                LHU(x4, ed, fixedaddress);                                                           \
-                ed = x4;                                                                             \
-            }                                                                                        \
-            B##NO(x1, 4 + 3 * 4);                                                                    \
-            LUI(x3, 0xffff0);                                                                        \
-            AND(gd, gd, x3);                                                                         \
-            OR(gd, gd, ed);
+#define GO(GETFLAGS, NO, YES, NATNO, NATYES, F)                                              \
+    READFLAGS(F);                                                                            \
+    GETFLAGS;                                                                                \
+    nextop = F8;                                                                             \
+    GETGD;                                                                                   \
+    if (MODREG) {                                                                            \
+        ed = xRAX + (nextop & 7) + (rex.b << 3);                                             \
+        ZEXTH(x4, ed);                                                                       \
+        ed = x4;                                                                             \
+    } else {                                                                                 \
+        SMREAD();                                                                            \
+        addr = geted(dyn, addr, ninst, nextop, &ed, x2, x4, &fixedaddress, rex, NULL, 1, 0); \
+        LHU(x4, ed, fixedaddress);                                                           \
+        ed = x4;                                                                             \
+    }                                                                                        \
+    B##NO(x1, 4 + 3 * 4);                                                                    \
+    LUI(x3, 0xffff0);                                                                        \
+    AND(gd, gd, x3);                                                                         \
+    OR(gd, gd, ed);
 
             GOCOND(0x40, "CMOV", "Gw, Ew");
-        #undef GO
+#undef GO
         case 0x50:
             INST_NAME("PMOVMSKD Gd, Ex");
             nextop = F8;
