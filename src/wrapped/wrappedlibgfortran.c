@@ -11,12 +11,12 @@
 #include "librarian/library_private.h"
 #include "x64emu.h"
 
-// #include "generated/wrappedmy_librarydefs.h"
+#include "generated/wrappedlibgfortrandefs.h"
 
-const char* my_libraryName = "libgfortran.so.5";
+const char* libgfortranName = "libgfortran.so.5";
 #define LIBNAME libgfortran
 
-// #include "generated/wrappedlibgfortran.h"
+#include "generated/wrappedlibgfortrantypes.h"
 
 #include "wrappercallback.h"
 
