@@ -4769,6 +4769,7 @@ wrappedlibfuse:
   - fuse_main_real
 - LFppLppU:
   - fuse_add_direntry
+wrappedlibgfortran:
 wrappedlibgl:
 - iFi:
   - glXSwapIntervalMESA
